@@ -1,0 +1,248 @@
+```html
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Energy’s Golden Rule: Grade 5 Interactive Primer</title>
+<style>
+  :root{
+    --bg:#f0f9ff; --ink:#111827; --muted:#374151;
+    --panel:#ffffff; --line:#e0f2fe;
+    --accent:#0ea5e9; --violet:#8b5cf6; --amber:#f59e0b; --green:#10b981; --rose:#fb7185;
+  }
+  body{margin:0;font-family:"Nunito",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:linear-gradient(90deg,#0ea5e9,#8b5cf6,#f59e0b);padding:14px;text-align:center;color:white}
+  header h1{margin:0}
+  main{max-width:1100px;margin:0 auto;padding:16px}
+  section{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+  h2{margin:.2rem 0 .5rem;font-size:1.2rem;color:var(--accent)}
+  h3{margin:.5rem 0 .3rem;color:var(--violet)}
+  .flipset{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+  .flip{perspective:1000px}
+  .flip button{position:relative;width:100%;height:130px;border:0;border-radius:10px;cursor:pointer;outline:2px solid var(--line)}
+  .flip .front,.flip .back{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;padding:8px;border-radius:10px;backface-visibility:hidden;transition:transform .6s}
+  .flip .front{background:#e0f2fe}
+  .flip .back{background:#fef3c7;transform:rotateY(180deg)}
+  .flip button.toggled .front{transform:rotateY(180deg)}
+  .flip button.toggled .back{transform:rotateY(0)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+  .chip{padding:6px 10px;border-radius:20px;border:2px solid var(--accent);cursor:pointer}
+  .chip.sel{background:var(--accent);color:white}
+  .accordion button{width:100%;text-align:left;padding:8px;border:2px solid var(--violet);border-radius:8px;margin:4px 0;background:#ede9fe;font-weight:700;cursor:pointer}
+  .accordion .panel{display:none;padding:8px;background:#f5f3ff;border-left:4px solid var(--violet)}
+  table{border-collapse:collapse;width:100%}
+  td,th{border:1px solid #d1d5db;padding:6px}
+  .counter{display:flex;gap:6px;align-items:center;margin:6px 0}
+  .counter button{border:2px solid var(--green);background:#dcfce7;border-radius:6px;padding:4px 8px;cursor:pointer}
+  .bars{display:flex;gap:10px;align-items:flex-end;height:200px;margin:12px 0}
+  .bar{width:60px;background:#a5f3fc;border:2px solid var(--accent);display:flex;align-items:flex-end;justify-content:center;border-radius:6px 6px 0 0}
+  .bar span{padding:4px;font-weight:700}
+  .quizq{margin:10px 0}
+  .quizq button{display:block;margin:4px 0;padding:6px 10px;border:2px solid var(--amber);background:#fef3c7;border-radius:6px;cursor:pointer}
+  .note{font-weight:700;color:var(--muted)}
+  .btn{border:2px solid var(--accent);background:#bae6fd;padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <h1>Energy’s Golden Rule: Understanding Energy Conservation</h1>
+</header>
+<main>
+
+<section>
+  <h2>Chapter 1: The Wonderful World of Energy 🌟</h2>
+  <p>Energy is everywhere! It makes things move, change, and work—from ants climbing to Ontario’s wind turbines.</p>
+  <a href="https://www.google.com/search?q=Energy+in+nature+for+kids" target="_blank">🔗 Images: Energy in nature</a>
+</section>
+
+<section>
+  <h2>Types of Energy: The Energy Family 🔋</h2>
+  <div class="flipset">
+    <div class="flip"><button><div class="front">⚙️ Mechanical</div><div class="back">Bike • Roller coaster • Ball</div></button></div>
+    <div class="flip"><button><div class="front">⚡ Electrical</div><div class="back">Lightning • Battery • Power lines</div></button></div>
+    <div class="flip"><button><div class="front">🔥 Thermal</div><div class="back">Campfire • Sun warming rocks • Boiling water</div></button></div>
+    <div class="flip"><button><div class="front">🔊 Sound</div><div class="back">Instruments • Talking • Thunder</div></button></div>
+    <div class="flip"><button><div class="front">💡 Light</div><div class="back">Sunlight • Flashlight • Fireflies</div></button></div>
+  </div>
+  <h3>Select what you noticed today:</h3>
+  <div class="chips">
+    <div class="chip">Mechanical</div><div class="chip">Electrical</div><div class="chip">Thermal</div><div class="chip">Sound</div><div class="chip">Light</div>
+  </div>
+  <div class="accordion">
+    <button>🌿 Indigenous Wisdom Corner</button>
+    <div class="panel">Energy is a sacred flow connecting all living things.</div>
+  </div>
+</section>
+
+<section>
+  <h2>The Golden Rule of Energy 🔬</h2>
+  <p><strong>Law:</strong> Energy cannot be created or destroyed — only changes form.</p>
+  <ul>
+    <li>Ball top of hill → Potential</li>
+    <li>Rolling down → Kinetic</li>
+    <li>Also some heat & sound</li>
+    <li>Total stays the same!</li>
+  </ul>
+  <h3>Transformation Match</h3>
+  <table>
+    <tr><th>Start</th><th>Transform (pick)</th><th>Example</th></tr>
+    <tr>
+      <td>Chemical (Battery)</td>
+      <td>
+        <select>
+          <option>—</option><option>Electrical → Mechanical</option><option>Thermal → Sound</option>
+        </select>
+      </td>
+      <td>Toy car moving</td>
+    </tr>
+    <tr>
+      <td>Sunlight</td>
+      <td>
+        <select>
+          <option>—</option><option>Light → Electrical</option><option>Kinetic → Thermal</option>
+        </select>
+      </td>
+      <td>Solar panel</td>
+    </tr>
+    <tr>
+      <td>Wind</td>
+      <td>
+        <select>
+          <option>—</option><option>Kinetic → Electrical</option><option>Electrical → Sound</option>
+        </select>
+      </td>
+      <td>Wind turbine</td>
+    </tr>
+  </table>
+  <button class="btn">Check Answers</button>
+</section>
+
+<section>
+  <h2>Pendulum Power Experiment 🏐</h2>
+  <ul>
+    <li>Make pendulum</li><li>Measure height</li><li>Observe energy transform</li><li>Record observations</li>
+  </ul>
+  <a href="https://www.google.com/search?q=Pendulum+energy+experiment+for+kids" target="_blank">🔗 Images: Pendulum experiment</a>
+  <h3>Record Notes</h3>
+  <input type="text" placeholder="Start height"> <br>
+  <input type="text" placeholder="Max swing"> <br>
+  <input type="text" placeholder="Potential → Kinetic where?"> <br>
+  <input type="text" placeholder="Heat or sound?">
+  <h3>Safety 🛡️</h3>
+  <ul>
+    <li><input type="checkbox"> Adult helps</li>
+    <li><input type="checkbox"> Wear gear</li>
+    <li><input type="checkbox"> Stay curious</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Ontario’s Energy Landscape</h2>
+  <div class="flipset">
+    <div class="flip"><button><div class="front">💦 Niagara Falls</div><div class="back">Water → Electricity</div></button></div>
+    <div class="flip"><button><div class="front">🌬️ Wind Farms</div><div class="back">Wind → Electricity</div></button></div>
+    <div class="flip"><button><div class="front">☀️ Solar Panels</div><div class="back">Sun → Electricity</div></button></div>
+  </div>
+</section>
+
+<section>
+  <h2>Vocabulary 📚</h2>
+  <div class="flipset">
+    <div class="flip"><button><div class="front">Potential Energy</div><div class="back">Stored energy</div></button></div>
+    <div class="flip"><button><div class="front">Kinetic Energy</div><div class="back">Movement energy</div></button></div>
+    <div class="flip"><button><div class="front">Conservation</div><div class="back">Changes form; total same</div></button></div>
+    <div class="flip"><button><div class="front">Transformation</div><div class="back">Changing forms</div></button></div>
+    <div class="flip"><button><div class="front">Renewable Energy</div><div class="back">Naturally replaced</div></button></div>
+  </div>
+</section>
+
+<section>
+  <h2>Counting & Graphing Energy 📈</h2>
+  <div id="counters">
+    <div class="counter" data-key="ToyCars">🚗 Toy cars: <button>-</button><span>0</span><button>+</button></div>
+    <div class="counter" data-key="Lights">💡 Lights: <button>-</button><span>0</span><button>+</button></div>
+    <div class="counter" data-key="WarmSources">🔥 Warm sources: <button>-</button><span>0</span><button>+</button></div>
+    <div class="counter" data-key="Sounds">🔊 Sounds: <button>-</button><span>0</span><button>+</button></div>
+  </div>
+  <div class="bars">
+    <div class="bar" data-key="ToyCars"><span>0</span></div>
+    <div class="bar" data-key="Lights"><span>0</span></div>
+    <div class="bar" data-key="WarmSources"><span>0</span></div>
+    <div class="bar" data-key="Sounds"><span>0</span></div>
+  </div>
+  <button class="btn" id="sync">Sync Graph</button>
+  <button class="btn" id="reset">Reset All</button>
+</section>
+
+<section>
+  <h2>Reflection 🤔</h2>
+  <input type="text" placeholder="3 transformations today"><br>
+  <input type="text" placeholder="Bike energy conservation"><br>
+  <input type="text" placeholder="Family saves energy"><br>
+  <input type="text" placeholder="Diagram description">
+</section>
+
+<section>
+  <h2>Comprehension Check ✅</h2>
+  <div class="quizq">Energy can be: <button>a) Created</button><button>b) Destroyed</button><button>c) Transformed ✓</button></div>
+  <div class="quizq">Potential energy is: <button>a) Moving</button><button>b) Stored ✓</button><button>c) Invisible</button></div>
+  <div class="quizq">When energy changes form, total: <button>a) Increases</button><button>b) Decreases</button><button>c) Stays same ✓</button></div>
+  <p>Bonus: Design an energy-saving invention!</p>
+</section>
+
+<section>
+  <h2>Resources</h2>
+  <a href="https://phet.colorado.edu/sims/html/energy-skate-park/latest/energy-skate-park_en.html" target="_blank">PhET Energy Skate Park</a><br>
+  <a href="https://www.ontariosciencecentre.ca/learn-teach" target="_blank">Ontario Science Centre Energy Resources</a>
+</section>
+
+</main>
+<script>
+  // Flip
+  document.querySelectorAll(".flip button").forEach(b=>{
+    b.addEventListener("click",()=>b.classList.toggle("toggled"));
+  });
+  // Chips
+  document.querySelectorAll(".chip").forEach(c=>{
+    c.addEventListener("click",()=>c.classList.toggle("sel"));
+  });
+  // Accordion
+  document.querySelectorAll(".accordion button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const panel=btn.nextElementSibling;
+      const open=panel.style.display==="block";
+      panel.style.display=open?"none":"block";
+    });
+  });
+  // Counters + Graph
+  const counts={ToyCars:0,Lights:0,WarmSources:0,Sounds:0};
+  document.querySelectorAll(".counter").forEach(c=>{
+    const key=c.dataset.key;
+    const span=c.querySelector("span");
+    c.querySelectorAll("button").forEach((btn,i)=>{
+      btn.addEventListener("click",()=>{
+        if(i===0) counts[key]=Math.max(0,counts[key]-1);
+        else counts[key]++;
+        span.textContent=counts[key];
+      });
+    });
+  });
+  function syncBars(){
+    const max=Math.max(1,...Object.values(counts));
+    document.querySelectorAll(".bar").forEach(b=>{
+      const key=b.dataset.key;const val=counts[key];
+      const h=20+val/max*160;
+      b.style.height=h+"px";b.querySelector("span").textContent=val;
+    });
+  }
+  document.getElementById("sync").addEventListener("click",syncBars);
+  document.getElementById("reset").addEventListener("click",()=>{
+    Object.keys(counts).forEach(k=>counts[k]=0);
+    document.querySelectorAll(".counter span").forEach(s=>s.textContent="0");
+    syncBars();
+  });
+</script>
+</body>
+</html>
+```
