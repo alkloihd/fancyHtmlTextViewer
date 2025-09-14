@@ -13,11 +13,9 @@
     toggleMarkdown: document.getElementById('toggleMarkdown'),
     htmlFrame: document.getElementById('htmlFrame'),
     markdownRender: document.getElementById('markdownRender'),
-    divider: document.getElementById('divider'),
     split: document.getElementById('split'),
     openHtmlNewTab: document.getElementById('openHtmlNewTab'),
-    mdVersionSelect: document.getElementById('mdVersionSelect'),
-    htmlVersionSelect: document.getElementById('htmlVersionSelect'),
+    htmlVersionButtons: document.getElementById('htmlVersionButtons'),
     feedbackTopBtn: document.getElementById('feedbackTopBtn'),
     backToTop: document.getElementById('backToTop'),
     teacherGrade: document.getElementById('teacherGrade'),
@@ -201,8 +199,7 @@
     selectedHtmlPath = item.html || htmlVariants[0] || '';
     selectedMdPath = item.markdown || markdownVariants[0] || '';
     els.openHtmlNewTab.href = selectedHtmlPath || '#';
-    populateHtmlSelector(htmlVariants, selectedHtmlPath);
-    populateMdSelector(markdownVariants, selectedMdPath);
+    buildHtmlVersionButtons(htmlVariants, selectedHtmlPath);
     // Set teacher grade default to the item grade if empty
     if (!els.teacherGrade.value) {
       els.teacherGrade.value = String(item.grade);
@@ -240,63 +237,24 @@
     const body = encodeURIComponent('Attach your downloaded JSON feedback file. Thank you!');
     els.emailHint.href = `mailto:rishaal@nextclass.ca?subject=${subj}&body=${body}`;
     // Ensure markdown shown by default (hide if not available)
-    ensureMarkdownVisible(!!hasMd);
+    ensureMarkdownVisible(false);
+    els.toggleMarkdown.disabled = !hasMd;
+    if (!hasMd) els.toggleMarkdown.textContent = 'Raw Text Unavailable';
     // Scroll to viewer
     els.viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function ensureMarkdownVisible(show) {
     if (show) {
-      els.split.classList.remove('markdown-hidden');
-      els.toggleMarkdown.textContent = 'Hide Markdown';
+      els.split.classList.add('raw-visible');
+      els.toggleMarkdown.textContent = 'Hide Raw Text ⇨';
     } else {
-      els.split.classList.add('markdown-hidden');
-      els.toggleMarkdown.textContent = 'Show Markdown';
+      els.split.classList.remove('raw-visible');
+      els.toggleMarkdown.textContent = 'Show Raw Text ⇦';
     }
   }
 
-  function initSplitResize() {
-    let isDragging = false;
-    let orientation = 'horizontal'; // or 'vertical' under narrow view
-
-    const updateOrientation = () => {
-      const style = window.getComputedStyle(els.split);
-      // If using grid-template-rows (mobile), treat as vertical
-      orientation = style.gridTemplateColumns && style.gridTemplateColumns.split(' ').length === 3 ? 'horizontal' : 'vertical';
-      // Heuristic: when 3 columns present -> horizontal
-    };
-
-    const onDown = (e) => {
-      updateOrientation();
-      isDragging = true;
-      document.body.style.userSelect = 'none';
-    };
-    const onMove = (e) => {
-      if (!isDragging) return;
-      const rect = els.split.getBoundingClientRect();
-      if (orientation === 'horizontal') {
-        const x = e.clientX - rect.left;
-        const clamped = Math.max(160, Math.min(x, rect.width - 200));
-        els.split.style.gridTemplateColumns = `${clamped}px 6px 1fr`;
-      } else {
-        const y = e.clientY - rect.top;
-        const clamped = Math.max(160, Math.min(y, rect.height - 200));
-        els.split.style.gridTemplateRows = `${clamped}px 6px 1fr`;
-      }
-    };
-    const onUp = () => {
-      isDragging = false;
-      document.body.style.userSelect = '';
-    };
-
-    els.divider.addEventListener('mousedown', onDown);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    // Touch support
-    els.divider.addEventListener('touchstart', (e) => { onDown(e.touches[0]); e.preventDefault(); }, { passive: false });
-    window.addEventListener('touchmove', (e) => onMove(e.touches[0]));
-    window.addEventListener('touchend', onUp);
-  }
+  // Removed split resizing; layout toggles via class only
 
   function initRatings() {
     const bind = (range, label) => {
@@ -323,8 +281,8 @@
     els.gradeFilter.addEventListener('change', renderList);
     els.subjectFilter.addEventListener('change', renderList);
     els.toggleMarkdown.addEventListener('click', () => {
-      const hidden = els.split.classList.contains('markdown-hidden');
-      ensureMarkdownVisible(hidden);
+      const visible = els.split.classList.contains('raw-visible');
+      ensureMarkdownVisible(!visible);
     });
     els.feedbackTopBtn.addEventListener('click', () => {
       // Scroll to feedback section in viewer
@@ -390,48 +348,7 @@
       // Helpful reminder
       setTimeout(() => alert('Feedback JSON downloaded. Please attach it in an email to rishaal@nextclass.ca. Thank you!'), 100);
     });
-    // HTML version switching
-    els.htmlVersionSelect.addEventListener('change', async () => {
-      const newHtml = els.htmlVersionSelect.value;
-      if (!newHtml) return;
-      selectedHtmlPath = newHtml;
-      els.openHtmlNewTab.href = selectedHtmlPath;
-      cache.html = await (await fetch(selectedHtmlPath)).text().catch(() => '');
-      els.htmlFrame.src = selectedHtmlPath;
-      // Update title version tag
-      const v = parseVersionFromPath(selectedHtmlPath);
-      els.currentTitle.textContent = `${currentContent.title} ${v>1?`(v${v})`:''}`;
-    });
-    // Markdown version switching
-    els.mdVersionSelect.addEventListener('change', async () => {
-      const newMd = els.mdVersionSelect.value;
-      selectedMdPath = newMd || '';
-      if (!newMd) {
-        els.markdownRender.innerHTML = `<em>Markdown not available.</em>`;
-        ensureMarkdownVisible(false);
-        return;
-      }
-      try {
-        const mdRes = await fetch(newMd);
-        if (mdRes.ok) {
-          const mdText = await mdRes.text();
-          cache.md = mdText;
-          try {
-            const rendered = marked.parse(mdText);
-            els.markdownRender.innerHTML = rendered;
-          } catch (e) {
-            els.markdownRender.textContent = mdText;
-          }
-          ensureMarkdownVisible(true);
-        } else {
-          els.markdownRender.innerHTML = `<em>Markdown not available.</em>`;
-          ensureMarkdownVisible(false);
-        }
-      } catch (e) {
-        els.markdownRender.innerHTML = `<em>Markdown not available.</em>`;
-        ensureMarkdownVisible(false);
-      }
-    });
+    // HTML version switching now handled by buttons
   }
 
   function initMarkedOptions() {
@@ -444,7 +361,6 @@
   }
 
   // Boot
-  initSplitResize();
   initRatings();
   initPersistence();
   initEvents();
@@ -479,37 +395,26 @@
     return { htmlVariants, markdownVariants };
   }
 
-  function populateHtmlSelector(htmlVariants, selected) {
-    els.htmlVersionSelect.innerHTML = '';
-    htmlVariants.forEach(h => {
+  function buildHtmlVersionButtons(htmlVariants, selected) {
+    els.htmlVersionButtons.innerHTML = '';
+    htmlVariants.forEach((h) => {
       const v = parseVersionFromPath(h);
-      const opt = document.createElement('option');
-      opt.value = h;
-      opt.textContent = `v${v}`;
-      if (h === selected) opt.selected = true;
-      els.htmlVersionSelect.appendChild(opt);
+      const btn = document.createElement('button');
+      btn.className = 'version-btn' + (h === selected ? ' active' : '');
+      btn.type = 'button';
+      btn.textContent = `v${v}`;
+      btn.addEventListener('click', async () => {
+        if (selectedHtmlPath === h) return;
+        selectedHtmlPath = h;
+        Array.from(els.htmlVersionButtons.children).forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        els.openHtmlNewTab.href = selectedHtmlPath;
+        cache.html = await (await fetch(selectedHtmlPath)).text().catch(() => '');
+        els.htmlFrame.src = selectedHtmlPath;
+        const vNow = parseVersionFromPath(selectedHtmlPath);
+        els.currentTitle.textContent = `${currentContent.title} ${vNow>1?`(v${vNow})`:''}`;
+      });
+      els.htmlVersionButtons.appendChild(btn);
     });
-    els.htmlVersionSelect.disabled = htmlVariants.length <= 1;
-  }
-
-  function populateMdSelector(mdVariants, selected) {
-    els.mdVersionSelect.innerHTML = '';
-    if (!mdVariants.length) {
-      const opt = document.createElement('option');
-      opt.value = '';
-      opt.textContent = 'N/A';
-      els.mdVersionSelect.appendChild(opt);
-      els.mdVersionSelect.disabled = true;
-      return;
-    }
-    mdVariants.forEach(m => {
-      const v = parseVersionFromPath(m);
-      const opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = `v${v}`;
-      if (m === selected) opt.selected = true;
-      els.mdVersionSelect.appendChild(opt);
-    });
-    els.mdVersionSelect.disabled = mdVariants.length <= 1;
   }
 })();

@@ -49,11 +49,8 @@
             <span id="currentMeta" class="meta"></span>
           </div>
           <div class="viewer-actions">
-            <span class="badge">Markdown</span>
-            <select id="mdVersionSelect"></select>
-            <span class="badge">HTML</span>
-            <select id="htmlVersionSelect"></select>
-            <button id="toggleMarkdown" class="ghost">Hide Markdown</button>
+            <button id="toggleMarkdown" class="toggle-raw">Show Raw Text ⇦</button>
+            <div id="htmlVersionButtons" class="version-buttons"></div>
             <a id="openHtmlNewTab" target="_blank" rel="noopener" class="ghost">Open HTML ↗</a>
           </div>
         </div>
@@ -63,7 +60,6 @@
             <div class="pane-header">Markdown (rendered)</div>
             <div id="markdownRender" class="content markdown-body"></div>
           </aside>
-          <div class="divider" id="divider" title="Drag to resize"></div>
           <section class="pane html" id="htmlPane">
             <div class="pane-header">HTML Preview</div>
             <iframe id="htmlFrame" title="HTML Preview"></iframe>
