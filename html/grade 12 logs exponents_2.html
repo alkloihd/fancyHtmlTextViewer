@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Logarithms ↔ Exponentials — Interactive Guide (Gr. 12)</title>
+  <style>
+    :root{
+      --bg: #0f1226;
+      --bg-soft:#161a36;
+      --card:#1d2247;
+      --ink:#eef2ff;
+      --muted:#bac2ff;
+      --accent:#7c5cff;
+      --accent-2:#00d1ff;
+      --good:#4ade80;
+      --warn:#fbbf24;
+      --bad:#f87171;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(1200px 600px at 80% -10%, #21306b 0%, transparent 60%) , linear-gradient(180deg,#0b0e22, #0f1226 40%, #0b0e22); color:var(--ink); font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji"; line-height:1.25}
+    a{color:var(--accent-2);text-decoration:none}
+    header{
+      padding:28px 16px 18px;
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg, rgba(15,18,38,.95), rgba(15,18,38,.8));
+      backdrop-filter: blur(8px);
+      border-bottom:1px solid rgba(124,92,255,.2)
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:0 16px}
+    .title{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+    .title h1{margin:0; font-size:clamp(20px,3.2vw,34px); letter-spacing:.3px}
+    .pill{font-size:12px; padding:6px 10px; border:1px solid rgba(255,255,255,.16); border-radius:999px; color:var(--muted)}
+    .hero{
+      margin:18px auto 28px;
+      background:
+        radial-gradient(500px 120px at 10% 0%, rgba(124,92,255,.25), transparent 60%),
+        radial-gradient(400px 120px at 90% 0%, rgba(0,209,255,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg-soft), #121634);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding:20px;
+    }
+    .hero p{color:var(--muted); margin:.2rem 0 0}
+    h2{
+      font-size:clamp(18px,2.2vw,26px); margin:26px 0 12px;
+      display:flex; align-items:center; gap:10px
+    }
+    .section{background:linear-gradient(180deg,#111534, #15193e); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:18px; margin:22px 0; box-shadow: var(--shadow)}
+    .grid{display:grid; gap:14px}
+    @media (min-width:860px){ .grid.cols-2{grid-template-columns:1fr 1fr} .grid.cols-3{grid-template-columns:repeat(3,1fr)} .grid.cols-4{grid-template-columns:repeat(4,1fr)} }
+
+    /* Cards */
+    .card{background:linear-gradient(180deg,#171b43, #1a1f4b); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:14px; box-shadow: var(--shadow)}
+    .badge{display:inline-block; padding:4px 8px; border-radius:10px; background:rgba(124,92,255,.18); color:#e4e0ff; font-size:12px; border:1px solid rgba(124,92,255,.35)}
+    .muted{color:var(--muted)}
+
+    /* Buttons & inputs */
+    button, .btn{
+      background: linear-gradient(180deg, #8a76ff, #664dff);
+      color:white; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600; letter-spacing:.2px; box-shadow:0 6px 20px rgba(124,92,255,.35); transition:.15s transform;
+    }
+    button:active{transform:translateY(1px)}
+    .btn.secondary{background:linear-gradient(180deg,#00d1ff, #00a3ff)}
+    .btn.ghost{background:transparent; border:1px solid rgba(255,255,255,.18); color:var(--ink)}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    label{font-size:13px; color:var(--muted)}
+    input[type="number"], input[type="text"]{
+      background:#0e1130; color:var(--ink); border:1px solid rgba(255,255,255,.16); border-radius:10px; padding:9px 10px; width:120px; outline:none
+    }
+    .wide{width:180px}
+    .hint{font-size:12px; color:var(--muted)}
+    .out{background:#0d102c; border:1px dashed rgba(255,255,255,.18); padding:10px; border-radius:12px; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; overflow:auto}
+
+    /* Flip cards */
+    .flip{background:transparent; perspective: 1000px; height:170px}
+    .flip-inner{
+      position:relative; width:100%; height:100%;
+      transform-style:preserve-3d; transition: transform .6s ease
+    }
+    .flip:hover .flip-inner, .flip:focus-within .flip-inner, .flip.active .flip-inner{ transform: rotateY(180deg) }
+    .face{
+      position:absolute; inset:0; padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg,#161a3f,#1a1f4b);
+      backface-visibility:hidden; box-shadow: var(--shadow)
+    }
+    .back{ transform: rotateY(180deg); background:linear-gradient(180deg,#13273f,#153752) }
+    .flip h4{margin:0 0 6px}
+    .flip .tap{position:absolute; right:10px; bottom:10px; font-size:12px; opacity:.7}
+
+    /* Canvas graph */
+    #graphWrap{display:grid; grid-template-columns: 1fr; gap:12px}
+    @media (min-width:980px){ #graphWrap{ grid-template-columns: 1fr 300px } }
+    canvas{width:100%; height:380px; background:#0a0d26; border:1px solid rgba(255,255,255,.12); border-radius:14px}
+
+    /* Collapsible */
+    details{ background:#10143a; border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:10px 12px}
+    summary{cursor:pointer; font-weight:600}
+    code.k{color:#d1d7ff}
+
+    /* Status */
+    .ok{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+    footer{color:#9aa3ff; font-size:12px; padding:28px 0 60px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">
+        <h1>Logarithms ↔ Exponentials — Interactive Reference & Tools</h1>
+        <span class="pill">Grade 12 • Advanced Functions / Calculus</span>
+        <span class="pill">Fully Offline • No Libraries</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="hero">
+      <p class="muted">
+        The logarithm <code>log<sub>b</sub>(x)</code> is the exponent you put on base <code>b</code> to get <code>x</code>. Inverse relationship:
+        <strong><code>log<sub>b</sub>(x)=y ⇔ b<sup>y</sup>=x</code></strong>. This page gives you quick conversions, a working calculator, an interactive graph,
+        flip-cards for memory, and a brief Calculus Corner (derivatives & integrals).
+      </p>
+    </section>
+
+    <!-- TOOLS -->
+    <section class="section" id="tools">
+      <h2>Tool 1 — Converter (Exponential ⇄ Logarithmic)</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="row" style="margin-bottom:8px">
+            <span class="badge">Exponential → Log</span>
+            <span class="hint">Enter any two; I’ll fill the third & write the equivalent form.</span>
+          </div>
+          <div class="row">
+            <label>Base b</label><input type="number" id="e_b" step="any" value="3" />
+            <label>Exponent y</label><input type="number" id="e_y" step="any" />
+            <label>Result x</label><input type="number" id="e_x" step="any" value="81" />
+            <button id="e_compute" class="btn">Compute</button>
+            <button id="e_clear" class="btn ghost">Clear</button>
+          </div>
+          <div class="hint">Model: <code>b<sup>y</sup>=x</code> ⇒ <code>log<sub>b</sub>(x)=y</code></div>
+          <div id="e_out" class="out" style="margin-top:10px; min-height:72px"></div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="margin-bottom:8px">
+            <span class="badge">Log → Exponential</span>
+            <span class="hint">Enter any two; I’ll fill the third & write the equivalent form.</span>
+          </div>
+          <div class="row">
+            <label>Base b</label><input type="number" id="l_b" step="any" value="5" />
+            <label>Argument x</label><input type="number" id="l_x" step="any" value="125" />
+            <label>Value y</label><input type="number" id="l_y" step="any" />
+            <button id="l_compute" class="btn">Compute</button>
+            <button id="l_clear" class="btn ghost">Clear</button>
+          </div>
+          <div class="hint">Model: <code>log<sub>b</sub>(x)=y</code> ⇒ <code>b<sup>y</sup>=x</code>, with <code>x&gt;0</code>, <code>b&gt;0, b≠1</code>.</div>
+          <div id="l_out" class="out" style="margin-top:10px; min-height:72px"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="graph">
+      <h2>Tool 2 — Visualizer (Graphs of <code>b<sup>x</sup></code> and <code>log<sub>b</sub>(x)</code>)</h2>
+      <div id="graphWrap">
+        <canvas id="cv" width="900" height="380" aria-label="Graph of exponential and logarithm"></canvas>
+        <div class="card">
+          <div class="row" style="margin-bottom:8px">
+            <label for="base">Base b</label>
+            <input type="range" id="base" min="1.1" max="10" step="0.1" value="2" style="width:100%">
+          </div>
+          <div class="row">
+            <label>Current b:</label><strong id="bLabel">2.0</strong>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <label><input type="checkbox" id="showExp" checked> Show <code>b<sup>x</sup></code></label>
+            <label><input type="checkbox" id="showLog" checked> Show <code>log<sub>b</sub>(x)</code></label>
+            <label><input type="checkbox" id="showLine" checked> Show line <code>y=x</code></label>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <span class="badge">Calculus Corner</span>
+          </div>
+          <ul class="muted" style="margin-top:8px">
+            <li><code> d/dx (b<sup>x</sup>) = b<sup>x</sup> ln b</code> → at <code>x=0</code>, slope is <code>ln b</code> = <span id="lnb">0.6931</span></li>
+            <li><code> d/dx (ln x) = 1/x</code> (domain <code>x&gt;0</code>)</li>
+            <li><code> ∫ b<sup>x</sup> dx = b<sup>x</sup>/ln b + C</code>, <code> ∫ ln x dx = x ln x − x + C</code></li>
+          </ul>
+          <details style="margin-top:8px">
+            <summary>How to read the plot</summary>
+            <div class="hint">
+              Domain: exponential is defined for all real <code>x</code>; logarithm only for <code>x&gt;0</code>. The graphs are reflections across <code>y=x</code>.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLIP CARDS -->
+    <section class="section" id="core">
+      <h2>Core Concepts — Tap/hover the cards</h2>
+      <div class="grid cols-3">
+        <div class="flip" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front">
+              <h4>Definition</h4>
+              <p class="muted">“Log asks the exponent.”</p>
+              <div class="tap">Flip ↻</div>
+            </div>
+            <div class="face back">
+              <p><strong>Logarithm:</strong> <code>log<sub>b</sub>(x)=y</code> iff <code>b<sup>y</sup>=x</code>.</p>
+              <p>Inverse of exponentiation.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front">
+              <h4>Change of base</h4>
+              <p class="muted"><code>log<sub>b</sub>(x)=log(x)/log(b)</code></p>
+              <div class="tap">Flip ↻</div>
+            </div>
+            <div class="face back">
+              <p>Also <code>log<sub>b</sub>(x)=ln(x)/ln(b)</code>. Useful on calculators with only <code>log</code> and <code>ln</code>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front">
+              <h4>Special cases</h4>
+              <p class="muted"><code>log<sub>b</sub>(1)=0</code>, <code>log<sub>b</sub>(b)=1</code></p>
+              <div class="tap">Flip ↻</div>
+            </div>
+            <div class="face back">
+              <p><code>log<sub>b</sub>(b<sup>x</sup>)=x</code>, domain: <code>x&gt;0</code> for logs; <code>b&gt;0</code>, <code>b≠1</code>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front">
+              <h4>Perfect powers</h4>
+              <p class="muted">Mental library of powers</p>
+              <div class="tap">Flip ↻</div>
+            </div>
+            <div class="face back">
+              <p>Examples: <code>2⁴=16 → log₂(16)=4</code>, <code>3³=27 → log₃(27)=3</code>.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip" tabindex="0">
+          <div class="flip-inner">
+            <div class="face front">
+              <h4>Common mistakes</h4>
+              <p class="muted">Base vs exponent confusion</p>
+              <div class="tap">Flip ↻</div>
+            </div>
+            <div class="face back">
+              <ul>
+                <li>Using <code>b≤0</code> or <code>b=1</code></li>
+                <li>Taking <code>log</code> of non-positive numbers</li>
+                <li>Calculator entry errors</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip" tabindex="0">
+          <div class="face front">
+            <h4>Memory hooks</h4>
+            <p class="muted">“Log asks; exp answers.”</p>
+            <div class="tap">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>Inverse operations “undo”: if <code>b<sup>y</sup>=x</code> then <code>log<sub>b</sub>(x)=y</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPLICATIONS -->
+    <section class="section" id="apps">
+      <h2>Canadian Applications (Richter & Decibels)</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3 style="margin:6px 0 8px">Earthquakes — Richter Scale</h3>
+          <p class="muted">Magnitude <code>M = log<sub>10</sub>(A/A₀)</code>. If amplitude is 1000× reference: <code>M=3</code>.</p>
+          <details><summary>Example: Saguenay (1988) was 5.9</summary>
+            <p class="muted">Each whole number is ~10× amplitude increase.</p>
+          </details>
+        </div>
+        <div class="card">
+          <h3 style="margin:6px 0 8px">Sound — Decibels</h3>
+          <p class="muted"><code>dB = 10·log<sub>10</sub>(I/I₀)</code>. Conversation ≈ 60 dB; traffic (Toronto) ≈ 80 dB.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRACTICE -->
+    <section class="section" id="practice">
+      <h2>Quick Practice</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <strong>Q1</strong> Convert <code>4³=64</code> to logarithmic form. Use format <code>log_b(x)=y</code>.
+          <div class="row" style="margin-top:8px"><input type="text" id="q1" class="wide" placeholder="e.g., log_4(64)=3"><button class="btn" onclick="checkQ1()">Check</button></div>
+          <div id="q1r" class="hint" style="margin-top:6px"></div>
+        </div>
+        <div class="card">
+          <strong>Q2</strong> Evaluate <code>log₁₀(0.001)</code>.
+          <div class="row" style="margin-top:8px"><input type="number" id="q2" step="any" class="wide" placeholder="number"><button class="btn" onclick="checkQ2()">Check</button></div>
+          <div id="q2r" class="hint" style="margin-top:6px"></div>
+        </div>
+        <div class="card">
+          <strong>Q3</strong> If <code>log₂(x)=5</code>, find <code>x</code>.
+          <div class="row" style="margin-top:8px"><input type="number" id="q3" step="any" class="wide" placeholder="number"><button class="btn" onclick="checkQ3()">Check</button></div>
+          <div id="q3r" class="hint" style="margin-top:6px"></div>
+        </div>
+        <div class="card">
+          <strong>Q4</strong> Convert <code>log₆(36)=2</code> to exponential form.
+          <div class="row" style="margin-top:8px"><input type="text" id="q4" class="wide" placeholder="e.g., 6^2=36"><button class="btn" onclick="checkQ4()">Check</button></div>
+          <div id="q4r" class="hint" style="margin-top:6px"></div>
+        </div>
+      </div>
+      <details style="margin-top:12px"><summary>Need a nudge? (worked examples)</summary>
+        <div class="grid cols-2" style="margin-top:10px">
+          <div class="card">
+            <strong>From the guide</strong>
+            <ul class="muted">
+              <li><code>3⁴=81</code> ⇒ <code>log₃(81)=4</code></li>
+              <li><code>7²=49</code> ⇒ <code>log₇(49)=2</code></li>
+              <li><code>log₂(64)=6</code> ⇒ <code>2⁶=64</code></li>
+            </ul>
+          </div>
+          <div class="card">
+            <strong>Calculator tip</strong>
+            <p class="muted">Use change of base: <code>log_b(x)=log(x)/log(b)</code>.</p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      Built for focus and speed: two working tools (converter + visualizer), flip-cards for recall, and practice checks. Works offline.
+    </footer>
+  </div>
+
+  <script>
+    // Utility
+    const fmt = (n, d=6) => Number.isFinite(n) ? (+n).toFixed(d).replace(/\.?0+$/,'') : '—';
+    const validBase = b => b>0 && Math.abs(b-1)>1e-12;
+
+    // Converter: Exponential → Log
+    const e_b = document.getElementById('e_b');
+    const e_y = document.getElementById('e_y');
+    const e_x = document.getElementById('e_x');
+    const e_out = document.getElementById('e_out');
+    document.getElementById('e_clear').onclick = () => { e_y.value=''; e_out.textContent=''; };
+
+    document.getElementById('e_compute').onclick = () => {
+      let b = parseFloat(e_b.value), y = parseFloat(e_y.value), x = parseFloat(e_x.value);
+      if(!validBase(b)){ e_out.innerHTML = `<span class="bad">Base must be > 0 and ≠ 1.</span>`; return; }
+
+      const hasY = Number.isFinite(y);
+      const hasX = Number.isFinite(x);
+
+      if(hasY && !hasX){ x = Math.pow(b,y); e_x.value = fmt(x); }
+      else if(!hasY && hasX){
+        if(x<=0){ e_out.innerHTML = `<span class="bad">x (result) must be > 0 for logs.</span>`; return; }
+        y = Math.log(x)/Math.log(b); e_y.value = fmt(y);
+      } else if(!hasY && !hasX){
+        e_out.innerHTML = `<span class="warn">Provide at least two of (b,y,x).</span>`; return;
+      } else {
+        // both given; check consistency
+        const lhs = Math.pow(b,y);
+        if(Math.abs(lhs - x) > 1e-8){
+          e_out.innerHTML = `<span class="warn">Note: given values are inconsistent. b^y = ${fmt(lhs)} ≠ x=${fmt(x)}.</span>`;
+        }
+      }
+      e_out.innerHTML = `
+        <div><strong>Exponential:</strong> <code>${fmt(b)}<sup>${fmt(y)}</sup> = ${fmt(x)}</code></div>
+        <div><strong>Logarithmic:</strong> <code>log<sub>${fmt(b)}</sub>(${fmt(x)}) = ${fmt(y)}</code></div>
+        <div class="hint">Because <code>b^y=x</code>, the log asks “what exponent on <code>b</code> makes <code>x</code>?”</div>
+      `;
+    };
+
+    // Converter: Log → Exponential
+    const l_b = document.getElementById('l_b');
+    const l_x = document.getElementById('l_x');
+    const l_y = document.getElementById('l_y');
+    const l_out = document.getElementById('l_out');
+    document.getElementById('l_clear').onclick = () => { l_y.value=''; l_out.textContent=''; };
+
+    document.getElementById('l_compute').onclick = () => {
+      let b = parseFloat(l_b.value), x = parseFloat(l_x.value), y = parseFloat(l_y.value);
+      if(!validBase(b)){ l_out.innerHTML = `<span class="bad">Base must be > 0 and ≠ 1.</span>`; return; }
+
+      const hasX = Number.isFinite(x);
+      const hasY = Number.isFinite(y);
+
+      if(hasY && !hasX){
+        x = Math.pow(b,y); l_x.value = fmt(x);
+      } else if(!hasY && hasX){
+        if(x<=0){ l_out.innerHTML = `<span class="bad">Argument x must be > 0.</span>`; return; }
+        y = Math.log(x)/Math.log(b); l_y.value = fmt(y);
+      } else if(!hasY && !hasX){
+        l_out.innerHTML = `<span class="warn">Provide at least two of (b,x,y).</span>`; return;
+      } else {
+        const lhs = Math.pow(b,y);
+        if(Math.abs(lhs - x) > 1e-8){
+          l_out.innerHTML = `<span class="warn">Mismatch: b^y = ${fmt(lhs)} ≠ x=${fmt(x)}.</span>`;
+        }
+      }
+      l_out.innerHTML = `
+        <div><strong>Logarithmic:</strong> <code>log<sub>${fmt(b)}</sub>(${fmt(x)}) = ${fmt(y)}</code></div>
+        <div><strong>Exponential:</strong> <code>${fmt(b)}<sup>${fmt(y)}</sup> = ${fmt(x)}</code></div>
+        <div class="hint">Direct conversion using <code>log<sub>b</sub>(x)=y ⇔ b^y=x</code>.</div>
+      `;
+    };
+
+    // Flip cards click support (mobile)
+    document.querySelectorAll('.flip').forEach(card=>{
+      card.addEventListener('click', e=>{
+        // avoid toggling when selecting text
+        if(window.getSelection && String(window.getSelection())!=='') return;
+        card.classList.toggle('active');
+      });
+    });
+
+    // Graph
+    const cv = document.getElementById('cv');
+    const ctx = cv.getContext('2d');
+    const baseSlider = document.getElementById('base');
+    const bLabel = document.getElementById('bLabel');
+    const lnb = document.getElementById('lnb');
+    const showExp = document.getElementById('showExp');
+    const showLog = document.getElementById('showLog');
+    const showLine = document.getElementById('showLine');
+
+    let XMIN=-4, XMAX=4, YMIN=-4, YMAX=4;
+
+    function toPxX(x){ return (x - XMIN)/(XMAX-XMIN) * cv.width; }
+    function toPxY(y){ return cv.height - (y - YMIN)/(YMAX-YMIN) * cv.height; }
+
+    function drawGrid(){
+      ctx.clearRect(0,0,cv.width,cv.height);
+      // background
+      let g=ctx.createLinearGradient(0,0,0,cv.height);
+      g.addColorStop(0,'#0a0d26'); g.addColorStop(1,'#06081b');
+      ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+
+      // grid lines
+      ctx.lineWidth=1;
+      for(let x=Math.ceil(XMIN); x<=XMAX; x++){
+        const px=toPxX(x);
+        ctx.strokeStyle = x===0 ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.12)';
+        ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,cv.height); ctx.stroke();
+        if(x!==0){ ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='12px ui-sans-serif'; ctx.fillText(x, px+3, toPxY(0)-3); }
+      }
+      for(let y=Math.ceil(YMIN); y<=YMAX; y++){
+        const py=toPxY(y);
+        ctx.strokeStyle = y===0 ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.12)';
+        ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(cv.width,py); ctx.stroke();
+        if(y!==0){ ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='12px ui-sans-serif'; ctx.fillText(y, toPxX(0)+4, py-4); }
+      }
+    }
+
+    function plot(b){
+      drawGrid();
+
+      // y = x line
+      if(showLine.checked){
+        ctx.strokeStyle='rgba(0,209,255,.9)'; ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(toPxX(XMIN), toPxY(XMIN));
+        ctx.lineTo(toPxX(XMAX), toPxY(XMAX));
+        ctx.stroke();
+      }
+
+      // exponential
+      if(showExp.checked){
+        ctx.strokeStyle='rgba(124,92,255,.95)';
+        ctx.lineWidth=2.2;
+        ctx.beginPath();
+        let first=true;
+        for(let i=0;i<=800;i++){
+          let x = XMIN + (XMAX-XMIN)*i/800;
+          let y = Math.pow(b,x);
+          let px=toPxX(x), py=toPxY(y);
+          if(first){ ctx.moveTo(px,py); first=false; } else { ctx.lineTo(px,py); }
+        }
+        ctx.stroke();
+      }
+
+      // logarithm
+      if(showLog.checked){
+        ctx.strokeStyle='rgba(74,222,128,.95)';
+        ctx.lineWidth=2.2;
+        ctx.beginPath();
+        let first=true;
+        for(let i=0;i<=800;i++){
+          let x = 1e-4 + (XMAX-1e-4)*i/800; // avoid x<=0
+          if(x<=0) continue;
+          let y = Math.log(x)/Math.log(b);
+          let px=toPxX(x), py=toPxY(y);
+          if(first){ ctx.moveTo(px,py); first=false; } else { ctx.lineTo(px,py); }
+        }
+        ctx.stroke();
+
+        // vertical asymptote at x=0
+        ctx.setLineDash([6,6]);
+        ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1.2;
+        ctx.beginPath(); ctx.moveTo(toPxX(0),0); ctx.lineTo(toPxX(0),cv.height); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // axes labels
+      ctx.fillStyle='rgba(255,255,255,.8)'; ctx.font='13px ui-sans-serif';
+      ctx.fillText('x', cv.width-16, toPxY(0)-6);
+      ctx.fillText('y', toPxX(0)+6, 14);
+    }
+
+    function redraw(){
+      const b = parseFloat(baseSlider.value);
+      bLabel.textContent = b.toFixed(1);
+      lnb.textContent = fmt(Math.log(b));
+      if(!validBase(b)) return;
+      plot(b);
+    }
+
+    baseSlider.oninput = redraw;
+    showExp.onchange = redraw;
+    showLog.onchange = redraw;
+    showLine.onchange = redraw;
+
+    // Init
+    redraw();
+
+    // Practice checks
+    function setMsg(el, ok, msg){
+      el.innerHTML = ok ? `<span class="ok">✔ ${msg}</span>` : `<span class="bad">✘ ${msg}</span>`;
+    }
+    window.checkQ1 = () => {
+      const v = (document.getElementById('q1').value||'').replace(/\s+/g,'').toLowerCase();
+      const ok = v==="log_4(64)=3" || v==="log4(64)=3" || v==="log_{4}(64)=3";
+      setMsg(document.getElementById('q1r'), ok, ok?"Correct: log₄(64)=3.":"Try format log_4(64)=3 (base 4, argument 64, value 3).");
+    };
+    window.checkQ2 = () => {
+      const val = parseFloat(document.getElementById('q2').value);
+      const ok = Math.abs(val - (-3)) < 1e-9;
+      setMsg(document.getElementById('q2r'), ok, ok?"Correct: −3.":"Hint: 0.001 = 10⁻³ → log₁₀(10⁻³)=−3.");
+    };
+    window.checkQ3 = () => {
+      const val = parseFloat(document.getElementById('q3').value);
+      const ok = Math.abs(val - 32) < 1e-9;
+      setMsg(document.getElementById('q3r'), ok, ok?"Correct: x=32.":"Use 2⁵=x → x=32.");
+    };
+    window.checkQ4 = () => {
+      const v = (document.getElementById('q4').value||'').replace(/\s+/g,'').toLowerCase();
+      const ok = v==="6^2=36" || v==="6**2=36";
+      setMsg(document.getElementById('q4r'), ok, ok?"Correct: 6²=36.":"Write 6^2=36.");
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Logarithms ↔ Exponentials — Grade 12 Interactive (Light)</title>
+  <style>
+    :root{
+      /* Light academic palette */
+      --bg:#f7fbff; --paper:#ffffff; --panel:#f2f7ff;
+      --ink:#1e2a33; --muted:#5a6b7a; --line:#d9e6f5;
+      --accent:#2f7bf4; --accent2:#08b6a0; --warn:#f59e0b; --bad:#e11d48; --good:#059669;
+      --radius:16px; --shadow:0 8px 22px rgba(22,35,60,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:
+      radial-gradient(1100px 480px at 85% -5%, #dff0ff 0%, transparent 60%),
+      linear-gradient(180deg,#f4f8ff,var(--bg) 60%,#f6fbff);
+      color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      line-height:1.35}
+    a{color:#1a73e8; text-decoration:none}
+    header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.85));
+      border-bottom:1px solid var(--line); padding:16px 0}
+    .wrap{max-width:1100px; margin:0 auto; padding:0 16px}
+    h1{margin:0; font-size:clamp(22px,3.2vw,36px)}
+    .pill{display:inline-block; font-size:12px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:#466178; background:#fff; margin-left:10px}
+
+    .hero{margin:16px 0 22px; background:var(--panel); border:1px solid var(--line);
+      border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
+    .section{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin:18px 0; box-shadow:var(--shadow)}
+    h2{font-size:clamp(18px,2.2vw,26px); margin:8px 0 12px}
+    .grid{display:grid; gap:12px}
+    @media (min-width:880px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} }
+
+    .card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+
+    button{
+      background:linear-gradient(180deg,#7fb4ff,var(--accent));
+      color:#061c3a; border:none; border-radius:12px; padding:9px 12px; font-weight:700; cursor:pointer;
+      box-shadow:0 6px 18px rgba(47,123,244,.25)
+    }
+    button.alt{background:linear-gradient(180deg,#7de4cf,var(--accent2)); color:#062b29}
+    button.ghost{background:#fff; color:#243a4a; border:1px solid var(--line)}
+    label{font-size:13px; color:#466178}
+    input[type="number"], input[type="text"], input[type="range"]{accent-color:var(--accent)}
+    input[type="number"], input[type="text"]{
+      background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 10px; width:120px
+    }
+    .wide{width:180px}
+    .hint{font-size:12px; color:var(--muted)}
+    .out{background:#f7fbff; border:1px dashed var(--line); padding:10px; border-radius:12px; font-family:ui-monospace,Menlo,Consolas,"Courier New",monospace; overflow:auto}
+    .ok{color:var(--good); font-weight:700} .warn{color:var(--warn); font-weight:700} .bad{color:var(--bad); font-weight:700}
+
+    /* Flip cards */
+    .flip{background:transparent; perspective:1000px; height:160px}
+    .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .55s ease}
+    .flip:hover .flip-inner,.flip:focus-within .flip-inner,.flip.active .flip-inner{transform:rotateY(180deg)}
+    .face{position:absolute; inset:0; padding:12px; border-radius:12px; border:1px solid var(--line); background:#fff; backface-visibility:hidden}
+    .back{transform:rotateY(180deg); background:#f7fbff}
+    .flip h4{margin:0 0 6px}
+    .tap{position:absolute; right:10px; bottom:8px; font-size:12px; opacity:.75}
+
+    /* Graph block */
+    #graphWrap{display:grid; grid-template-columns:1fr; gap:12px}
+    @media (min-width:980px){ #graphWrap{ grid-template-columns: 1fr 320px } }
+    canvas{width:100%; height:420px; background:#fff; border:1px solid var(--line); border-radius:14px}
+
+    /* Print */
+    @media print{ header .row button{display:none} .flip:hover .flip-inner{transform:none} }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Logarithms ↔ Exponentials <span class="pill">Grade 12 • Advanced Functions / Calculus</span> <span class="pill">Light Theme</span></h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="muted">
+      A logarithm <code>log<sub>b</sub>(x)</code> is the exponent on base <code>b</code> that gives <code>x</code>.
+      Inverse relationship: <strong><code>log<sub>b</sub>(x)=y ⇔ b<sup>y</sup>=x</code></strong>.
+      Tools below: reliable converter, a graph of <code>b<sup>x}</code> and <code>log<sub>b</sub>(x)</code> with a tangent line, memory flip-cards, and quick practice (checks don’t reveal answers unless you choose to).
+    </p>
+    <div class="row" style="margin-top:8px">
+      <button id="btnPrint" class="alt">🖨️ Print / Save as PDF</button>
+      <button id="btnSavePng" class="ghost">🖼️ Save Graph as PNG</button>
+      <button id="btnReset" class="ghost">↺ Reset View</button>
+    </div>
+  </section>
+
+  <!-- Converter -->
+  <section class="section" id="tools">
+    <h2>Tool 1 — Converter (Exponential ⇄ Logarithmic)</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="row" style="margin-bottom:6px">
+          <strong>Exponential → Log</strong> <span class="hint">Enter any two; I’ll fill the third & show both forms.</span>
+        </div>
+        <div class="row">
+          <label>Base b</label><input type="number" id="e_b" step="any" value="3" />
+          <label>Exponent y</label><input type="number" id="e_y" step="any" />
+          <label>Result x</label><input type="number" id="e_x" step="any" value="81" />
+          <button id="e_compute">Compute</button>
+          <button id="e_clear" class="ghost">Clear</button>
+        </div>
+        <div class="hint">Model: <code>b<sup>y</sup>=x</code> ⇒ <code>log<sub>b</sub>(x)=y</code></div>
+        <div id="e_out" class="out" style="margin-top:8px; min-height:68px"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="margin-bottom:6px">
+          <strong>Log → Exponential</strong> <span class="hint">Enter any two; I’ll fill the third & show both forms.</span>
+        </div>
+        <div class="row">
+          <label>Base b</label><input type="number" id="l_b" step="any" value="5" />
+          <label>Argument x</label><input type="number" id="l_x" step="any" value="125" />
+          <label>Value y</label><input type="number" id="l_y" step="any" />
+          <button id="l_compute">Compute</button>
+          <button id="l_clear" class="ghost">Clear</button>
+        </div>
+        <div class="hint">Domain: <code>x&gt;0</code>, <code>b&gt;0</code>, <code>b≠1</code>.</div>
+        <div id="l_out" class="out" style="margin-top:8px; min-height:68px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Graph -->
+  <section class="section" id="graph">
+    <h2>Tool 2 — Visualiser (<code>b<sup>x</sup></code>, <code>log<sub>b</sub>(x)</code>, and Tangent)</h2>
+    <div id="graphWrap">
+      <canvas id="cv" aria-label="Graph of exponential and logarithm"></canvas>
+      <div class="card">
+        <div class="row">
+          <label for="base">Base b</label>
+          <input type="range" id="base" min="1.1" max="10" step="0.1" value="2" style="width:180px">
+          <input type="number" id="baseNum" min="1.1" max="10" step="0.1" value="2.0" />
+          <strong id="bLabel">b = 2.0</strong>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label><input type="checkbox" id="showExp" checked> Show <code>b<sup>x</sup></code></label>
+          <label><input type="checkbox" id="showLog" checked> Show <code>log<sub>b</sub>(x)</code></label>
+          <label><input type="checkbox" id="showLine" checked> Show <code>y=x</code></label>
+        </div>
+        <hr style="border:none; border-top:1px solid var(--line); margin:10px 0">
+        <div class="row">
+          <span class="hint"><strong>Tangent to</strong> <code>b<sup>x</sup></code> at <code>x=x₀</code></span>
+          <label for="x0">x₀</label>
+          <input type="range" id="x0" min="-3" max="3" step="0.1" value="0" style="width:160px">
+          <input type="number" id="x0Num" min="-3" max="3" step="0.1" value="0.0" />
+          <strong id="x0Label">x₀ = 0.0</strong>
+        </div>
+        <ul class="muted small" style="margin-top:8px">
+          <li><code>d/dx (b<sup>x</sup>) = b<sup>x</sup> \u22C5 ln b</code> → slope at <code>x₀</code>: <span id="slope">0.6931</span></li>
+          <li><code>d/dx (ln x) = 1/x</code> (<code>x&gt;0</code>)</li>
+          <li><code>∫ b<sup>x</sup> dx = b<sup>x</sup> / ln b + C</code>, <code>∫ ln x dx = x ln x − x + C</code></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core flip-cards -->
+  <section class="section" id="core">
+    <h2>Core Concepts — Flip the cards</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Definition</h4><p class="muted">“Log asks the exponent.”</p><div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back"><p><strong>Logarithm:</strong> <code>log<sub>b</sub>(x)=y</code> iff <code>b<sup>y</sup>=x</code>.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Change of base</h4><p class="muted"><code>log<sub>b</sub>(x)=log(x)/log(b)</code></p><div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back"><p>Also <code>= ln(x)/ln(b)</code>. Handy when calculators lack <code>log<sub>b</sub></code>.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Special cases</h4><p class="muted"><code>log<sub>b</sub>(1)=0</code>, <code>log<sub>b</sub>(b)=1</code></p><div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back"><p><code>log<sub>b</sub>(b<sup>x</sup>)=x</code>, domain: <code>x&gt;0</code> for logs; <code>b&gt;0</code>, <code>b≠1</code>.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Practice (checks only; optional reveal) -->
+  <section class="section" id="practice">
+    <h2>Quick Practice</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <strong>Q1</strong> Convert <code>4³=64</code> to logarithmic form (format <code>log_b(x)=y</code>).
+        <div class="row" style="margin-top:6px"><input type="text" id="q1" class="wide" placeholder="Type your answer"><button class="ghost" onclick="checkQ1()">Check</button></div>
+        <div id="q1r" class="hint" style="margin-top:6px"></div>
+      </div>
+      <div class="card">
+        <strong>Q2</strong> Evaluate <code>log₁₀(0.001)</code>.
+        <div class="row" style="margin-top:6px"><input type="number" id="q2" step="any" class="wide" placeholder="Number"><button class="ghost" onclick="checkQ2()">Check</button></div>
+        <div id="q2r" class="hint" style="margin-top:6px"></div>
+      </div>
+      <div class="card">
+        <strong>Q3</strong> If <code>log₂(x)=5</code>, find <code>x</code>.
+        <div class="row" style="margin-top:6px"><input type="number" id="q3" step="any" class="wide" placeholder="Number"><button class="ghost" onclick="checkQ3()">Check</button></div>
+        <div id="q3r" class="hint" style="margin-top:6px"></div>
+      </div>
+      <div class="card">
+        <strong>Q4</strong> Convert <code>log₆(36)=2</code> to exponential form.
+        <div class="row" style="margin-top:6px"><input type="text" id="q4" class="wide" placeholder="Type your answer"><button class="ghost" onclick="checkQ4()">Check</button></div>
+        <div id="q4r" class="hint" style="margin-top:6px"></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="reveal" class="alt">Reveal Answers (optional)</button>
+      <span class="small muted">By default, checks don’t reveal answers. Use this only when ready.</span>
+    </div>
+  </section>
+
+  <footer class="muted small" style="padding:28px 0 60px">
+    Fixes in this build: light theme, clear number inputs next to sliders, robust canvas (device-pixel scaling + resize), stable tangent overlay, non-revealing checks with optional reveal.
+  </footer>
+</div>
+
+<script>
+  /* ---------- Utilities ---------- */
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const num = v => (v===''||v==null)?NaN:parseFloat(v);
+  const clamp = (x,a,b)=>Math.min(b,Math.max(a,x));
+  const fmt = (n, d=6) => Number.isFinite(n) ? (+n).toFixed(d).replace(/\.?0+$/,'') : '—';
+  const validBase = b => b>0 && Math.abs(b-1)>1e-12;
+
+  /* ---------- Print / Export / Reset ---------- */
+  $('#btnPrint').onclick = () => window.print();
+  $('#btnSavePng').onclick = () => {
+    const cv = $('#cv');
+    const link = document.createElement('a');
+    link.download = 'log-exp-graph.png';
+    link.href = cv.toDataURL('image/png');
+    link.click();
+  };
+  $('#btnReset').onclick = () => {
+    $('#base').value = 2.0; $('#baseNum').value = '2.0';
+    $('#x0').value = 0.0;   $('#x0Num').value = '0.0';
+    $('#showExp').checked = true; $('#showLog').checked = true; $('#showLine').checked = true;
+    redraw();
+  };
+
+  /* ---------- Flip cards tap support ---------- */
+  $$('.flip').forEach(card=>{
+    card.addEventListener('click', e=>{
+      if(window.getSelection && String(window.getSelection())!=='') return;
+      card.classList.toggle('active');
+    });
+  });
+
+  /* ---------- Converter ---------- */
+  const e_b = $('#e_b'), e_y = $('#e_y'), e_x = $('#e_x'), e_out = $('#e_out');
+  const l_b = $('#l_b'), l_x = $('#l_x'), l_y = $('#l_y'), l_out = $('#l_out');
+
+  $('#e_clear').onclick = () => { e_y.value=''; e_out.textContent=''; };
+  $('#l_clear').onclick = () => { l_y.value=''; l_out.textContent=''; };
+
+  $('#e_compute').onclick = () => {
+    let b = parseFloat(e_b.value), y = parseFloat(e_y.value), x = parseFloat(e_x.value);
+    if(!validBase(b)){ e_out.innerHTML = `<span class="bad">Base must be &gt; 0 and ≠ 1.</span>`; return; }
+    const hasY = Number.isFinite(y), hasX = Number.isFinite(x);
+    if(hasY && !hasX){ x = Math.pow(b,y); e_x.value = fmt(x); }
+    else if(!hasY && hasX){
+      if(x<=0){ e_out.innerHTML = `<span class="bad">x must be &gt; 0 for logs.</span>`; return; }
+      y = Math.log(x)/Math.log(b); e_y.value = fmt(y);
+    } else if(!hasY && !hasX){
+      e_out.innerHTML = `<span class="warn">Provide at least two of (b,y,x).</span>`; return;
+    } else {
+      const lhs = Math.pow(b,y);
+      if(Math.abs(lhs - x) > 1e-8){
+        e_out.innerHTML = `<span class="warn">Inconsistent: b^y = ${fmt(lhs)} ≠ x=${fmt(x)}.</span>`;
+      }
+    }
+    e_out.innerHTML = `
+      <div><strong>Exponential:</strong> <code>${fmt(b)}<sup>${fmt(y)}</sup> = ${fmt(x)}</code></div>
+      <div><strong>Logarithmic:</strong> <code>log<sub>${fmt(b)}</sub>(${fmt(x)}) = ${fmt(y)}</code></div>
+    `;
+  };
+
+  $('#l_compute').onclick = () => {
+    let b = parseFloat(l_b.value), x = parseFloat(l_x.value), y = parseFloat(l_y.value);
+    if(!validBase(b)){ l_out.innerHTML = `<span class="bad">Base must be &gt; 0 and ≠ 1.</span>`; return; }
+    const hasX = Number.isFinite(x), hasY = Number.isFinite(y);
+    if(hasY && !hasX){ x = Math.pow(b,y); l_x.value = fmt(x); }
+    else if(!hasY && hasX){
+      if(x<=0){ l_out.innerHTML = `<span class="bad">Argument x must be &gt; 0.</span>`; return; }
+      y = Math.log(x)/Math.log(b); l_y.value = fmt(y);
+    } else if(!hasY && !hasX){
+      l_out.innerHTML = `<span class="warn">Provide at least two of (b,x,y).</span>`; return;
+    } else {
+      const lhs = Math.pow(b,y);
+      if(Math.abs(lhs - x) > 1e-8){
+        l_out.innerHTML = `<span class="warn">Mismatch: b^y = ${fmt(lhs)} ≠ x=${fmt(x)}.</span>`;
+      }
+    }
+    l_out.innerHTML = `
+      <div><strong>Logarithmic:</strong> <code>log<sub>${fmt(b)}</sub>(${fmt(x)}) = ${fmt(y)}</code></div>
+      <div><strong>Exponential:</strong> <code>${fmt(b)}<sup>${fmt(y)}</sup> = ${fmt(x)}</code></div>
+    `;
+  };
+
+  /* ---------- Graph + Tangent (robust canvas) ---------- */
+  const cv = $('#cv'); const ctx = cv.getContext('2d');
+  const baseSlider = $('#base'), baseNum = $('#baseNum'), bLabel = $('#bLabel');
+  const x0Slider = $('#x0'), x0Num = $('#x0Num'), x0Label = $('#x0Label');
+  const showExp = $('#showExp'), showLog = $('#showLog'), showLine = $('#showLine');
+  const slopeLabel = $('#slope');
+
+  let plotW = 0, plotH = 0; // CSS pixel size used for math → canvas mapping
+  let XMIN=-4, XMAX=4, YMIN=-4, YMAX=4;
+
+  function resizeCanvas(){
+    const dpr = window.devicePixelRatio || 1;
+    const w = cv.clientWidth, h = cv.clientHeight;
+    plotW = w; plotH = h;
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(h * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0); // use CSS pixels in drawing
+    redraw();
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  function toPxX(x){ return (x - XMIN)/(XMAX - XMIN) * plotW; }
+  function toPxY(y){ return plotH - (y - YMIN)/(YMAX - YMIN) * plotH; }
+
+  function drawGrid(){
+    // background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0,0,plotW,plotH);
+
+    // grid lines + axes
+    ctx.lineWidth = 1;
+    // verticals
+    for(let x=Math.ceil(XMIN); x<=XMAX; x++){
+      const px = toPxX(x);
+      ctx.strokeStyle = x===0 ? 'rgba(0,0,0,.5)' : 'rgba(0,0,0,.08)';
+      ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,plotH); ctx.stroke();
+      if(x!==0){ ctx.fillStyle='rgba(0,0,0,.55)'; ctx.font='12px system-ui'; ctx.fillText(x, px+3, toPxY(0)-4); }
+    }
+    // horizontals
+    for(let y=Math.ceil(YMIN); y<=YMAX; y++){
+      const py = toPxY(y);
+      ctx.strokeStyle = y===0 ? 'rgba(0,0,0,.5)' : 'rgba(0,0,0,.08)';
+      ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(plotW,py); ctx.stroke();
+      if(y!==0){ ctx.fillStyle='rgba(0,0,0,.55)'; ctx.font='12px system-ui'; ctx.fillText(y, toPxX(0)+6, py-4); }
+    }
+  }
+
+  function plot(b, x0){
+    drawGrid();
+
+    // y = x
+    if(showLine.checked){
+      ctx.strokeStyle='rgba(26,115,232,.9)'; ctx.lineWidth=1.5;
+      ctx.beginPath();
+      ctx.moveTo(toPxX(XMIN), toPxY(XMIN));
+      ctx.lineTo(toPxX(XMAX), toPxY(XMAX));
+      ctx.stroke();
+    }
+
+    // exponential b^x
+    if(showExp.checked){
+      ctx.strokeStyle='rgba(5,150,105,.95)'; // green
+      ctx.lineWidth=2;
+      ctx.beginPath(); let first=true;
+      for(let i=0;i<=900;i++){
+        let x = XMIN + (XMAX-XMIN)*i/900;
+        let y = Math.pow(b,x);
+        let px=toPxX(x), py=toPxY(y);
+        if(first){ ctx.moveTo(px,py); first=false; } else { ctx.lineTo(px,py); }
+      }
+      ctx.stroke();
+    }
+
+    // logarithm log_b(x)
+    if(showLog.checked){
+      ctx.strokeStyle='rgba(47,123,244,.95)'; // blue
+      ctx.lineWidth=2;
+      ctx.beginPath(); let first=true;
+      for(let i=0;i<=900;i++){
+        let x = 1e-4 + (XMAX-1e-4)*i/900; // avoid x<=0
+        let y = Math.log(x)/Math.log(b);
+        let px=toPxX(x), py=toPxY(y);
+        if(first){ ctx.moveTo(px,py); first=false; } else { ctx.lineTo(px,py); }
+      }
+      ctx.stroke();
+
+      // vertical asymptote x=0
+      ctx.setLineDash([6,6]);
+      ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(toPxX(0),0); ctx.lineTo(toPxX(0),plotH); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Tangent to b^x at x0
+    const y0 = Math.pow(b,x0);
+    const m  = y0 * Math.log(b);
+    slopeLabel.textContent = fmt(m);
+
+    // draw tangent only if exp is shown (still informative if not)
+    ctx.strokeStyle='rgba(0,0,0,.8)'; ctx.lineWidth=1.8;
+    ctx.setLineDash([10,6]);
+    const yLeft  = m*(XMIN-x0) + y0;
+    const yRight = m*(XMAX-x0) + y0;
+    ctx.beginPath();
+    ctx.moveTo(toPxX(XMIN), toPxY(yLeft));
+    ctx.lineTo(toPxX(XMAX), toPxY(yRight));
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // mark (x0,y0)
+    ctx.fillStyle='rgba(0,0,0,.9)';
+    ctx.beginPath();
+    ctx.arc(toPxX(x0), toPxY(y0), 3, 0, 2*Math.PI);
+    ctx.fill();
+
+    // label
+    ctx.fillStyle='rgba(0,0,0,.75)';
+    ctx.font='12px system-ui';
+    ctx.fillText(`x₀=${fmt(x0)}, y₀=${fmt(y0)}, slope=${fmt(m)}`, toPxX(x0)+8, toPxY(y0)-8);
+  }
+
+  function redraw(){
+    const b = clamp(parseFloat(baseSlider.value), 1.1, 10.0);
+    baseSlider.value = b; baseNum.value = b.toFixed(1); bLabel.textContent = `b = ${b.toFixed(1)}`;
+
+    const x0 = clamp(parseFloat(x0Slider.value), -3, 3);
+    x0Slider.value = x0; x0Num.value = x0.toFixed(1); x0Label.textContent = `x₀ = ${x0.toFixed(1)}`;
+
+    plot(b, x0);
+  }
+
+  // sync slider <-> number inputs
+  baseSlider.oninput = redraw;
+  baseNum.onchange = ()=>{ baseSlider.value = clamp(parseFloat(baseNum.value)||2, 1.1, 10.0); redraw(); };
+  x0Slider.oninput = redraw;
+  x0Num.onchange = ()=>{ x0Slider.value = clamp(parseFloat(x0Num.value)||0, -3, 3); redraw(); };
+  showExp.onchange = redraw; showLog.onchange = redraw; showLine.onchange = redraw;
+
+  // first layout
+  resizeCanvas();
+
+  /* ---------- Practice checks (no reveal by default) ---------- */
+  function setMsg(el, ok, msg){
+    el.innerHTML = ok ? `<span class="ok">✔ ${msg}</span>` : `<span class="bad">✘ ${msg}</span>`;
+  }
+  window.checkQ1 = () => {
+    const v = ( $('#q1').value || '' ).trim().replace(/\s+/g,'').toLowerCase();
+    const ok = v === "log_4(64)=3" || v==="log4(64)=3" || v==="log_{4}(64)=3";
+    setMsg($('#q1r'), ok, ok ? "Correct." : "Not yet—match base 4, argument 64, and the exponent.");
+  };
+  window.checkQ2 = () => {
+    const val = parseFloat($('#q2').value);
+    const ok = Math.abs(val - (-3)) < 1e-9;
+    setMsg($('#q2r'), ok, ok ? "Correct." : "Not yet—use powers of ten and try again.");
+  };
+  window.checkQ3 = () => {
+    const val = parseFloat($('#q3').value);
+    const ok = Math.abs(val - 32) < 1e-9;
+    setMsg($('#q3r'), ok, ok ? "Correct." : "Not yet—convert to exponential form and retry.");
+  };
+  window.checkQ4 = () => {
+    const v = ( $('#q4').value || '' ).trim().replace(/\s+/g,'').toLowerCase();
+    const ok = v==="6^2=36" || v==="6**2=36";
+    setMsg($('#q4r'), ok, ok ? "Correct." : "Not yet—rewrite with base, exponent, and result.");
+  };
+
+  // Optional Reveal Answers
+  $('#reveal').onclick = ()=>{
+    $('#q1r').innerHTML = `<span class="ok">Answer: log₄(64)=3</span>`;
+    $('#q2r').innerHTML = `<span class="ok">Answer: −3</span>`;
+    $('#q3r').innerHTML = `<span class="ok">Answer: 32</span>`;
+    $('#q4r').innerHTML = `<span class="ok">Answer: 6²=36</span>`;
+  };
+</script>
+</body>
+</html>

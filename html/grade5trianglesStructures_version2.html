@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Triangle Explorer — Grade 5 Interactive Chapter (Light Theme)</title>
+  <style>
+    :root{
+      /* Light, kid-friendly palette */
+      --bg:#f9fbff; --paper:#ffffff; --panel:#f1f6ff; --card:#fef7ec;
+      --ink:#222; --muted:#5a6b7a; --line:#d7e3f3;
+      --accent:#3ba8ff; --accent2:#ffb703; --accent3:#34c759;
+      --bad:#e84c3d; --warn:#ffb703; --good:#1fa971;
+      --radius:16px; --shadow:0 10px 28px rgba(26,40,73,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:
+      radial-gradient(1200px 500px at 85% -5%, #e3f2ff 0%, transparent 60%),
+      linear-gradient(180deg,#f4f9ff, var(--bg) 60%, #f6fbff);
+      color:var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; line-height:1.35}
+    a{color:#1a73e8; text-decoration:none}
+    header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.85));
+      backdrop-filter: blur(6px); border-bottom:1px solid var(--line); padding:16px 0}
+    .wrap{max-width:1100px; margin:0 auto; padding:0 16px}
+    h1{margin:0; font-size:clamp(22px,3.2vw,36px)}
+    .pill{display:inline-block; font-size:12px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:#4a6175; background:#fff; margin-left:10px}
+
+    .hero{margin:16px 0 22px; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
+    .section{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin:18px 0; box-shadow:var(--shadow)}
+    h2{font-size:clamp(18px,2.4vw,26px); margin:8px 0 12px}
+    .grid{display:grid; gap:12px}
+    @media (min-width:860px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} }
+
+    .card{background:var(--card); border:1px solid #f1e3c7; border-radius:14px; padding:12px}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    button{
+      background:linear-gradient(180deg, #ffcc6b, var(--accent2));
+      color:#3d2c00; border:none; border-radius:12px; padding:9px 12px; font-weight:700; cursor:pointer;
+      box-shadow:0 6px 18px rgba(255,183,3,.25)
+    }
+    button.blue{background:linear-gradient(180deg, #71c6ff, var(--accent)); color:#08273c; box-shadow:0 6px 18px rgba(59,168,255,.25)}
+    button.green{background:linear-gradient(180deg, #9be7b5, var(--accent3)); color:#0d3a20; box-shadow:0 6px 18px rgba(52,199,89,.25)}
+    button.ghost{background:#fff; color:#345; border:1px solid var(--line)}
+    label{font-size:13px; color:#4a6175}
+    input[type="number"], input[type="text"]{
+      background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 10px; width:120px
+    }
+    table{width:100%; border-collapse:collapse; border:1px solid var(--line); background:#fff}
+    th,td{border:1px solid var(--line); padding:8px; text-align:left; font-size:14px}
+    .ok{color:var(--good); font-weight:700}
+    .bad{color:var(--bad); font-weight:700}
+    .warn{color:var(--warn); font-weight:700}
+    footer{color:#6f8aa3; font-size:12px; padding:30px 0 60px}
+
+    /* Flip cards */
+    .flip{background:transparent; perspective:1000px; height:160px}
+    .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .55s ease}
+    .flip:hover .flip-inner,.flip:focus-within .flip-inner,.flip.active .flip-inner{transform:rotateY(180deg)}
+    .face{position:absolute; inset:0; padding:12px; border-radius:12px; border:1px solid var(--line); background:#fff; backface-visibility:hidden}
+    .back{transform:rotateY(180deg); background:#f7fbff}
+    .flip h4{margin:0 0 6px}
+    .tap{position:absolute; right:10px; bottom:8px; font-size:12px; opacity:.75}
+
+    /* SVG blocks */
+    .svgwrap{background:#fff; border:1px solid var(--line); border-radius:12px; padding:10px}
+    .btnrow{display:flex; gap:8px; flex-wrap:wrap}
+    .legend span{display:inline-flex; align-items:center; gap:6px; margin-right:10px; font-size:13px}
+    .dot{width:12px; height:12px; border-radius:99px; display:inline-block}
+    .c-red{background:#e84c3d} .c-blue{background:#3ba8ff}
+
+    /* Matching game */
+    .match-wrap{display:grid; gap:12px}
+    @media (min-width:900px){ .match-wrap{grid-template-columns:1fr 1fr} }
+    .list{display:grid; gap:10px}
+    .draggable,.droppable{
+      background:#fff; border:2px dashed #e7eef8; border-radius:12px; padding:10px; min-height:48px;
+      display:flex; align-items:center; justify-content:space-between; gap:8px
+    }
+    .draggable{cursor:grab}
+    .draggable:active{cursor:grabbing}
+    .droppable{min-height:56px}
+    .slot{opacity:.65; font-size:12px}
+    .correct{border-color:rgba(31,169,113,.95); background:#eaf9f2}
+    .wrong{border-color:rgba(232,76,61,.9); background:#ffeceb; animation:shake .2s}
+    .locked{opacity:.7; pointer-events:none}
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}100%{transform:translateX(0)}}
+
+    /* Checklist */
+    .checklist label{display:flex; gap:8px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px}
+
+    /* Print */
+    @media print{ header .row button{display:none} .flip:hover .flip-inner{transform:none} }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Triangle Explorer <span class="pill">Grade 5 • Math & Science</span> <span class="pill">Student Mode</span></h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="muted">Triangles make structures strong. Explore types, see where <em>compression</em> and <em>tension</em> might act, record measurements, and try a quick matching game. Checks tell you if you’re right; if not, try again.</p>
+    <div class="row" style="margin-top:8px">
+      <button id="btnPrint" class="blue">🖨️ Print / Save as PDF</button>
+      <button class="ghost" id="btnReset">↺ Reset worksheet</button>
+    </div>
+  </section>
+
+  <!-- Triangle types -->
+  <section class="section" id="types">
+    <h2>Types of Triangles 🔍</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Equilateral</h4>
+            <p class="muted">All 3 sides & angles equal</p>
+            <div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>Every angle is 60°. Super stable in trusses.</p>
+            <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=equilateral+triangle+diagram">See images ↗</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Isosceles</h4>
+            <p class="muted">2 sides equal</p>
+            <div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>Base angles are equal. Common in roofs.</p>
+            <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=isosceles+triangle+diagram">Learn more ↗</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Scalene</h4>
+            <p class="muted">All sides different</p>
+            <div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>Angles are all different too.</p>
+            <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=scalene+triangle+diagram">See examples ↗</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Distinct triangle diagrams -->
+    <div class="card" style="margin-top:12px">
+      <div class="row">
+        <strong>Triangle Types Diagram</strong>
+        <div class="btnrow">
+          <button class="ghost small" data-show="eq">Equilateral</button>
+          <button class="ghost small" data-show="iso">Isosceles</button>
+          <button class="ghost small" data-show="sca">Scalene</button>
+        </div>
+      </div>
+      <div class="svgwrap" id="typesSVG" aria-label="Triangle types diagram">
+        <!-- Three clearly different triangles (with equality tick marks) -->
+        <svg width="100%" height="220" viewBox="0 0 960 220" role="img">
+          <!-- Equilateral: base 200, all equal; tick marks on all sides -->
+          <g id="g-eq" transform="translate(40,10)">
+            <rect width="280" height="200" rx="12" fill="#fff" stroke="#e9eef7"/>
+            <text x="12" y="22" fill="#4a6175" font-size="14">Equilateral</text>
+            <polygon points="180,30 60,180 300,180" fill="none" stroke="#3ba8ff" stroke-width="4"/>
+            <!-- ticks on all sides -->
+            <line x1="120" y1="105" x2="132" y2="92" stroke="#ffb703" stroke-width="3"/>
+            <line x1="228" y1="105" x2="216" y2="92" stroke="#ffb703" stroke-width="3"/>
+            <line x1="130" y1="180" x2="150" y2="180" stroke="#ffb703" stroke-width="3"/>
+            <line x1="210" y1="180" x2="230" y2="180" stroke="#ffb703" stroke-width="3"/>
+            <!-- 60° labels -->
+            <text x="170" y="28" fill="#3ba8ff" font-size="12">60°</text>
+            <text x="46" y="193" fill="#3ba8ff" font-size="12">60°</text>
+            <text x="300" y="193" fill="#3ba8ff" font-size="12">60°</text>
+          </g>
+
+          <!-- Isosceles: two equal sides; base longer; ticks on the two equal sides only -->
+          <g id="g-iso" transform="translate(340,10)">
+            <rect width="280" height="200" rx="12" fill="#fff" stroke="#e9eef7"/>
+            <text x="12" y="22" fill="#4a6175" font-size="14">Isosceles</text>
+            <polygon points="180,40 80,180 280,180" fill="none" stroke="#3ba8ff" stroke-width="4"/>
+            <!-- ticks on the equal sides (left and right) -->
+            <line x1="130" y1="110" x2="142" y2="97" stroke="#ffb703" stroke-width="3"/>
+            <line x1="230" y1="110" x2="218" y2="97" stroke="#ffb703" stroke-width="3"/>
+            <!-- base has no tick -->
+            <text x="100" y="195" fill="#3ba8ff" font-size="12">∠A</text>
+            <text x="260" y="195" fill="#3ba8ff" font-size="12">∠A</text>
+          </g>
+
+          <!-- Scalene: all sides clearly different; label a,b,c -->
+          <g id="g-sca" transform="translate(640,10)">
+            <rect width="280" height="200" rx="12" fill="#fff" stroke="#e9eef7"/>
+            <text x="12" y="22" fill="#4a6175" font-size="14">Scalene</text>
+            <polygon points="70,180 310,180 260,70" fill="none" stroke="#3ba8ff" stroke-width="4"/>
+            <text x="60" y="195" fill="#3ba8ff" font-size="12">a</text>
+            <text x="300" y="195" fill="#3ba8ff" font-size="12">b</text>
+            <text x="264" y="66" fill="#3ba8ff" font-size="12">c</text>
+          </g>
+        </svg>
+      </div>
+      <p class="muted small" style="margin-top:6px">Fun fact: The CN Tower uses triangular bracing to stand strong against wind.</p>
+    </div>
+  </section>
+
+  <!-- Forces -->
+  <section class="section" id="forces">
+    <h2>Forces at Work 🏗️</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <p><strong>Compression</strong> pushes inward. <strong>Tension</strong> pulls outward.</p>
+        <p class="muted">Tap to highlight where each force might act in a simple truss triangle.</p>
+        <div class="row" style="margin:8px 0 6px">
+          <button class="ghost small" id="btnComp">Show Compression</button>
+          <button class="ghost small" id="btnTens">Show Tension</button>
+          <button class="ghost small" id="btnClearForces">Clear</button>
+        </div>
+        <div class="legend small">
+          <span><span class="dot c-red"></span> Compression</span>
+          <span><span class="dot c-blue"></span> Tension</span>
+        </div>
+      </div>
+      <div class="svgwrap">
+        <svg id="forceSVG" width="100%" height="220" viewBox="0 0 340 220" role="img" aria-label="Triangle truss with force highlight">
+          <polygon id="tri" points="50,180 290,180 190,60" fill="none" stroke="#7fc8ff" stroke-width="3"/>
+          <line id="edge1" x1="50" y1="180" x2="290" y2="180" stroke="#7fc8ff" stroke-width="8" stroke-linecap="round"/>
+          <line id="edge2" x1="50" y1="180" x2="190" y2="60"  stroke="#7fc8ff" stroke-width="8" stroke-linecap="round"/>
+          <line id="edge3" x1="290" y1="180" x2="190" y2="60" stroke="#7fc8ff" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="50" cy="180" r="4" fill="#1b3d6b"/>
+          <circle cx="290" cy="180" r="4" fill="#1b3d6b"/>
+          <circle cx="190" cy="60" r="4" fill="#1b3d6b"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Measurement worksheet / "triangle calculator" -->
+  <section class="section" id="measure">
+    <h2>Interactive Measurement Activity ✏️</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <p><strong>Materials:</strong> ruler, protractor, grid paper.</p>
+        <p class="muted">Enter what you measured. We’ll check if it makes a triangle and classify it.</p>
+        <div class="row">
+          <label>Side 1</label><input type="number" id="s1" min="0" step="0.1">
+          <label>Side 2</label><input type="number" id="s2" min="0" step="0.1">
+          <label>Side 3</label><input type="number" id="s3" min="0" step="0.1">
+        </div>
+        <div class="row" style="margin-top:6px">
+          <label>Angle 1 (°)</label><input type="number" id="a1" min="0" max="180" step="0.1">
+          <label>Angle 2 (°)</label><input type="number" id="a2" min="0" max="180" step="0.1">
+          <label>Angle 3 (°)</label><input type="number" id="a3" min="0" max="180" step="0.1">
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button id="btnClassify" class="blue">Check & Classify</button>
+          <button class="ghost" id="btnRecord">Record Row</button>
+          <button class="ghost" id="btnClearInputs">Clear Inputs</button>
+        </div>
+        <div id="result" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <table aria-label="recorded measurements">
+          <thead><tr><th>Side 1</th><th>Side 2</th><th>Side 3</th><th>A1°</th><th>A2°</th><th>A3°</th><th>By Sides</th><th>By Angles</th><th>Action</th></tr></thead>
+          <tbody id="tbl"></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="muted small" style="margin-top:6px">We never give away answers here. If checks fail, fix your measures and try again.</p>
+  </section>
+
+  <!-- Matching game: NO answer reveal when wrong -->
+  <section class="section" id="match">
+    <h2>Match the Cards — Types & Forces</h2>
+    <p class="muted">Drag (or tap-then-tap) to match each item on the left to the correct idea on the right. Wrong matches bounce back—no answers revealed.</p>
+    <div class="match-wrap">
+      <div>
+        <div class="row" style="margin-bottom:6px"><strong>Cards</strong></div>
+        <div id="expList" class="list"></div>
+      </div>
+      <div>
+        <div class="row" style="margin-bottom:6px"><strong>Drop Zones</strong> <span class="small muted">(empty until matched)</span></div>
+        <div id="logList" class="list"></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <span>Score: <span id="score" class="ok">0</span>/<span id="total">0</span></span>
+      <button id="btnShuffle" class="green">Shuffle / Reset</button>
+    </div>
+  </section>
+
+  <!-- Practice checklist -->
+  <section class="section" id="practice">
+    <h2>Practice Time!</h2>
+    <div class="grid cols-2">
+      <div class="card checklist">
+        <label><input type="checkbox"> Found three triangles in our classroom</label>
+        <label><input type="checkbox"> Drew and labelled side lengths</label>
+        <label><input type="checkbox"> Measured and wrote angles</label>
+        <label><input type="checkbox"> Explained how each triangle helps make structures stronger</label>
+      </div>
+      <div class="card">
+        <p><strong>Why triangles make structures strong:</strong></p>
+        <ul>
+          <li>Spread weight evenly</li>
+          <li>Resist bending and twisting</li>
+          <li>Keep their shape under pressure</li>
+        </ul>
+        <p class="muted small">Try searching: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=bridge+truss+triangles">bridge truss triangles</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Glossary -->
+  <section class="section" id="glossary">
+    <h2>Important Terms</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Vertex</h4><p class="muted">Where two sides meet</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>A corner point of a triangle.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Base</h4><p class="muted">Bottom side</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>We often draw the triangle resting on this side.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Angle</h4><p class="muted">Space between two sides</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Measured with a protractor in degrees (°).</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Structure</h4><p class="muted">Built to support weight</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Bridges, towers, roofs, frames—and more.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources -->
+  <section class="section" id="gallery">
+    <h2>Digital Resources</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <strong>Engineering for Kids — Triangle Strength</strong>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=engineering+for+kids+triangle+strength">Open search ↗</a></p>
+      </div>
+      <div class="card">
+        <strong>Virtual Triangle Constructor</strong>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=virtual+triangle+constructor+geogebra">Open search ↗</a></p>
+      </div>
+      <div class="card">
+        <strong>Building with Shapes Game</strong>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=building+with+shapes+game+kids">Open search ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Lighter theme, distinct triangles, reliable drag-and-drop, and student-only checks. Print-friendly.
+  </footer>
+</div>
+
+<script>
+  // Helpers
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const num = v => (v===''||v==null)?NaN:parseFloat(v);
+
+  // Print & reset
+  $('#btnPrint').onclick = () => window.print();
+  $('#btnReset').onclick = () => { $('#tbl').innerHTML=''; ['s1','s2','s3','a1','a2','a3'].forEach(id=>document.getElementById(id).value=''); $('#result').innerHTML=''; };
+  $('#btnClearInputs').onclick = () => { ['s1','s2','s3','a1','a2','a3'].forEach(id=>document.getElementById(id).value=''); $('#result').innerHTML=''; };
+
+  // Flip cards tap support
+  $$('.flip').forEach(card=>{
+    card.addEventListener('click', e=>{
+      if(window.getSelection && String(window.getSelection())!=='') return;
+      card.classList.toggle('active');
+    });
+  });
+
+  // Types diagram buttons (scroll the pane to each block)
+  const map = {eq:'#g-eq', iso:'#g-iso', sca:'#g-sca'};
+  $$('#types .card .btnrow button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const which = btn.getAttribute('data-show');
+      const target = document.querySelector(map[which]);
+      if(target){ target.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'}); }
+    });
+  });
+
+  // Forces toggles
+  const e1 = $('#edge1'), e2 = $('#edge2'), e3 = $('#edge3');
+  function clearForces(){
+    [e1,e2,e3].forEach(e=>{ e.style.stroke = '#7fc8ff'; e.style.strokeWidth = '8'; });
+  }
+  $('#btnComp').onclick = () => { clearForces(); e1.style.stroke='#e84c3d'; e1.style.strokeWidth='10'; };
+  $('#btnTens').onclick = () => { clearForces(); e2.style.stroke='#3ba8ff'; e3.style.stroke='#3ba8ff'; e2.style.strokeWidth=e3.style.strokeWidth='10'; };
+  $('#btnClearForces').onclick = clearForces; clearForces();
+
+  // Measurement checks (no answer reveal beyond pass/fail + classifications derived from input)
+  function triangleIneq(a,b,c){ return a+b>c && a+c>b && b+c>a; }
+  function classifyBySides(a,b,c,tol=1e-6){
+    if(![a,b,c].every(isFinite) || [a,b,c].some(x=>x<=0)) return 'invalid';
+    if(!triangleIneq(a,b,c)) return 'fails inequality';
+    const eq=(x,y)=>Math.abs(x-y)<=tol;
+    if(eq(a,b)&&eq(b,c)) return 'equilateral';
+    if(eq(a,b)||eq(a,c)||eq(b,c)) return 'isosceles';
+    return 'scalene';
+  }
+  function classifyByAngles(A,B,C){
+    if(![A,B,C].every(isFinite)) return '—';
+    const sum=A+B+C, close=Math.abs(sum-180)<=2;
+    if(!close) return 'angles ≠ 180°';
+    if([A,B,C].some(x=>x<=0||x>=180)) return 'invalid';
+    if([A,B,C].some(x=>Math.abs(x-90)<=0.8)) return 'right';
+    if([A,B,C].every(x=>x<90)) return 'acute';
+    if([A,B,C].some(x=>x>90)) return 'obtuse';
+    return '—';
+  }
+  function tag(txt){
+    if(/equilateral|isosceles|scalene|acute|right|obtuse/.test(txt)) return `<span class="ok">${txt}</span>`;
+    if(/fail|invalid|angles ≠/.test(txt)) return `<span class="bad">${txt}</span>`;
+    return `<span class="warn">${txt}</span>`;
+  }
+  $('#btnClassify').onclick = ()=>{
+    const a = num($('#s1').value), b = num($('#s2').value), c = num($('#s3').value);
+    const A = num($('#a1').value), B = num($('#a2').value), C = num($('#a3').value);
+    let msgs=[];
+    if([a,b,c].some(x=>!isFinite(x)) && [A,B,C].some(x=>!isFinite(x))){
+      $('#result').innerHTML = `<span class="warn">Enter sides and/or angles to check.</span>`; return;
+    }
+    if([a,b,c].every(isFinite)){
+      if(!triangleIneq(a,b,c)) msgs.push(`<span class="bad">Triangle inequality fails.</span>`);
+      else msgs.push(`<span class="ok">Triangle inequality holds.</span>`);
+      msgs.push(`<strong>By sides:</strong> ${tag(classifyBySides(a,b,c))}`);
+    }
+    if([A,B,C].every(isFinite)){
+      const close=Math.abs(A+B+C-180)<=2;
+      msgs.push(`${close?'<span class="ok">Angle sum ≈ 180°.</span>':'<span class="bad">Angle sum off (should total ~180°).</span>'}`);
+      msgs.push(`<strong>By angles:</strong> ${tag(classifyByAngles(A,B,C))}`);
+    }
+    $('#result').innerHTML = msgs.join('<br>');
+  };
+  $('#btnRecord').onclick = ()=>{
+    const s1=$('#s1').value, s2=$('#s2').value, s3=$('#s3').value;
+    const a1=$('#a1').value, a2=$('#a2').value, a3=$('#a3').value;
+    if([s1,s2,s3,a1,a2,a3].every(v=>v==='')){ alert('Enter some values first.'); return; }
+    const byS = classifyBySides(num(s1),num(s2),num(s3));
+    const byA = classifyByAngles(num(a1),num(a2),num(a3));
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s1||'—'}</td><td>${s2||'—'}</td><td>${s3||'—'}</td>
+                    <td>${a1||'—'}</td><td>${a2||'—'}</td><td>${a3||'—'}</td>
+                    <td>${byS}</td><td>${byA}</td>
+                    <td><button class="ghost small">Delete</button></td>`;
+    tr.querySelector('button').onclick = ()=> tr.remove();
+    $('#tbl').appendChild(tr);
+  };
+
+  // Matching game (drag & drop + tap fallback) — no answer reveal on wrong drops
+  const PAIRS = [
+    {id:'t1', left:'Equilateral', right:'All 3 sides & angles equal'},
+    {id:'t2', left:'Isosceles',   right:'2 sides equal; base angles equal'},
+    {id:'t3', left:'Scalene',     right:'All sides different'},
+    {id:'f1', left:'Compression', right:'Pushing force (inward)'},
+    {id:'f2', left:'Tension',     right:'Pulling force (outward)'},
+  ];
+  const expList = $('#expList'), logList = $('#logList');
+  const scoreEl = $('#score'), totalEl = $('#total'); totalEl.textContent = PAIRS.length;
+  let score=0, selectedId=null;
+
+  function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+
+  function renderLists(){
+    score=0; scoreEl.textContent=score; expList.innerHTML=''; logList.innerHTML='';
+    const L = shuffle([...PAIRS]); const R = shuffle([...PAIRS]);
+    L.forEach(p=>{
+      const d=document.createElement('div');
+      d.className='draggable'; d.draggable=true; d.dataset.id=p.id;
+      d.innerHTML = `<span>${p.left}</span><span class="slot">drag</span>`;
+      d.addEventListener('dragstart', ev=>{ ev.dataTransfer.setData('text/plain', p.id); });
+      d.addEventListener('click', ()=>{ // tap select
+        selectedId = p.id;
+        $$('.draggable').forEach(x=>x.classList.remove('correct'));
+        d.classList.add('correct'); setTimeout(()=>d.classList.remove('correct'), 400);
+      });
+      expList.appendChild(d);
+    });
+    R.forEach(p=>{
+      const z=document.createElement('div');
+      z.className='droppable'; z.dataset.answer=p.id;
+      z.innerHTML = `<span>${p.right}</span><span class="slot">drop here</span>`;
+      z.addEventListener('dragover', ev=>ev.preventDefault());
+      z.addEventListener('drop', ev=>{ ev.preventDefault(); handleMatch(z, ev.dataTransfer.getData('text/plain')); });
+      z.addEventListener('click', ()=>{ if(selectedId) handleMatch(z, selectedId); });
+      logList.appendChild(z);
+    });
+  }
+
+  function handleMatch(targetZone, draggedId){
+    if(!draggedId) return;
+    const ans = targetZone.dataset.answer;
+    if(ans===draggedId){
+      targetZone.classList.add('correct','locked');
+      targetZone.querySelector('.slot').textContent='matched';
+      const drag = [...document.querySelectorAll('.draggable')].find(d=>d.dataset.id===draggedId);
+      if(drag){ drag.classList.add('locked','correct'); drag.querySelector('.slot').textContent='✓'; drag.draggable=false; }
+      score++; scoreEl.textContent=score;
+    } else {
+      // wrong — bounce, do NOT reveal anything
+      targetZone.classList.add('wrong');
+      setTimeout(()=>targetZone.classList.remove('wrong'), 400);
+    }
+    selectedId=null;
+  }
+  $('#btnShuffle').onclick = renderLists;
+  renderLists();
+</script>
+</body>
+</html>

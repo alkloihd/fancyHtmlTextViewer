@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Animal Movement Adventure — Grade 2 Life Systems (Simple & Colourful)</title>
+  <style>
+    :root{
+      --sky:#fff8fb;
+      --paper:#ffffff;
+      --panel:#fff2e2;
+      --ink:#213547;
+      --muted:#577082;
+      --line:#e7edf5;
+
+      --pink:#ff7fb6;
+      --orange:#ffb84d;
+      --mint:#41d6a3;
+      --blue:#5ab0ff;
+      --violet:#a48bff;
+
+      --ok:#1aa27a;
+      --warn:#ff9f1c;
+      --bad:#e04646;
+
+      --radius:18px;
+      --shadow:0 12px 28px rgba(33,53,71,.12);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0; padding:0;
+      background:
+        radial-gradient(1000px 400px at 90% -10%, #e4f4ff 0%, transparent 60%),
+        radial-gradient(900px 500px at -10% 0%, #ffe9f4 0%, transparent 55%),
+        linear-gradient(180deg,#fffafd,var(--sky) 60%, #f7fdff);
+      color:var(--ink);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      line-height:1.35;
+    }
+    a{color:#0a66c2;text-decoration:none}
+    header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+      border-bottom:1px solid var(--line);
+      backdrop-filter: blur(6px);
+      padding:14px 0;
+    }
+    .wrap{max-width:1180px; margin:0 auto; padding:0 16px}
+    h1{margin:0; font-size:clamp(22px,3.5vw,38px)}
+    .pill{display:inline-block; font-size:12px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; color:#546e7a; margin-left:8px}
+
+    .hero{margin:14px 0 18px; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px}
+    .section{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin:16px 0; box-shadow:var(--shadow)}
+    h2{font-size:clamp(18px,2.4vw,26px); margin:0 0 10px}
+    h3{margin:8px 0}
+    .muted{color:var(--muted)} .small{font-size:12px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .grid{display:grid; gap:12px}
+    @media (min-width:900px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} }
+
+    .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px}
+    .btn{
+      background: linear-gradient(180deg,#ffd59b, var(--orange));
+      color:#4a3000; border:none; border-radius:14px; padding:10px 14px; font-weight:800; cursor:pointer;
+      box-shadow: 0 8px 20px rgba(255,184,77,.28);
+    }
+    .btn.pink{ background: linear-gradient(180deg,#ffb5d3,var(--pink)); color:#4a1430; box-shadow:0 8px 20px rgba(255,135,182,.28)}
+    .btn.blue{ background: linear-gradient(180deg,#a8d7ff,var(--blue)); color:#06243d; box-shadow:0 8px 20px rgba(90,176,255,.28)}
+    .btn.mint{ background: linear-gradient(180deg,#b7f0dc,var(--mint)); color:#063426; box-shadow:0 8px 20px rgba(65,214,163,.26)}
+    .btn.ghost{background:#fff; color:#345; border:1px solid var(--line)}
+    .hint{font-size:12px; color:var(--muted)}
+    .ok{color:var(--ok); font-weight:800} .warn{color:var(--warn); font-weight:800} .bad{color:var(--bad); font-weight:800}
+    .out{background:#fbfdff; border:1px dashed var(--line); border-radius:12px; padding:10px; font-family:var(--mono)}
+
+    /* Board (grid) */
+    #boardWrap{position:relative}
+    #board{
+      position:relative; width:100%; max-width:720px; aspect-ratio: 3 / 2;
+      border-radius:18px; border:3px solid #dfeaf6; background:#ffffff; overflow:hidden;
+      box-shadow: inset 0 0 0 10px #ffffff, 0 8px 24px rgba(0,0,0,.06);
+      touch-action:none;
+    }
+    #draw{position:absolute; inset:0; pointer-events:none}
+    .legend{display:flex; gap:10px; flex-wrap:wrap}
+    .legend span{display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:#fff; border:1px solid var(--line)}
+    .landmark{ position:absolute; transform:translate(-50%,-50%); font-size:26px }
+    /* Tokens */
+    .token{
+      position:absolute; width:52px; height:52px; border-radius:50%;
+      transform:translate(-50%,-50%);
+      display:grid; place-items:center; font-size:28px; user-select:none; cursor:grab;
+      border:3px solid #fff; box-shadow:0 6px 16px rgba(0,0,0,.15);
+      transition: box-shadow .15s ease;
+    }
+    .token:active{cursor:grabbing; box-shadow:0 4px 10px rgba(0,0,0,.18)}
+    .tok-rabbit{ background: conic-gradient(from 180deg, #ffe5ef, #ffd0ea) }
+    .tok-fox{ background: conic-gradient(from 180deg, #ffe7c7, #ffd39a) }
+    .tok-frog{ background: conic-gradient(from 180deg, #e6ffe7, #c7ffd8) }
+
+    /* Controls */
+    .control-pad{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .control-pad .btn{min-width:44px}
+    .seg{display:flex; gap:8px; align-items:center; flex-wrap:wrap; background:#fff; border:1px solid var(--line); border-radius:999px; padding:6px 10px}
+
+    /* Flip-cards */
+    .flip{background:transparent; perspective:1000px; height:150px}
+    .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .55s ease}
+    .flip:hover .flip-inner, .flip:focus-within .flip-inner, .flip.active .flip-inner{ transform: rotateY(180deg) }
+    .face{position:absolute; inset:0; padding:12px; border-radius:12px; border:1px solid var(--line); background:#fff; backface-visibility:hidden}
+    .back{transform:rotateY(180deg); background:#f7fbff}
+    .flip h4{margin:0 0 6px}
+    .tap{position:absolute; right:10px; bottom:8px; font-size:12px; opacity:.75}
+
+    /* Accordion */
+    details{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px}
+    summary{cursor:pointer; font-weight:800}
+
+    /* Print */
+    @media print{
+      header .row .btn{display:none}
+      .flip:hover .flip-inner{transform:none}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🌲 Animal Movement Adventure
+      <span class="pill">Grade 2 • Science + Language + Math</span>
+      <span class="pill">Student-facing • Simple & Colourful</span>
+    </h1>
+    <div class="row" style="margin-top:8px">
+      <button class="btn mint" id="btnPrint">🖨️ Print / Save as PDF</button>
+      <span class="hint">Read → choose → drag → turn/move → draw → write.</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p><strong>Welcome, Animal Explorer!</strong> Help an animal friend get home using <em>quarter-turns</em> and <em>half-turns</em>. Drag the animal on the map, use the direction buttons, and draw your path.</p>
+    <ul style="margin:8px 0 0">
+      <li>Read each section carefully</li>
+      <li>Choose your animal by pressing its button</li>
+      <li>Drag your animal or use the buttons to move</li>
+      <li>Use words like “half-turn” and “quarter-turn” to describe movements</li>
+    </ul>
+  </section>
+
+  <!-- Choose Animal -->
+  <section class="section">
+    <h2>Choose Your Animal Friend</h2>
+    <div class="grid cols-3">
+      <button class="card btn pink" data-animal="rabbit">🐰 Hoppy the Rabbit</button>
+      <button class="card btn blue" data-animal="fox">🦊 Fox the Explorer</button>
+      <button class="card btn mint" data-animal="frog">🐸 Leap the Frog</button>
+    </div>
+    <div id="chosenOut" class="hint" style="margin-top:8px">No animal chosen yet.</div>
+  </section>
+
+  <!-- Board + Controls -->
+  <section class="section" id="play">
+    <h2>Forest Map — Drag & Move (no tricky animations)</h2>
+    <div id="boardWrap" class="grid cols-2">
+      <div class="card" style="position:relative">
+        <div id="board" aria-label="Forest grid board">
+          <canvas id="grid" width="720" height="480" aria-hidden="true"></canvas>
+          <canvas id="draw" width="720" height="480" aria-label="Drawing layer"></canvas>
+
+          <!-- Landmarks (emoji) -->
+          <div class="landmark" data-col="2" data-row="1">🍓</div><!-- berry bush -->
+          <div class="landmark" data-col="10" data-row="2">🪵</div><!-- fallen log -->
+          <div class="landmark" data-col="3" data-row="6">💧</div><!-- pond -->
+          <div class="landmark" data-col="1" data-row="7">🕳️</div><!-- burrow -->
+          <div class="landmark" data-col="10" data-row="7">🏚️</div><!-- den -->
+          <div class="landmark" data-col="6" data-row="0">🌿</div><!-- lily pad -->
+
+          <!-- Tokens -->
+          <div id="tok-rabbit" class="token tok-rabbit" role="img" aria-label="Rabbit">🐰</div>
+          <div id="tok-fox" class="token tok-fox" role="img" aria-label="Fox">🦊</div>
+          <div id="tok-frog" class="token tok-frog" role="img" aria-label="Frog">🐸</div>
+        </div>
+
+        <div class="legend" style="margin-top:8px">
+          <span>🍓 Berry bush</span><span>🪵 Log</span><span>💧 Pond</span><span>🕳️ Burrow</span><span>🏚️ Den</span><span>🌿 Lily pad</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Directions</h3>
+        <div class="seg">
+          <span class="hint">Active:</span>
+          <button class="btn ghost" id="sel-rabbit">🐰</button>
+          <button class="btn ghost" id="sel-fox">🦊</button>
+          <button class="btn ghost" id="sel-frog">🐸</button>
+          <span class="hint" id="who"></span>
+        </div>
+
+        <div class="control-pad" style="margin-top:8px">
+          <button class="btn ghost" data-turn="QL">↺ Quarter-turn Left</button>
+          <button class="btn ghost" data-turn="QR">↻ Quarter-turn Right</button>
+          <button class="btn ghost" data-turn="H">⇆ Half-turn</button>
+        </div>
+        <div class="control-pad" style="margin-top:6px">
+          <button class="btn blue" data-move="1">↑ Move 1</button>
+          <button class="btn blue" data-move="2">↑↑ Move 2</button>
+          <button class="btn blue" data-move="3">↑↑↑ Move 3</button>
+        </div>
+
+        <div class="control-pad" style="margin-top:8px">
+          <button class="btn pink" id="btnDrawMode">✏️ Draw Mode: OFF</button>
+          <button class="btn ghost" id="btnClearDrawing">🧽 Clear Drawing</button>
+          <button class="btn mint" id="btnReset">↺ Reset</button>
+        </div>
+
+        <details style="margin-top:10px">
+          <summary>Tips & image searches</summary>
+          <p class="small muted">Paths: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=cartoon+forest+path+for+children">cartoon forest path for children ↗</a><br>
+          Animal homes: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=forest+animal+homes+cartoon">forest animal homes cartoon ↗</a></p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story Instructions (accordion) -->
+  <section class="section">
+    <h2>Story Steps (Read & Follow)</h2>
+
+    <details open>
+      <summary>🌳 Starting Point: The Forest Clearing</summary>
+      <div class="grid cols-3" style="margin-top:8px">
+        <div class="card">
+          <h3>For Hoppy 🐰</h3>
+          <p>Make a <strong>quarter-turn right</strong> and <strong>hop 3 spaces</strong> to the berry bush.</p>
+        </div>
+        <div class="card">
+          <h3>For Fox 🦊</h3>
+          <p>Make a <strong>half-turn</strong> and <strong>trot 4 spaces</strong> to the fallen log.</p>
+        </div>
+        <div class="card">
+          <h3>For Leap 🐸</h3>
+          <p>Make a <strong>quarter-turn left</strong> and <strong>jump 2 spaces</strong> to the pond.</p>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>🌿 Middle of the Journey</summary>
+      <p class="small muted">Choose one option for your animal.</p>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Hoppy 🐰</h3>
+          <ul>
+            <li><strong>Half-turn</strong> and hop to the carrot patch</li>
+            <li><strong>Quarter-turn right</strong> to the tall grass</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Fox 🦊</h3>
+          <ul>
+            <li><strong>Quarter-turn left</strong> to the rocky path</li>
+            <li><strong>Half-turn</strong> to the shady trees</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Leap 🐸</h3>
+          <ul>
+            <li><strong>Quarter-turn right</strong> to the lily pads</li>
+            <li><strong>Half-turn</strong> to the muddy bank</li>
+          </ul>
+        </div>
+      </div>
+      <p class="small muted">Images: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=cartoon+forest+path+for+children">cartoon forest path for children ↗</a></p>
+    </details>
+
+    <details>
+      <summary>🏡 Finding Home</summary>
+      <div class="grid cols-3" style="margin-top:8px">
+        <div class="card">
+          <h3>Hoppy 🐰</h3>
+          <p>Make <strong>two quarter-turns right</strong>. Hop <strong>3 spaces</strong> to the burrow.</p>
+        </div>
+        <div class="card">
+          <h3>Fox 🦊</h3>
+          <p>Make <strong>one half-turn</strong>. Walk <strong>5 spaces</strong> to the den.</p>
+        </div>
+        <div class="card">
+          <h3>Leap 🐸</h3>
+          <p>Make <strong>three quarter-turns left</strong>. Jump <strong>2 spaces</strong> to the lily pad.</p>
+        </div>
+      </div>
+      <p class="small muted">Images: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=forest+animal+homes+cartoon">forest animal homes cartoon ↗</a></p>
+    </details>
+  </section>
+
+  <!-- Movement Challenge -->
+  <section class="section">
+    <h2>🌟 Movement Challenge</h2>
+    <p>Make your own path. Draw your route and write directions using <em>quarter-turn</em> and <em>half-turn</em>.</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <p><strong>Draw here:</strong> turn on <em>Draw Mode</em> above. Use <em>Clear Drawing</em> to start again.</p>
+      </div>
+      <div class="card">
+        <p><strong>Write your directions:</strong></p>
+        <textarea id="storyText" placeholder="First, I made a quarter-turn and moved 2 spaces..."></textarea>
+        <div class="row" style="margin-top:6px">
+          <button class="btn mint" id="btnCopyStory">📋 Copy Text</button>
+          <span id="copyMsg" class="hint"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vocabulary (flip) -->
+  <section class="section">
+    <h2>📚 Animal Movement Words (flip the cards)</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="face front"><h4>Hop</h4><p class="muted">Both feet jump</p><div class="tap small">Flip ↻</div></div>
+        <div class="face back"><p>Moving by jumping with both feet.</p></div>
+      </div></div>
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="face front"><h4>Trot</h4><p class="muted">Steady steps</p><div class="tap small">Flip ↻</div></div>
+        <div class="face back"><p>Moving at a steady pace.</p></div>
+      </div></div>
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="face front"><h4>Leap</h4><p class="muted">Big jump</p><div class="tap small">Flip ↻</div></div>
+        <div class="face back"><p>Making big jumps.</p></div>
+      </div></div>
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="face front"><h4>Quarter-turn</h4><p class="muted">Small turn</p><div class="tap small">Flip ↻</div></div>
+        <div class="face back"><p>Turn 90° (like pointing to 3 on a clock).</p></div>
+      </div></div>
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="face front"><h4>Half-turn</h4><p class="muted">Halfway</p><div class="tap small">Flip ↻</div></div>
+        <div class="face back"><p>Turn 180° (like pointing to 6 on a clock).</p></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- Digital Resources -->
+  <section class="section">
+    <h2>🔍 Digital Resources</h2>
+    <ul>
+      <li>Animal Movement Videos: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=National+Geographic+Kids+animal+movements">National Geographic Kids — Animal Movements ↗</a></li>
+      <li>Forest Animals Guide: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Canadian+Wildlife+Federation+forest+animals">Canadian Wildlife Federation — Forest Animals ↗</a></li>
+      <li>Movement Games: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=PBS+Kids+animal+movement+activities">PBS Kids — Animal Movement Activities ↗</a></li>
+    </ul>
+  </section>
+
+  <footer class="wrap" style="color:#6b7f8c; font-size:12px; padding:26px 0 60px">
+    Built for Grade 2: colourful theme, simple drag-and-drop with direction buttons, reliable flip-cards and accordions. All text integrated.
+  </footer>
+</div>
+
+<script>
+/* ====== Print ====== */
+document.getElementById('btnPrint').onclick = () => window.print();
+
+/* ====== Grid & Board ====== */
+const grid = document.getElementById('grid');
+const gtx = grid.getContext('2d');
+const draw = document.getElementById('draw');
+const dtx = draw.getContext('2d');
+const board = document.getElementById('board');
+
+const COLS = 12, ROWS = 8;
+let CELL, ORX, ORY;
+
+function layoutGrid(){
+  const W = grid.width, H = grid.height;
+  CELL = Math.floor(Math.min(W/COLS, H/ROWS));
+  ORX = Math.floor((W - COLS*CELL)/2);
+  ORY = Math.floor((H - ROWS*CELL)/2);
+
+  // background
+  gtx.clearRect(0,0,W,H);
+  const bg = gtx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#ffffff'); bg.addColorStop(1,'#f9fcff');
+  gtx.fillStyle=bg; gtx.fillRect(0,0,W,H);
+
+  // grid lines
+  for(let c=0;c<=COLS;c++){
+    gtx.strokeStyle = c===Math.floor(COLS/2)? '#b7cde4' : '#eaf1f8';
+    gtx.lineWidth = c===Math.floor(COLS/2)? 1.5 : 1;
+    gtx.beginPath();
+    gtx.moveTo(ORX + c*CELL, ORY);
+    gtx.lineTo(ORX + c*CELL, ORY + ROWS*CELL);
+    gtx.stroke();
+  }
+  for(let r=0;r<=ROWS;r++){
+    gtx.strokeStyle = r===Math.floor(ROWS/2)? '#b7cde4' : '#eaf1f8';
+    gtx.lineWidth = r===Math.floor(ROWS/2)? 1.5 : 1;
+    gtx.beginPath();
+    gtx.moveTo(ORX, ORY + r*CELL);
+    gtx.lineTo(ORX + COLS*CELL, ORY + r*CELL);
+    gtx.stroke();
+  }
+
+  // clear drawing overlay
+  dtx.clearRect(0,0,draw.width, draw.height);
+
+  // position landmarks
+  document.querySelectorAll('.landmark').forEach(el=>{
+    const col = +el.dataset.col, row = +el.dataset.row;
+    const {x,y} = centerOf(col,row);
+    el.style.left = x+'px'; el.style.top = y+'px';
+  });
+}
+function centerOf(col,row){
+  return { x: ORX + col*CELL + CELL/2, y: ORY + row*CELL + CELL/2 };
+}
+layoutGrid();
+
+/* ====== Tokens (drag + buttons) ====== */
+const TOKENS = {
+  rabbit: { id:'tok-rabbit', col: Math.floor(COLS/2), row: Math.floor(ROWS/2), dir:0, angle:0 },
+  fox:    { id:'tok-fox',    col: Math.floor(COLS/2)-1, row: Math.floor(ROWS/2), dir:0, angle:0 },
+  frog:   { id:'tok-frog',   col: Math.floor(COLS/2)+1, row: Math.floor(ROWS/2), dir:0, angle:0 },
+};
+function placeToken(t){
+  const el = document.getElementById(t.id);
+  const {x,y} = centerOf(t.col,t.row);
+  el.style.left = x+'px';
+  el.style.top  = y+'px';
+  el.style.transform = `translate(-50%,-50%) rotate(${t.angle}deg)`;
+}
+Object.values(TOKENS).forEach(placeToken);
+
+let active = null;
+const chosenOut = document.getElementById('chosenOut');
+function setActive(name){
+  active = name;
+  const label = name ? ({rabbit:'🐰 Hoppy the Rabbit', fox:'🦊 Fox the Explorer', frog:'🐸 Leap the Frog'})[name] : 'None';
+  document.getElementById('who').textContent = name? label : '';
+  chosenOut.textContent = name? `${label} selected.` : 'No animal chosen yet.';
+}
+document.querySelectorAll('[data-animal]').forEach(b=>{
+  b.onclick = ()=> setActive(b.dataset.animal);
+});
+document.getElementById('sel-rabbit').onclick = ()=> setActive('rabbit');
+document.getElementById('sel-fox').onclick    = ()=> setActive('fox');
+document.getElementById('sel-frog').onclick   = ()=> setActive('frog');
+
+function turn(t, kind){
+  if(kind==='QL'){ t.dir = (t.dir+3)%4; t.angle -= 90; }
+  if(kind==='QR'){ t.dir = (t.dir+1)%4; t.angle += 90; }
+  if(kind==='H'){  t.dir = (t.dir+2)%4; t.angle += 180; }
+  t.angle = ((t.angle%360)+360)%360;
+  placeToken(t);
+}
+function moveForward(t, steps){
+  for(let i=0;i<steps;i++){
+    if(t.dir===0) t.row = Math.max(0, t.row-1);
+    if(t.dir===1) t.col = Math.min(COLS-1, t.col+1);
+    if(t.dir===2) t.row = Math.min(ROWS-1, t.row+1);
+    if(t.dir===3) t.col = Math.max(0, t.col-1);
+  }
+  placeToken(t);
+}
+document.querySelectorAll('[data-turn]').forEach(btn=>{
+  btn.onclick = ()=>{
+    if(!active){ alert('Choose an animal first.'); return; }
+    turn(TOKENS[active], btn.dataset.turn);
+  };
+});
+document.querySelectorAll('[data-move]').forEach(btn=>{
+  btn.onclick = ()=>{
+    if(!active){ alert('Choose an animal first.'); return; }
+    moveForward(TOKENS[active], parseInt(btn.dataset.move,10));
+  };
+});
+document.getElementById('btnReset').onclick = ()=>{
+  TOKENS.rabbit.col = Math.floor(COLS/2); TOKENS.rabbit.row = Math.floor(ROWS/2); TOKENS.rabbit.dir=0; TOKENS.rabbit.angle=0;
+  TOKENS.fox.col    = Math.floor(COLS/2)-1; TOKENS.fox.row = Math.floor(ROWS/2); TOKENS.fox.dir=0; TOKENS.fox.angle=0;
+  TOKENS.frog.col   = Math.floor(COLS/2)+1; TOKENS.frog.row = Math.floor(ROWS/2); TOKENS.frog.dir=0; TOKENS.frog.angle=0;
+  Object.values(TOKENS).forEach(placeToken);
+  dtx.clearRect(0,0,draw.width, draw.height);
+};
+
+/* ====== Dragging (simple, snap to grid) ====== */
+let dragToken = null, offset = {x:0,y:0};
+function onDown(e){
+  if(drawMode) return; // drawing mode disables drags
+  const el = e.target.closest('.token'); if(!el) return;
+  dragToken = el;
+  const r = el.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  const p = getPointer(e);
+  offset.x = p.x - cx; offset.y = p.y - cy;
+  el.setPointerCapture?.(e.pointerId||0);
+}
+function onMove(e){
+  if(!dragToken) return;
+  const p = getPointer(e);
+  const x = p.x - offset.x, y = p.y - offset.y;
+  dragToken.style.left = x+'px';
+  dragToken.style.top  = y+'px';
+}
+function onUp(e){
+  if(!dragToken) return;
+  // snap to nearest grid cell
+  const rect = grid.getBoundingClientRect();
+  const cx = parseFloat(dragToken.style.left), cy = parseFloat(dragToken.style.top);
+  const col = Math.round((cx - rect.left - ORX - CELL/2)/CELL);
+  const row = Math.round((cy - rect.top  - ORY - CELL/2)/CELL);
+  // clamp
+  const c = Math.max(0, Math.min(COLS-1, col));
+  const r = Math.max(0, Math.min(ROWS-1, row));
+  // update token model
+  const name = dragToken.id==='tok-rabbit'?'rabbit':dragToken.id==='tok-fox'?'fox':'frog';
+  TOKENS[name].col = c; TOKENS[name].row = r;
+  placeToken(TOKENS[name]);
+  dragToken.releasePointerCapture?.(e.pointerId||0);
+  dragToken = null;
+}
+function getPointer(e){
+  if(e.touches && e.touches[0]) return {x:e.touches[0].clientX, y:e.touches[0].clientY};
+  return {x:e.clientX, y:e.clientY};
+}
+board.addEventListener('mousedown', onDown);
+board.addEventListener('mousemove', onMove);
+window.addEventListener('mouseup', onUp);
+board.addEventListener('touchstart', (e)=>{onDown(e); e.preventDefault();},{passive:false});
+board.addEventListener('touchmove', (e)=>{onMove(e); e.preventDefault();},{passive:false});
+board.addEventListener('touchend', onUp);
+
+/* ====== Drawing Mode (simple pen) ====== */
+let drawMode = false, drawing = false, last = null, penColor = '#333', penSize = 4;
+document.getElementById('btnDrawMode').onclick = (e)=>{
+  drawMode = !drawMode;
+  draw.style.pointerEvents = drawMode ? 'auto' : 'none';
+  e.target.textContent = drawMode ? '✏️ Draw Mode: ON' : '✏️ Draw Mode: OFF';
+  e.target.classList.toggle('mint', drawMode);
+};
+document.getElementById('btnClearDrawing').onclick = ()=> dtx.clearRect(0,0,draw.width, draw.height);
+
+draw.addEventListener('mousedown', (e)=>{ if(!drawMode) return; drawing=true; last=boardPoint(e); });
+draw.addEventListener('mousemove', (e)=>{ if(!drawing) return; const p=boardPoint(e); dtx.strokeStyle=penColor; dtx.lineWidth=penSize; dtx.lineCap='round'; dtx.beginPath(); dtx.moveTo(last.x,last.y); dtx.lineTo(p.x,p.y); dtx.stroke(); last=p; });
+window.addEventListener('mouseup', ()=> drawing=false);
+draw.addEventListener('touchstart', (e)=>{ if(!drawMode) return; drawing=true; last=boardPoint(e); e.preventDefault(); }, {passive:false});
+draw.addEventListener('touchmove', (e)=>{ if(!drawing) return; const p=boardPoint(e); dtx.strokeStyle=penColor; dtx.lineWidth=penSize; dtx.lineCap='round'; dtx.beginPath(); dtx.moveTo(last.x,last.y); dtx.lineTo(p.x,p.y); dtx.stroke(); last=p; e.preventDefault(); }, {passive:false});
+draw.addEventListener('touchend', ()=> drawing=false);
+
+function boardPoint(e){
+  const rect = draw.getBoundingClientRect();
+  const p = getPointer(e);
+  return { x: p.x - rect.left, y: p.y - rect.top };
+}
+
+/* ====== Flip cards tap support ====== */
+document.querySelectorAll('.flip').forEach(card=>{
+  card.addEventListener('click', e=>{
+    if(window.getSelection && String(window.getSelection())!=='') return;
+    card.classList.toggle('active');
+  });
+});
+
+/* ====== Copy text ====== */
+document.getElementById('btnCopyStory').onclick = async ()=>{
+  const text = document.getElementById('storyText').value || '';
+  const msg = document.getElementById('copyMsg');
+  try{ await navigator.clipboard.writeText(text); msg.textContent='Copied!'; setTimeout(()=>msg.textContent='',1500);}
+  catch{ msg.textContent='Copy not available.'; setTimeout(()=>msg.textContent='',1500); }
+};
+
+/* ====== Responsive relayout on resize ====== */
+window.addEventListener('resize', ()=>{
+  // keep canvas backing store size fixed (720x480), but layout landmarks/tokens again
+  layoutGrid();
+  Object.values(TOKENS).forEach(placeToken);
+});
+/* initial active */
+setActive(null);
+</script>
+</body>
+</html>

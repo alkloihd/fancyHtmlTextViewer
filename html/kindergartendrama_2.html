@@ -1,0 +1,637 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Our Bodies Tell Stories: Kindergarten Drama Guide</title>  
+    <style>  
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Fredoka+One&display=swap');  
+          
+        * {  
+            margin: 0;  
+            padding: 0;  
+            box-sizing: border-box;  
+        }  
+          
+        body {  
+            font-family: 'Comic Neue', cursive;  
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);  
+            min-height: 100vh;  
+            padding: 20px;  
+        }  
+          
+        .container {  
+            max-width: 1200px;  
+            margin: 0 auto;  
+            background: white;  
+            border-radius: 25px;  
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);  
+            overflow: hidden;  
+        }  
+          
+        .header {  
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);  
+            color: white;  
+            text-align: center;  
+            padding: 40px 20px;  
+            position: relative;  
+            overflow: hidden;  
+        }  
+          
+        .header::before {  
+            content: '🎭✨🌟🎪🎨';  
+            position: absolute;  
+            top: 10px;  
+            left: 0;  
+            right: 0;  
+            font-size: 2em;  
+            opacity: 0.3;  
+            animation: float 3s ease-in-out infinite;  
+        }  
+          
+        @keyframes float {  
+            0%, 100% { transform: translateY(0px); }  
+            50% { transform: translateY(-10px); }  
+        }  
+          
+        .main-title {  
+            font-family: 'Fredoka One', cursive;  
+            font-size: 3em;  
+            margin-bottom: 10px;  
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);  
+        }  
+          
+        .subtitle {  
+            font-size: 1.5em;  
+            opacity: 0.9;  
+        }  
+          
+        .content {  
+            padding: 30px;  
+        }  
+          
+        .section {  
+            margin-bottom: 40px;  
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);  
+            border-radius: 20px;  
+            padding: 25px;  
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);  
+            color: white;  
+        }  
+          
+        .section:nth-child(even) {  
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);  
+        }  
+          
+        .section:nth-child(3n) {  
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);  
+        }  
+          
+        .section:nth-child(4n) {  
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);  
+        }  
+          
+        .section-title {  
+            font-family: 'Fredoka One', cursive;  
+            font-size: 2.2em;  
+            margin-bottom: 20px;  
+            text-align: center;  
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);  
+        }  
+          
+        .subsection {  
+            background: rgba(255,255,255,0.2);  
+            border-radius: 15px;  
+            padding: 20px;  
+            margin: 20px 0;  
+            backdrop-filter: blur(10px);  
+        }  
+          
+        .character-grid {  
+            display: grid;  
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  
+            gap: 20px;  
+            margin: 20px 0;  
+        }  
+          
+        .character-card {  
+            background: rgba(255,255,255,0.3);  
+            border-radius: 15px;  
+            padding: 20px;  
+            text-align: center;  
+            transition: transform 0.3s ease;  
+        }  
+          
+        .character-card:hover {  
+            transform: scale(1.05);  
+        }  
+          
+        .emoji-large {  
+            font-size: 3em;  
+            display: block;  
+            margin-bottom: 10px;  
+        }  
+          
+        .feelings-table {  
+            width: 100%;  
+            border-collapse: collapse;  
+            margin: 20px 0;  
+            background: rgba(255,255,255,0.2);  
+            border-radius: 15px;  
+            overflow: hidden;  
+        }  
+          
+        .feelings-table th {  
+            background: rgba(0,0,0,0.2);  
+            padding: 15px;  
+            font-family: 'Fredoka One', cursive;  
+            font-size: 1.2em;  
+        }  
+          
+        .feelings-table td {  
+            padding: 15px;  
+            text-align: center;  
+            border-bottom: 1px solid rgba(255,255,255,0.2);  
+        }  
+          
+        .activity-box {  
+            background: rgba(255,255,255,0.3);  
+            border: 3px dashed rgba(255,255,255,0.8);  
+            border-radius: 20px;  
+            padding: 25px;  
+            margin: 20px 0;  
+            text-align: center;  
+        }  
+          
+        .drawing-space {  
+            background: white;  
+            border: 3px dashed #ff6b6b;  
+            border-radius: 15px;  
+            height: 150px;  
+            margin: 20px 0;  
+            display: flex;  
+            align-items: center;  
+            justify-content: center;  
+            color: #ff6b6b;  
+            font-size: 1.2em;  
+            font-weight: bold;  
+        }  
+          
+        .link-button {  
+            display: inline-block;  
+            background: rgba(255,255,255,0.3);  
+            color: white;  
+            text-decoration: none;  
+            padding: 10px 20px;  
+            border-radius: 25px;  
+            margin: 5px;  
+            transition: all 0.3s ease;  
+            border: 2px solid rgba(255,255,255,0.5);  
+        }  
+          
+        .link-button:hover {  
+            background: rgba(255,255,255,0.5);  
+            transform: translateY(-2px);  
+        }  
+          
+        .rules-list {  
+            list-style: none;  
+            padding: 0;  
+        }  
+          
+        .rules-list li {  
+            background: rgba(255,255,255,0.2);  
+            margin: 10px 0;  
+            padding: 15px;  
+            border-radius: 10px;  
+            border-left: 5px solid rgba(255,255,255,0.8);  
+        }  
+          
+        .celebration {  
+            background: linear-gradient(45deg, #ff9a9e, #fecfef, #fecfef, #ff9a9e);  
+            background-size: 400% 400%;  
+            animation: gradient 3s ease infinite;  
+            text-align: center;  
+            padding: 40px;  
+            border-radius: 20px;  
+            margin-top: 30px;  
+        }  
+          
+        @keyframes gradient {  
+            0% { background-position: 0% 50%; }  
+            50% { background-position: 100% 50%; }  
+            100% { background-position: 0% 50%; }  
+        }  
+          
+        .word-count {  
+            text-align: center;  
+            font-size: 1.2em;  
+            color: #666;  
+            margin-top: 20px;  
+            font-weight: bold;  
+        }  
+    </style>  
+</head>  
+<body>  
+    <div class="container">  
+        <div class="header">  
+            <h1 class="main-title">🎭 Our Bodies Tell Stories 📚</h1>  
+            <p class="subtitle">Kindergarten Drama Guide</p>  
+        </div>  
+          
+        <div class="content">  
+            <div class="section">  
+                <h2 class="section-title">🌟 Welcome to Movement Magic! 🌟</h2>  
+                <p style="font-size: 1.3em; text-align: center; line-height: 1.6;">  
+                    <strong>Hello, young storytellers!</strong> Did you know that your body can tell amazing stories without saying any words? Today we're going to learn how to use our whole body to show feelings, act like different characters, and have fun with our friends!  
+                </p>  
+                <div class="drawing-space">  
+                    ✏️ Draw yourself telling a story with your body! ✏️  
+                </div>  
+            </div>
+
+            <div class="section">  
+                <h2 class="section-title">📖 What Does "Body Language" Mean?</h2>  
+                <div class="subsection">  
+                    <p style="font-size: 1.2em; margin-bottom: 20px;">  
+                        <strong>Body language</strong> is when we use our body to show how we feel or what we're thinking. It's like having a conversation without talking!  
+                    </p>  
+                      
+                    <h3 style="font-size: 1.5em; margin: 20px 0;">🎨 Your Body Parts Are Story Tools:</h3>  
+                    <div class="character-grid">  
+                        <div class="character-card">  
+                            <span class="emoji-large">👀</span>  
+                            <strong>Eyes:</strong> Can show if you're happy, sad, or surprised  
+                        </div>  
+                        <div class="character-card">  
+                            <span class="emoji-large">😊</span>  
+                            <strong>Face:</strong> Shows your feelings with smiles or frowns  
+                        </div>  
+                        <div class="character-card">  
+                            <span class="emoji-large">🙌</span>  
+                            <strong>Hands:</strong> Can wave, point, or hug  
+                        </div>  
+                        <div class="character-card">  
+                            <span class="emoji-large">🦵</span>  
+                            <strong>Legs:</strong> Help you walk, run, or dance  
+                        </div>  
+                        <div class="character-card">  
+                            <span class="emoji-large">💪</span>  
+                            <strong>Arms:</strong> Can reach up high or wrap around for hugs  
+                        </div>  
+                    </div>  
+                      
+                    <div style="text-align: center; margin-top: 20px;">  
+                        <a href="https://www.google.com/search?q=kindergarten+body+language+activities+images" class="link-button" target="_blank">  
+                            🔍 Google Search: Body Language Activities  
+                        </a>  
+                    </div>  
+                </div>  
+            </div>
+
+            <div class="section">  
+                <h2 class="section-title">🐻 Moving Like Different Characters 🦋</h2>  
+                <p style="text-align: center; font-size: 1.2em; margin-bottom: 25px;">  
+                    Let's learn how different story characters move their bodies!  
+                </p>  
+                  
+                <div class="character-grid">  
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">🐘 Big Characters Move Like This:</h3>  
+                        <ul class="rules-list">  
+                            <li><strong>Giants:</strong> Take big, slow steps</li>  
+                            <li><strong>Elephants:</strong> Swing your arms like a trunk</li>  
+                            <li><strong>Bears:</strong> Walk on all fours, move slowly</li>  
+                        </ul>  
+                    </div>  
+                      
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">🐭 Small Characters Move Like This:</h3>  
+                        <ul class="rules-list">  
+                            <li><strong>Mice:</strong> Take tiny, quick steps on your toes</li>  
+                            <li><strong>Butterflies:</strong> Flutter your arms gently</li>  
+                            <li><strong>Rabbits:</strong> Hop, hop, hop!</li>  
+                        </ul>  
+                    </div>  
+                </div>  
+                  
+                <div class="character-grid">  
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">😊 Happy Characters:</h3>  
+                        <ul class="rules-list">  
+                            <li>Stand up tall</li>  
+                            <li>Smile big</li>  
+                            <li>Move with bouncy steps</li>  
+                            <li>Arms swing freely</li>  
+                        </ul>  
+                    </div>  
+                      
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">😢 Sad Characters:</h3>  
+                        <ul class="rules-list">  
+                            <li>Shoulders drop down</li>  
+                            <li>Head looks down</li>  
+                            <li>Move slowly</li>  
+                            <li>Arms hang by your sides</li>  
+                        </ul>  
+                    </div>  
+                </div>  
+                  
+                <div style="text-align: center; margin-top: 25px;">  
+                    <a href="https://www.cbc.ca/kids/games/play/movement-games" class="link-button" target="_blank">  
+                        🎮 CBC Kids Movement Games  
+                    </a>  
+                    <a href="https://www.google.com/search?q=animal+movement+activities+kindergarten+children" class="link-button" target="_blank">  
+                        🔍 Animal Movement Activities  
+                    </a>  
+                </div>  
+                  
+                <div class="drawing-space">  
+                    🎨 Draw your favorite character and how they move! 🎨  
+                </div>  
+            </div>
+
+            <div class="section">  
+                <h2 class="section-title">🪞 Mirror, Mirror - Playing Together! 🪞</h2>  
+                <div class="subsection">  
+                    <p style="font-size: 1.2em; text-align: center; margin-bottom: 20px;">  
+                        <strong>Mirroring</strong> means copying what your friend does, just like looking in a mirror!  
+                    </p>  
+                      
+                    <div class="character-grid">  
+                        <div class="activity-box">  
+                            <h3 style="font-size: 1.4em;">🎯 How to Be a Good Mirror:</h3>  
+                            <ol style="text-align: left; font-size: 1.1em; line-height: 1.8;">  
+                                <li><strong>👁️ Watch carefully</strong> - Look at your partner</li>  
+                                <li><strong>🤝 Copy gently</strong> - Do the same movements</li>  
+                                <li><strong>😊 Be kind</strong> - Help your friend learn</li>  
+                                <li><strong>🔄 Take turns</strong> - Everyone gets to be the leader!</li>  
+                            </ol>  
+                        </div>  
+                          
+                        <div class="activity-box">  
+                            <h3 style="font-size: 1.4em;">✨ Mirror Game Rules:</h3>  
+                            <ul style="text-align: left; font-size: 1.1em; line-height: 1.8;">  
+                                <li>Move slowly so your partner can follow</li>  
+                                <li>Use your whole body</li>  
+                                <li>Try different emotions</li>  
+                                <li>Have fun together!</li>  
+                            </ul>  
+                        </div>  
+                    </div>  
+                      
+                    <div style="text-align: center; margin-top: 20px;">  
+                        <a href="https://www.google.com/search?q=mirror+movement+games+kindergarten+activities" class="link-button" target="_blank">  
+                            🔍 Mirror Movement Games  
+                        </a>  
+                    </div>  
+                </div>  
+            </div>
+
+            <div class="section">  
+                <h2 class="section-title">😊 Showing Feelings With Your Body 💭</h2>  
+                <p style="text-align: center; font-size: 1.2em; margin-bottom: 25px;">  
+                    Your body is amazing at showing how you feel inside!  
+                </p>  
+                  
+                <table class="feelings-table">  
+                    <thead>  
+                        <tr>  
+                            <th>Feeling</th>  
+                            <th>How Your Body Shows It</th>  
+                            <th>Try This!</th>  
+                        </tr>  
+                    </thead>  
+                    <tbody>  
+                        <tr>  
+                            <td><strong>😊 Happy</strong></td>  
+                            <td>Big smile, arms up high, bouncy walk</td>  
+                            <td>Jump like you're celebrating!</td>  
+                        </tr>  
+                        <tr>  
+                            <td><strong>😢 Sad</strong></td>  
+                            <td>Frown, shoulders down, slow movements</td>  
+                            <td>Walk like you lost your toy</td>  
+                        </tr>  
+                        <tr>  
+                            <td><strong>😠 Angry</strong></td>  
+                            <td>Tight fists, stomping feet, frowny face</td>  
+                            <td>Stomp like a grumpy giant</td>  
+                        </tr>  
+                        <tr>  
+                            <td><strong>😴 Sleepy</strong></td>  
+                            <td>Yawning, droopy eyes, slow movements</td>  
+                            <td>Stretch like a sleepy cat</td>  
+                        </tr>  
+                        <tr>  
+                            <td><strong>😱 Surprised</strong></td>  
+                            <td>Wide eyes, mouth open, jump back</td>  
+                            <td>Act like you saw something amazing!</td>  
+                        </tr>  
+                    </tbody>  
+                </table>  
+                  
+                <div style="text-align: center; margin-top: 25px;">  
+                    <a href="https://www.ontario.ca/page/resources-early-years" class="link-button" target="_blank">  
+                        🏛️ Ontario Early Years Resources  
+                    </a>  
+                    <a href="https://www.google.com/search?q=emotions+body+language+children+pictures+kindergarten" class="link-button" target="_blank">  
+                        🔍 Emotions Body Language Pictures  
+                    </a>  
+                </div>  
+                  
+                <div class="drawing-space">  
+                    😊 Draw yourself showing different feelings! 😊  
+                </div>  
+            </div>
+
+            <div class="section">  
+                <h2 class="section-title">🎪 Your Personal Space Bubble 🫧</h2>  
+                <div class="subsection">  
+                    <p style="font-size: 1.2em; text-align: center; margin-bottom: 20px;">  
+                        When we move and play, everyone needs their own <strong>space bubble</strong>!  
+                    </p>  
+                      
+                    <div class="activity-box">  
+                        <h3 style="font-size: 1.4em;">🛡️ Space Bubble Rules:</h3>  
+                        <ul class="rules-list">  
+                            <li><strong>Stretch your arms out</strong> - that's your bubble!</li>  
+                            <li><strong>Stay in your bubble</strong> when moving</li>  
+                            <li><strong>Respect friends' bubbles</strong> - don't bump into them</li>  
+                            <li><strong>Move carefully</strong> so everyone stays safe</li>  
+                        </ul>  
+                    </div>  
+                      
+                    <div style="text-align: center; margin-top: 20px;">  
+                        <a href="https://www.google.com/search?q=personal+space+activities+kindergarten+classroom" class="link-button" target="_blank">  
+                            🔍 Personal Space Activities  
+                        </a>  
+                    </div>  
+                </div>  
+            </div>
+
+            <div class="section">  
+                <h2 class="section-title">🎭 Drama Elements We're Learning 🎭</h2>  
+                <div class="character-grid">  
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">👤 Character:</h3>  
+                        <p>The person or animal in our story</p>  
+                        <ul class="rules-list">  
+                            <li>How do they move?</li>  
+                            <li>What do they look like?</li>  
+                            <li>How do they feel?</li>  
+                        </ul>  
+                    </div>  
+                      
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">🏠 Setting:</h3>  
+                        <p>Where our story happens</p>  
+                        <ul class="rules-list">  
+                            <li>Are we in a forest? 🌲</li>  
+                            <li>At home? 🏠</li>  
+                            <li>In a castle? 🏰</li>  
+                        </ul>  
+                    </div>  
+                      
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">📚 Story:</h3>  
+                        <p>What happens in our tale</p>  
+                        <ul class="rules-list">  
+                            <li>Beginning, middle, end</li>  
+                            <li>Problems and solutions</li>  
+                            <li>Happy or sad moments</li>  
+                        </ul>  
+                    </div>  
+                </div>  
+                  
+                <div style="text-align: center; margin-top: 25px;">  
+                    <a href="https://www.nfb.ca/education" class="link-button" target="_blank">  
+                        🎬 National Film Board Resources  
+                    </a>  
+                    <a href="https://www.google.com/search?q=kindergarten+drama+elements+character+setting+activities" class="link-button" target="_blank">  
+                        🔍 Drama Elements Activities  
+                    </a>  
+                </div>  
+            </div>
+
+            <div class="section">  
+                <h2 class="section-title">🌈 Practice Activities You Can Do! 🌈</h2>  
+                <div class="character-grid">  
+                    <div class="activity-box">  
+                        <h3 style="font-size: 1.3em;">🎯 Activity 1: Emotion Statues</h3>  
+                        <ul style="text-align: left; line-height: 1.6;">  
+                            <li>Teacher calls out a feeling</li>  
+                            <li>Make your body show that feeling</li>  
+                            <li>Freeze like a statue!</li>  
+                            <li>Guess what friends are showing</li>  
+                        </ul>  
+                        <div class="drawing-space" style="height: 100px; margin-top: 15px;">  
+                            Draw your favorite emotion statue!  
+                        </div>  
+                    </div>  
+                      
+                    <div class="activity-box">  
+                        <h3 style="font-size: 1.3em;">🎯 Activity 2: Animal Parade</h3>  
+                        <ul style="text-align: left; line-height: 1.6;">  
+                            <li>Pick your favorite story animal</li>  
+                            <li>Move like that animal around the room</li>  
+                            <li>Make the sounds they make</li>  
+                            <li>Show how they feel</li>  
+                        </ul>  
+                        <div class="drawing-space" style="height: 100px; margin-top: 15px;">  
+                            Draw your animal character!  
+                        </div>  
+                    </div>  
+                      
+                    <div class="activity-box">  
+                        <h3 style="font-size: 1.3em;">🎯 Activity 3: Mirror Partners</h3>  
+                        <ul style="text-align: left; line-height: 1.6;">  
+                            <li>Find a friend to work with</li>  
+                            <li>Take turns being the leader</li>  
+                            <li>Copy each other's movements</li>  
+                            <li>Try different characters together</li>  
+                        </ul>  
+                        <div class="drawing-space" style="height: 100px; margin-top: 15px;">  
+                            Draw you and your partner!  
+                        </div>  
+                    </div>  
+                </div>  
+                  
+                <div style="text-align: center; margin-top: 25px;">  
+                    <a href="https://www.google.com/search?q=kindergarten+movement+activities+classroom+drama" class="link-button" target="_blank">  
+                        🔍 Classroom Movement Activities  
+                    </a>  
+                </div>  
+            </div>
+
+            <div class="section">  
+                <h2 class="section-title">⭐ Remember These Important Things! ⭐</h2>  
+                <div class="character-grid">  
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">🎪 When We Move Together:</h3>  
+                        <ul class="rules-list">  
+                            <li><strong>Be gentle</strong> with friends</li>  
+                            <li><strong>Watch carefully</strong> when others are moving</li>  
+                            <li><strong>Use kind words</strong> to help each other</li>  
+                            <li><strong>Take turns</strong> being the leader</li>  
+                            <li><strong>Have fun</strong> and be creative!</li>  
+                        </ul>  
+                    </div>  
+                      
+                    <div class="subsection">  
+                        <h3 style="font-size: 1.4em; text-align: center;">🏆 You're Doing Great When You:</h3>  
+                        <ul class="rules-list">  
+                            <li>Use your whole body to show characters</li>  
+                            <li>Help friends learn new movements</li>  
+                            <li>Stay in your own space</li>  
+                            <li>Show different feelings clearly</li>  
+                            <li>Work well with partners</li>  
+                        </ul>  
+                    </div>  
+                </div>  
+                  
+                <div style="text-align: center; margin-top: 20px;">  
+                    <a href="https://www.google.com/search?q=positive+reinforcement+movement+activities+kindergarten" class="link-button" target="_blank">  
+                        🔍 Positive Movement Activities  
+                    </a>  
+                </div>  
+            </div>
+
+            <div class="celebration">  
+                <h2 style="font-family: 'Fredoka One', cursive; font-size: 2.5em; margin-bottom: 20px; color: #333;">  
+                    🎉 Celebration Time! 🎉  
+                </h2>  
+                <p style="font-size: 1.3em; line-height: 1.6; color: #333; margin-bottom: 20px;">  
+                    <strong>Congratulations, amazing storytellers!</strong> You've learned how to use your body to tell wonderful stories. Remember:  
+                </p>  
+                <ul style="font-size: 1.2em; line-height: 1.8; color: #333; text-align: left; max-width: 600px; margin: 0 auto;">  
+                    <li>Your body is a powerful storytelling tool</li>  
+                    <li>Every movement can show a feeling or character</li>  
+                    <li>Working with friends makes stories even better</li>  
+                    <li>Practice makes you an even better storyteller!</li>  
+                </ul>  
+                <p style="font-size: 1.2em; margin-top: 25px; color: #333;">  
+                    Keep practicing your body storytelling at home and school. Soon you'll be able to tell any story just by moving!  
+                </p>  
+                  
+                <div style="margin-top: 30px;">  
+                    <a href="https://www.arts.on.ca/resources/early-years" class="link-button" target="_blank" style="color: #333; border-color: #333;">  
+                        🎭 Ontario Arts Council Resources  
+                    </a>  
+                    <a href="https://www.google.com/search?q=kindergarten+storytelling+celebration+activities+drama" class="link-button" target="_blank" style="color: #333; border-color: #333;">  
+                        🔍 Storytelling Celebration Activities  
+                    </a>  
+                </div>  
+                  
+                <div class="drawing-space" style="margin-top: 30px; border-color: #333; color: #333;">  
+                    🌟 Draw yourself as a master storyteller! 🌟  
+                </div>  
+            </div>  
+              
+            <div class="word-count">  
+                📊 Word Count: 847 words  
+            </div>  
+        </div>  
+    </div>  
+</body>  
+</html>  

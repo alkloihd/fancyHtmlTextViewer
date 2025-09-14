@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Logarithms ↔ Exponentials — Grade 12 Interactive Guide (Light)</title>
+  <style>
+    :root{
+      --bg:#f7faff; --paper:#ffffff; --panel:#f1f6ff; --ink:#1b2733; --muted:#4c6072;
+      --line:#dbe7f5; --accent:#2f7df4; --accent2:#00b3a4; --warn:#f59e0b; --bad:#e53935; --good:#14866d;
+      --radius:16px; --shadow:0 10px 28px rgba(22,44,88,.08);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:
+      radial-gradient(1200px 500px at 90% -5%, #e7f0ff 0%, transparent 60%),
+      linear-gradient(180deg,#f3f8ff,var(--bg) 60%,#f6fbff);
+      color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; line-height:1.35}
+    a{color:#1558d6; text-decoration:none}
+    header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.85));
+      backdrop-filter:blur(6px); border-bottom:1px solid var(--line); padding:14px 0}
+    .wrap{max-width:1160px; margin:0 auto; padding:0 16px}
+    h1{margin:0; font-size:clamp(22px,3.2vw,36px)}
+    .pill{display:inline-block; font-size:12px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:#4a6175; background:#fff; margin-left:8px}
+    .hero{margin:14px 0 18px; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px}
+    .section{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin:16px 0; box-shadow:var(--shadow)}
+    h2{font-size:clamp(18px,2.3vw,26px); margin:0 0 12px}
+    h3{margin:8px 0}
+    .muted{color:var(--muted)} .small{font-size:12px}
+    .grid{display:grid; gap:12px}
+    @media (min-width:900px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} }
+    .card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    button{background:linear-gradient(180deg,#7eb6ff,var(--accent)); color:#05132a; border:none; border-radius:12px; padding:9px 12px; font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(47,125,244,.18)}
+    button.ghost{background:#fff; color:#345; border:1px solid var(--line)}
+    button.teal{background:linear-gradient(180deg,#5fe5d9,var(--accent2)); color:#003b36; box-shadow:0 6px 18px rgba(0,179,164,.18)}
+    input[type="number"],input[type="text"]{background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 10px; width:140px}
+    code, .code{font-family:var(--mono)}
+    .out{background:#f8fbff; border:1px dashed var(--line); border-radius:12px; padding:10px; font-family:var(--mono)}
+    .ok{color:var(--good); font-weight:700} .warn{color:var(--warn); font-weight:700} .bad{color:var(--bad); font-weight:700}
+    table{width:100%; border-collapse:collapse; border:1px solid var(--line); background:#fff}
+    th,td{border:1px solid var(--line); padding:8px; text-align:left; font-size:14px}
+    footer{color:#6f8aa3; font-size:12px; padding:24px 0 60px}
+
+    /* Flip cards */
+    .flip{background:transparent; perspective:1000px; height:160px}
+    .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .55s ease}
+    .flip:hover .flip-inner,.flip:focus-within .flip-inner,.flip.active .flip-inner{transform:rotateY(180deg)}
+    .face{position:absolute; inset:0; padding:12px; border-radius:12px; border:1px solid var(--line); background:#fff; backface-visibility:hidden}
+    .back{transform:rotateY(180deg); background:#f7fbff}
+    .flip h4{margin:0 0 6px}
+    .tap{position:absolute; right:10px; bottom:8px; font-size:12px; opacity:.75}
+
+    /* Static graph SVG */
+    .svgwrap{background:#fff; border:1px solid var(--line); border-radius:12px; padding:10px}
+    .legend span{display:inline-flex; align-items:center; gap:6px; margin-right:12px; font-size:13px}
+    .box{width:12px; height:12px; display:inline-block; border-radius:3px}
+    .b1{background:#2f7df4} .b2{background:#00b3a4} .b3{background:#e67e22}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Logarithms ↔ Exponentials 📚<span class="pill">Grade 12 • Advanced Functions / Calculus</span><span class="pill">Light Theme • Single File</span></h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="muted">This guide keeps the full content you provided and adds reliable, no-library tools. Graph visualiser removed; instead a clean static example graph is drawn (base <code>b=2</code>). You still get: exp↔log converter, change-of-base support, flip-cards, Canadian applications (Richter & dB) with tiny calculators, practice checks, and quick references.</p>
+    <div class="row" style="margin-top:6px">
+      <button id="btnPrint" class="teal">🖨️ Print / Save as PDF</button>
+    </div>
+  </section>
+
+  <!-- Static example graph -->
+  <section class="section">
+    <h2>Static Graph Example (b = 2) — \(y=2^x\), \(y=\log_2 x\), and the mirror \(y=x\)</h2>
+    <div class="svgwrap">
+      <div class="legend small" style="margin-bottom:6px">
+        <span><span class="box b1"></span> \(y=2^x\)</span>
+        <span><span class="box b2"></span> \(y=\log_2 x\)</span>
+        <span><span class="box b3"></span> \(y=x\)</span>
+      </div>
+      <svg id="staticGraph" width="100%" height="360" viewBox="0 0 640 360" role="img" aria-label="Example graph of 2^x and log base 2 of x">
+        <!-- axes and grid will be drawn by JS once; not interactive -->
+      </svg>
+    </div>
+    <p class="small muted" style="margin-top:6px">Key features: exponential defined for all real x; logarithm only for x&gt;0; they reflect across <code>y=x</code>; asymptotes: <code>y=0</code> for \(2^x\) and <code>x=0</code> for \(\log_2 x\).</p>
+  </section>
+
+  <!-- Tools -->
+  <section class="section" id="tools">
+    <h2>Toolbox — Conversions & Quick Calcs</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Exponential → Logarithmic</h3>
+        <div class="row">
+          <label>Base b</label><input type="number" id="e_b" step="any" value="3"/>
+          <label>Exponent y</label><input type="number" id="e_y" step="any"/>
+          <label>Result x</label><input type="number" id="e_x" step="any" value="81"/>
+          <button id="e_compute">Compute</button>
+          <button class="ghost" id="e_clear">Clear</button>
+        </div>
+        <div class="small muted">Model: <span class="code">b^y = x</span> ⇒ <span class="code">log_b(x) = y</span></div>
+        <div id="e_out" class="out" style="margin-top:8px; min-height:64px"></div>
+      </div>
+
+      <div class="card">
+        <h3>Logarithmic → Exponential</h3>
+        <div class="row">
+          <label>Base b</label><input type="number" id="l_b" step="any" value="5"/>
+          <label>Argument x</label><input type="number" id="l_x" step="any" value="125"/>
+          <label>Value y</label><input type="number" id="l_y" step="any"/>
+          <button id="l_compute">Compute</button>
+          <button class="ghost" id="l_clear">Clear</button>
+        </div>
+        <div class="small muted">Model: <span class="code">log_b(x)=y</span> ⇒ <span class="code">b^y=x</span>, with <span class="code">x&gt;0</span>, <span class="code">b&gt;0</span>, <span class="code">b≠1</span>.</div>
+        <div id="l_out" class="out" style="margin-top:8px; min-height:64px"></div>
+      </div>
+
+      <div class="card">
+        <h3>Change of Base (quick)</h3>
+        <div class="row">
+          <label>b (base)</label><input type="number" id="cb_b" step="any" value="3"/>
+          <label>x (argument)</label><input type="number" id="cb_x" step="any" value="29"/>
+          <button class="teal" id="cb_go">Compute log<sub>b</sub>(x)</button>
+        </div>
+        <div id="cb_out" class="out" style="margin-top:8px"></div>
+        <div class="small muted">Uses <span class="code">log_b(x) = ln(x)/ln(b)</span>. Most calculators only have <span class="code">log</span> and <span class="code">ln</span>.</div>
+      </div>
+
+      <div class="card">
+        <h3>Mini Calcs — Canadian Applications</h3>
+        <div class="row">
+          <label>Richter: amplitude multiple (A/A₀)</label><input type="number" id="ri_mult" step="any" value="1000"/>
+          <button id="ri_go">Magnitude</button>
+        </div>
+        <div id="ri_out" class="out" style="margin-top:6px"></div>
+        <div class="row" style="margin-top:10px">
+          <label>dB: intensity ratio (I/I₀)</label><input type="number" id="db_ratio" step="any" value="1000"/>
+          <button id="db_go">Decibels</button>
+        </div>
+        <div id="db_out" class="out" style="margin-top:6px"></div>
+        <p class="small muted" style="margin-top:6px">
+          NRCan data: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Natural+Resources+Canada+earthquake+magnitude+scales">Natural Resources Canada earthquake magnitude scales ↗</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Flip cards: core -->
+  <section class="section" id="core">
+    <h2>Core Ideas — Flip for quick recall</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Definition</h4><p class="muted">“Log asks the exponent.”</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p><strong>Logarithm:</strong> <span class="code">log_b(x)=y</span> iff <span class="code">b^y=x</span>.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Change of base</h4><p class="muted"><span class="code">log_b(x)=ln(x)/ln(b)</span></p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Also <span class="code">log(x)/log(b)</span> on base-10 calculators.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Special cases</h4><p class="muted"><span class="code">log_b(1)=0</span>, <span class="code">log_b(b)=1</span></p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p><span class="code">log_b(b^x)=x</span>; domain for logs: <span class="code">x&gt;0</span>.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chaptered content (all original text elements preserved) -->
+  <section class="section" id="chap1">
+    <h2>Chapter 1: Understanding the Fundamental Relationship</h2>
+    <h3>What Are Logarithms? 🔍</h3>
+    <p>A logarithm is the inverse operation of exponentiation. Example: <span class="code">log₂(8)=3</span> because <span class="code">2³=8</span>.</p>
+    <div class="card">
+      <strong>Key Definition Box 📋</strong>
+      <p><em>Logarithm:</em> The logarithm of a number to a given base is the exponent to which the base must be raised to produce that number.</p>
+      <p><em>Mathematical Notation:</em> <span class="code">log_b(x)=y</span> iff <span class="code">b^y=x</span></p>
+    </div>
+    <h3>The Inverse Relationship Explained ⚖️</h3>
+    <p>Exponential and logarithmic functions “undo” each other, like addition vs subtraction.</p>
+    <div class="grid cols-3">
+      <div class="card"><div class="code">2³ = 8 ⟷ log₂(8) = 3</div></div>
+      <div class="card"><div class="code">5² = 25 ⟷ log₅(25) = 2</div></div>
+      <div class="card"><div class="code">10⁴ = 10,000 ⟷ log₁₀(10,000) = 4</div></div>
+    </div>
+    <p class="small muted">Explore more diagrams: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=logarithm+exponential+relationship+diagrams">Google Search ↗</a></p>
+  </section>
+
+  <section class="section" id="chap2">
+    <h2>Chapter 2: Step-by-Step Conversion Processes 🔄</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Exponential → Logarithmic</h3>
+        <ol>
+          <li>Identify base</li><li>Identify exponent</li><li>Identify result</li><li>Rewrite using log notation</li>
+        </ol>
+        <p><strong>Example:</strong> <span class="code">3⁴=81</span> → <span class="code">log₃(81)=4</span></p>
+        <p><strong>Example:</strong> <span class="code">7²=49</span> → <span class="code">log₇(49)=2</span></p>
+      </div>
+      <div class="card">
+        <h3>Logarithmic → Exponential</h3>
+        <ol>
+          <li>Identify base (subscript)</li><li>Identify argument</li><li>Identify log value</li><li>Rewrite using exponentials</li>
+        </ol>
+        <p><strong>Example:</strong> <span class="code">log₅(125)=3</span> → <span class="code">5³=125</span></p>
+        <p><strong>Example:</strong> <span class="code">log₂(64)=6</span> → <span class="code">2⁶=64</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="chap3">
+    <h2>Chapter 3: Evaluating Simple Logarithmic Expressions 🧮</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Mental Strategies</h3>
+        <p><strong>Perfect Power Recognition</strong></p>
+        <ul>
+          <li><span class="code">log₂(16)=4</span> since <span class="code">2⁴=16</span></li>
+          <li><span class="code">log₃(27)=3</span> since <span class="code">3³=27</span></li>
+        </ul>
+        <p><strong>Known Powers</strong></p>
+        <table>
+          <thead><tr><th>Base 2</th><th>Base 3</th><th>Base 10</th></tr></thead>
+          <tbody>
+            <tr><td>2¹=2</td><td>3¹=3</td><td>10¹=10</td></tr>
+            <tr><td>2²=4</td><td>3²=9</td><td>10²=100</td></tr>
+            <tr><td>2³=8</td><td>3³=27</td><td>10³=1,000</td></tr>
+            <tr><td>2⁴=16</td><td>3⁴=81</td><td>10⁴=10,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Technology-Assisted 💻</h3>
+        <p>For non-perfect powers, use change of base:</p>
+        <p class="code">log_b(x) = log(x)/log(b) = ln(x)/ln(b)</p>
+        <p class="small muted">Find calculator tips: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=scientific+calculator+logarithm+functions">Google Search ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="chap4">
+    <h2>Chapter 4: Canadian Real-World Applications 🇨🇦</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Earthquakes — Richter 🌍</h3>
+        <p>Magnitude <span class="code">M = log₁₀(A/A₀)</span>. Each integer step = tenfold amplitude.</p>
+        <p><em>Example:</em> Saguenay 1988 ≈ 5.9.</p>
+        <p><strong>Practice:</strong> If amplitude is 1,000×, <span class="code">M=3</span>.</p>
+      </div>
+      <div class="card">
+        <h3>Sound — Decibels 🔊</h3>
+        <p><span class="code">dB = 10·log₁₀(I/I₀)</span>.</p>
+        <ul class="small">
+          <li>Whisper ≈ 30 dB • Conversation ≈ 60 dB</li>
+          <li>Toronto traffic ≈ 80 dB • Rock concert ≈ 110 dB</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="chap5">
+    <h2>Chapter 5: Practice Problems with Solutions 📝</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <p><strong>1.</strong> Convert <span class="code">4³=64</span> to logarithmic form.</p>
+        <details><summary>Show solution</summary><p>log₄(64)=3</p></details>
+      </div>
+      <div class="card">
+        <p><strong>2.</strong> Convert <span class="code">log₆(36)=2</span> to exponential form.</p>
+        <details><summary>Show solution</summary><p>6²=36</p></details>
+      </div>
+      <div class="card">
+        <p><strong>3.</strong> Evaluate <span class="code">log₅(25)</span>.</p>
+        <details><summary>Show solution</summary><p>2 (since 5²=25)</p></details>
+      </div>
+      <div class="card">
+        <p><strong>4.</strong> If <span class="code">log₂(x)=5</span>, find <span class="code">x</span>.</p>
+        <details><summary>Show solution</summary><p>x=32 (2⁵)</p></details>
+      </div>
+      <div class="card">
+        <p><strong>5.</strong> Evaluate <span class="code">log₁₀(0.001)</span>.</p>
+        <details><summary>Show solution</summary><p>−3 (since 10⁻³=0.001)</p></details>
+      </div>
+      <div class="card">
+        <p><strong>6.</strong> A culture doubles every 3 h. 100 → 1,600: how many doublings?</p>
+        <details><summary>Show solution</summary><p>100·2ⁿ=1,600 ⇒ 2ⁿ=16=2⁴ ⇒ n=4 doublings</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="chap6">
+    <h2>Chapter 6: Visual Representation Charts 📊</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Key Features Comparison</h3>
+        <table>
+          <thead><tr><th>Feature</th><th>Exponential \(b^x\)</th><th>Logarithmic \(log_b x\)</th></tr></thead>
+          <tbody>
+            <tr><td>Domain</td><td>All real numbers</td><td>x &gt; 0</td></tr>
+            <tr><td>Range</td><td>y &gt; 0</td><td>All real numbers</td></tr>
+            <tr><td>Intercept</td><td>y-int (0,1)</td><td>x-int (1,0)</td></tr>
+            <tr><td>Asymptote</td><td>y = 0</td><td>x = 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Common Base Reference Chart 📈</h3>
+        <table>
+          <thead><tr><th>Base</th><th>Powers</th><th>Logs</th></tr></thead>
+          <tbody>
+            <tr><td>2</td><td>2, 4, 8, 16</td><td>1, 2, 3, 4</td></tr>
+            <tr><td>3</td><td>3, 9, 27, 81</td><td>1, 2, 3, 4</td></tr>
+            <tr><td>10</td><td>10, 100, 1,000</td><td>1, 2, 3</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="small muted">More visuals: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=inverse+function+mathematical+examples">Google Search ↗</a></p>
+  </section>
+
+  <section class="section" id="chap7">
+    <h2>Chapter 7: Quick Reference Section ⚡</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <strong>Essential Formulas 📐</strong>
+        <ul>
+          <li class="code">log_b(x)=y ⟺ b^y=x</li>
+          <li class="code">log_b(x)=log(x)/log(b)=ln(x)/ln(b)</li>
+        </ul>
+        <p><em>Special:</em> <span class="code">log_b(1)=0</span>, <span class="code">log_b(b)=1</span>, <span class="code">log_b(b^x)=x</span></p>
+      </div>
+      <div class="card">
+        <strong>Common Mistakes ⚠️</strong>
+        <ul>
+          <li>Confusing base and exponent</li>
+          <li>Ignoring domain <span class="code">(x&gt;0)</span></li>
+          <li>Calculator errors using change of base</li>
+        </ul>
+      </div>
+      <div class="card">
+        <strong>Memory Aids 🧠</strong>
+        <ul>
+          <li>“Log asks the question”</li>
+          <li>“Exponential gives the answer”</li>
+          <li>“Inverse operations undo”</li>
+        </ul>
+      </div>
+    </div>
+    <h3>Digital Resources 🌐</h3>
+    <ul>
+      <li><a target="_blank" rel="noopener" href="https://www.google.com/search?q=Khan+Academy+logarithm+tutorials">Khan Academy Logarithms Course ↗</a></li>
+      <li><a target="_blank" rel="noopener" href="https://www.google.com/search?q=Desmos+logarithmic+function+graphing">Desmos Graphing Calculator ↗</a></li>
+      <li><a target="_blank" rel="noopener" href="https://www.google.com/search?q=Ontario+Grade+12+Advanced+Functions+logarithms">Ontario Math Curriculum Resources ↗</a></li>
+    </ul>
+  </section>
+
+  <footer>Light theme; static example graph; dependable tools; complete original content preserved.</footer>
+</div>
+
+<script>
+  // ---- Utilities ----
+  const $ = s => document.querySelector(s);
+  const num = v => (v===''||v==null)?NaN:parseFloat(v);
+  const fmt = (n, d=6) => Number.isFinite(n) ? (+n).toFixed(d).replace(/\.?0+$/,'') : '—';
+  const validBase = b => b>0 && Math.abs(b-1)>1e-12;
+
+  // ---- Print ----
+  $('#btnPrint').onclick = () => window.print();
+
+  // ---- Converter: Exponential → Log ----
+  const e_b=$('#e_b'), e_y=$('#e_y'), e_x=$('#e_x'), e_out=$('#e_out');
+  $('#e_clear').onclick = ()=>{ e_y.value=''; e_out.textContent=''; };
+  $('#e_compute').onclick = ()=>{
+    let b=num(e_b.value), y=num(e_y.value), x=num(e_x.value);
+    if(!validBase(b)){ e_out.innerHTML=`<span class="bad">Base must be &gt;0 and ≠1.</span>`; return; }
+    const hasY=Number.isFinite(y), hasX=Number.isFinite(x);
+    if(hasY && !hasX){ x = Math.pow(b,y); e_x.value = fmt(x); }
+    else if(!hasY && hasX){
+      if(x<=0){ e_out.innerHTML=`<span class="bad">x must be &gt; 0.</span>`; return; }
+      y = Math.log(x)/Math.log(b); e_y.value = fmt(y);
+    } else if(!hasY && !hasX){ e_out.innerHTML=`<span class="warn">Provide at least two of (b,y,x).</span>`; return; }
+    else{
+      const lhs=Math.pow(b,y);
+      if(Math.abs(lhs-x)>1e-8){ e_out.innerHTML=`<span class="warn">Inconsistent: b^y=${fmt(lhs)} ≠ x=${fmt(x)}.</span>`; }
+    }
+    e_out.innerHTML = `<div><strong>Exponential:</strong> <span class="code">${fmt(b)}^${fmt(y)} = ${fmt(x)}</span></div>
+                       <div><strong>Logarithmic:</strong> <span class="code">log_${fmt(b)}(${fmt(x)}) = ${fmt(y)}</span></div>`;
+  };
+
+  // ---- Converter: Log → Exponential ----
+  const l_b=$('#l_b'), l_x=$('#l_x'), l_y=$('#l_y'), l_out=$('#l_out');
+  $('#l_clear').onclick = ()=>{ l_y.value=''; l_out.textContent=''; };
+  $('#l_compute').onclick = ()=>{
+    let b=num(l_b.value), x=num(l_x.value), y=num(l_y.value);
+    if(!validBase(b)){ l_out.innerHTML=`<span class="bad">Base must be &gt;0 and ≠1.</span>`; return; }
+    const hasX=Number.isFinite(x), hasY=Number.isFinite(y);
+    if(hasY && !hasX){ x = Math.pow(b,y); l_x.value = fmt(x); }
+    else if(!hasY && hasX){
+      if(x<=0){ l_out.innerHTML=`<span class="bad">Argument x must be &gt; 0.</span>`; return; }
+      y = Math.log(x)/Math.log(b); l_y.value = fmt(y);
+    } else if(!hasY && !hasX){ l_out.innerHTML=`<span class="warn">Provide at least two of (b,x,y).</span>`; return; }
+    else{
+      const lhs=Math.pow(b,y);
+      if(Math.abs(lhs-x)>1e-8){ l_out.innerHTML=`<span class="warn">Mismatch: b^y=${fmt(lhs)} ≠ x=${fmt(x)}.</span>`; }
+    }
+    l_out.innerHTML = `<div><strong>Logarithmic:</strong> <span class="code">log_${fmt(b)}(${fmt(x)}) = ${fmt(y)}</span></div>
+                       <div><strong>Exponential:</strong> <span class="code">${fmt(b)}^${fmt(y)} = ${fmt(x)}</span></div>`;
+  };
+
+  // ---- Change of base quick ----
+  $('#cb_go').onclick = ()=>{
+    const b=num($('#cb_b').value), x=num($('#cb_x').value);
+    const out=$('#cb_out');
+    if(!validBase(b)){ out.innerHTML=`<span class="bad">Base must be &gt;0 and ≠1.</span>`; return; }
+    if(!(x>0)){ out.innerHTML=`<span class="bad">x must be &gt; 0.</span>`; return; }
+    const v = Math.log(x)/Math.log(b);
+    out.innerHTML = `<strong>Result:</strong> <span class="code">log_${fmt(b)}(${fmt(x)}) = ${fmt(v,8)}</span>`;
+  };
+
+  // ---- Mini calcs ----
+  $('#ri_go').onclick = ()=>{
+    const mult = num($('#ri_mult').value);
+    const out = $('#ri_out');
+    if(!(mult>0)){ out.innerHTML=`<span class="bad">Amplitude multiple must be &gt; 0.</span>`; return; }
+    const M = Math.log10 ? Math.log10(mult) : Math.log(mult)/Math.log(10);
+    out.innerHTML = `Magnitude M = <span class="code">${fmt(M,6)}</span>`;
+  };
+  $('#db_go').onclick = ()=>{
+    const ratio = num($('#db_ratio').value);
+    const out = $('#db_out');
+    if(!(ratio>0)){ out.innerHTML=`<span class="bad">Intensity ratio must be &gt; 0.</span>`; return; }
+    const dB = 10 * (Math.log10 ? Math.log10(ratio) : Math.log(ratio)/Math.log(10));
+    out.innerHTML = `dB = <span class="code">${fmt(dB,6)}</span>`;
+  };
+
+  // ---- Static example graph (b=2). Not interactive. ----
+  (function drawStatic(){
+    const svg = $('#staticGraph');
+    const W=640, H=360;
+    const XMIN=-4, XMAX=4, YMIN=-4, YMAX=4;
+    const toX = x => (x - XMIN)/(XMAX - XMIN) * W;
+    const toY = y => H - (y - YMIN)/(YMAX - YMIN) * H;
+
+    // Background & grid
+    const grid = document.createElementNS('http://www.w3.org/2000/svg','g');
+    for(let x=Math.ceil(XMIN); x<=XMAX; x++){
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', toX(x)); line.setAttribute('x2', toX(x));
+      line.setAttribute('y1', 0); line.setAttribute('y2', H);
+      line.setAttribute('stroke', x===0 ? '#a7b9d5' : '#e9f0fb'); line.setAttribute('stroke-width', x===0 ? '1.5':'1');
+      grid.appendChild(line);
+    }
+    for(let y=Math.ceil(YMIN); y<=YMAX; y++){
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('y1', toY(y)); line.setAttribute('y2', toY(y));
+      line.setAttribute('x1', 0); line.setAttribute('x2', W);
+      line.setAttribute('stroke', y===0 ? '#a7b9d5' : '#e9f0fb'); line.setAttribute('stroke-width', y===0 ? '1.5':'1');
+      grid.appendChild(line);
+    }
+    svg.appendChild(grid);
+
+    // y = x
+    const diag = document.createElementNS('http://www.w3.org/2000/svg','line');
+    diag.setAttribute('x1', toX(XMIN)); diag.setAttribute('y1', toY(XMIN));
+    diag.setAttribute('x2', toX(XMAX)); diag.setAttribute('y2', toY(XMAX));
+    diag.setAttribute('stroke', '#e67e22'); diag.setAttribute('stroke-width', '2');
+    svg.appendChild(diag);
+
+    // y = 2^x
+    let d1 = '';
+    for(let i=0;i<=800;i++){
+      const x = XMIN + (XMAX - XMIN)*i/800;
+      const y = Math.pow(2, x);
+      const X = toX(x), Y = toY(y);
+      d1 += (i===0?`M ${X} ${Y}`:` L ${X} ${Y}`);
+    }
+    const p1 = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p1.setAttribute('d', d1); p1.setAttribute('fill','none'); p1.setAttribute('stroke','#2f7df4'); p1.setAttribute('stroke-width','2.2');
+    svg.appendChild(p1);
+
+    // y = log_2(x)
+    let d2 = '';
+    for(let i=0;i<=800;i++){
+      const x = 1e-4 + (XMAX-1e-4)*i/800;
+      const y = Math.log(x)/Math.log(2);
+      const X = toX(x), Y = toY(y);
+      d2 += (i===0?`M ${X} ${Y}`:` L ${X} ${Y}`);
+    }
+    const p2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p2.setAttribute('d', d2); p2.setAttribute('fill','none'); p2.setAttribute('stroke','#00b3a4'); p2.setAttribute('stroke-width','2.2');
+    svg.appendChild(p2);
+
+    // Vertical asymptote x=0 (for log)
+    const asy = document.createElementNS('http://www.w3.org/2000/svg','line');
+    asy.setAttribute('x1', toX(0)); asy.setAttribute('x2', toX(0));
+    asy.setAttribute('y1', 0); asy.setAttribute('y2', H);
+    asy.setAttribute('stroke', '#c9d9ef'); asy.setAttribute('stroke-dasharray', '6 6'); asy.setAttribute('stroke-width', '1.2');
+    svg.appendChild(asy);
+
+    // Labels
+    const label = (txt, x, y) => {
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('fill', '#4c6072'); t.setAttribute('font-size', '12');
+      t.textContent = txt; svg.appendChild(t);
+    };
+    label('x', W-14, toY(0)-6); label('y', toX(0)+6, 14);
+  })();
+
+  // ---- Flip cards tap support ----
+  document.querySelectorAll('.flip').forEach(card=>{
+    card.addEventListener('click', e=>{
+      if(window.getSelection && String(window.getSelection())!=='') return;
+      card.classList.toggle('active');
+    });
+  });
+</script>
+</body>
+</html>

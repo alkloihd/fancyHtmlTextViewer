@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Animal Movement Adventure — Grade 2 Life Systems (Interactive)</title>
+  <style>
+    :root{
+      /* bright, kid-friendly palette */
+      --sky:#fef8ff;
+      --paper:#ffffff;
+      --panel:#fff4e3;
+      --ink:#213547;
+      --muted:#546e7a;
+      --line:#e6ecf2;
+
+      --pink:#ff87b7;
+      --orange:#ffb84d;
+      --leaf:#2ecc71;
+      --blue:#5ab0ff;
+      --purple:#a48bff;
+
+      --good:#22a06b;
+      --warn:#ff9f1c;
+      --bad:#e04646;
+
+      --radius:18px;
+      --shadow:0 12px 28px rgba(33,53,71,.12);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0; padding:0;
+      background:
+        radial-gradient(1200px 500px at 90% -10%, #e4f4ff 0%, transparent 60%),
+        radial-gradient(1200px 600px at -10% 0%, #ffe9f4 0%, transparent 55%),
+        linear-gradient(180deg,#fffafc,var(--sky) 60%, #f9fdff);
+      color:var(--ink);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      line-height:1.35;
+    }
+    a{color:#0a66c2;text-decoration:none}
+    header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+      border-bottom:1px solid var(--line);
+      backdrop-filter: blur(6px);
+      padding:14px 0;
+    }
+    .wrap{max-width:1180px; margin:0 auto; padding:0 16px}
+    h1{margin:0; font-size:clamp(22px,3.5vw,38px)}
+    .pill{display:inline-block; font-size:12px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; color:#546e7a; margin-left:8px}
+
+    .hero{margin:14px 0 18px; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px}
+    .section{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin:16px 0; box-shadow:var(--shadow)}
+    h2{font-size:clamp(18px,2.4vw,26px); margin:0 0 10px}
+    h3{margin:8px 0}
+    .muted{color:var(--muted)} .small{font-size:12px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .grid{display:grid; gap:12px}
+    @media (min-width:900px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} }
+
+    .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px}
+    .badge{display:inline-block; padding:4px 8px; border-radius:10px; background:#fff; border:1px solid var(--line); font-size:12px}
+    .btn{
+      background: linear-gradient(180deg,#ffd59b, var(--orange));
+      color:#4a3000; border:none; border-radius:14px; padding:10px 14px; font-weight:800; cursor:pointer;
+      box-shadow: 0 8px 20px rgba(255,184,77,.28);
+    }
+    .btn.pink{ background: linear-gradient(180deg,#ffb5d3,var(--pink)); color:#4a1430; box-shadow:0 8px 20px rgba(255,135,183,.28)}
+    .btn.blue{ background: linear-gradient(180deg,#a8d7ff,var(--blue)); color:#06243d; box-shadow:0 8px 20px rgba(90,176,255,.28)}
+    .btn.leaf{ background: linear-gradient(180deg,#b7efcf,var(--leaf)); color:#063019; box-shadow:0 8px 20px rgba(46,204,113,.28)}
+    .btn.ghost{background:#fff; color:#345; border:1px solid var(--line)}
+    label{font-size:13px; color:#355667}
+    input[type="number"], input[type="text"]{
+      background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 10px; width:140px
+    }
+    textarea{width:100%; min-height:100px; padding:10px; border:1px solid var(--line); border-radius:12px; resize:vertical}
+    .hint{font-size:12px; color:var(--muted)}
+    .ok{color:var(--good); font-weight:800}
+    .warn{color:var(--warn); font-weight:800}
+    .bad{color:var(--bad); font-weight:800}
+    .out{background:#fbfdff; border:1px dashed var(--line); border-radius:12px; padding:10px; font-family:var(--mono)}
+
+    /* Flip-cards (vocab) */
+    .flip{background:transparent; perspective:1000px; height:150px}
+    .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .55s ease}
+    .flip:hover .flip-inner, .flip:focus-within .flip-inner, .flip.active .flip-inner{ transform: rotateY(180deg) }
+    .face{position:absolute; inset:0; padding:12px; border-radius:12px; border:1px solid var(--line); background:#fff; backface-visibility:hidden}
+    .back{transform:rotateY(180deg); background:#f7fbff}
+    .flip h4{margin:0 0 6px}
+    .tap{position:absolute; right:10px; bottom:8px; font-size:12px; opacity:.75}
+
+    /* Canvas pad */
+    #mapWrap{display:grid; gap:10px}
+    #map{ background:#fefefe; border:2px solid var(--line); border-radius:14px; box-shadow: inset 0 0 0 6px #ffffff; touch-action:none }
+    .tool{display:inline-flex; align-items:center; gap:6px; background:#fff; border:1px solid var(--line); border-radius:999px; padding:6px 10px}
+
+    /* Sequencer (drag & drop + click-add) */
+    .palette, .program {display:flex; flex-wrap:wrap; gap:8px; min-height:48px}
+    .tile{
+      background:#fff; border:2px dashed #e7eef8; border-radius:12px; padding:8px 10px; font-weight:700; cursor:grab;
+      display:inline-flex; align-items:center; gap:6px;
+    }
+    .tile:active{cursor:grabbing}
+    .prog-slot{min-height:54px; background:#fff; border:2px dashed #d9e7f5; border-radius:12px; padding:8px}
+    .tile.small{font-size:13px}
+    .prog-controls{display:flex; gap:8px; flex-wrap:wrap}
+    .ghost-drag{opacity:.6}
+    .selected{outline:3px solid #b9e6ff; border-color:#b9e6ff!important}
+
+    /* Quiz radio */
+    .qcard{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px}
+    .qcard label{display:flex; gap:8px; align-items:flex-start; margin:4px 0}
+    .q{font-weight:800; margin-bottom:6px}
+
+    /* Print */
+    @media print{
+      header .row .btn{display:none}
+      .flip:hover .flip-inner{transform:none}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🌲 Animal Movement Adventure
+      <span class="pill">Grade 2 • Science + Language + Math</span>
+      <span class="pill">Student-facing • Works Offline</span>
+    </h1>
+    <div class="row" style="margin-top:8px">
+      <button class="btn leaf" id="btnPrint">🖨️ Print / Save as PDF</button>
+      <button class="btn blue" id="btnSavePNG">🖼️ Save Map as PNG</button>
+      <span class="hint">Use this page to read, plan, draw, and write your movement story!</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- How to use -->
+  <section class="hero">
+    <p><strong>Welcome, Animal Explorer!</strong> Choose an animal friend and help them find the way home using <em>quarter-turns</em> and <em>half-turns</em>. Draw on the map, build a movement plan, and write your story.</p>
+    <ul style="margin:8px 0 0">
+      <li>Read each section carefully</li>
+      <li>Choose your path by following your animal’s emoji</li>
+      <li>Draw the path on the map space</li>
+      <li>Use words like “half-turn” and “quarter-turn” to describe movements</li>
+    </ul>
+  </section>
+
+  <!-- Choose Animal -->
+  <section class="section" id="choose">
+    <h2>Choose Your Animal Friend</h2>
+    <div class="grid cols-3">
+      <button class="card btn pink" data-animal="rabbit">🐰 Hoppy the Rabbit</button>
+      <button class="card btn blue" data-animal="fox">🦊 Fox the Explorer</button>
+      <button class="card btn leaf" data-animal="frog">🐸 Leap the Frog</button>
+    </div>
+    <div id="chosenOut" class="hint" style="margin-top:8px">No animal chosen yet.</div>
+  </section>
+
+  <!-- Map + Tools -->
+  <section class="section" id="mapsec">
+    <h2>Map Space — Draw and Explore</h2>
+    <div id="mapWrap" class="grid cols-2">
+      <div class="card">
+        <canvas id="map" width="600" height="420" aria-label="Grid map for drawing and path animation"></canvas>
+        <div class="row" style="margin-top:8px">
+          <div class="tool"><label>Brush</label>
+            <button class="btn ghost" data-brush="2">Thin</button>
+            <button class="btn ghost" data-brush="5">Medium</button>
+            <button class="btn ghost" data-brush="9">Thick</button>
+          </div>
+          <div class="tool"><label>Colour</label>
+            <button class="btn ghost" data-col="#333">⬤</button>
+            <button class="btn ghost" data-col="#ff477e">⬤</button>
+            <button class="btn ghost" data-col="#00a6fb">⬤</button>
+            <button class="btn ghost" data-col="#2ecc71">⬤</button>
+            <button class="btn ghost" data-col="#8e44ad">⬤</button>
+          </div>
+          <button class="btn" id="btnClear">🧽 Clear Map</button>
+        </div>
+        <p class="small muted" style="margin-top:6px">Tip: On a tablet, draw with your finger. On a laptop, click and drag.</p>
+      </div>
+
+      <div class="card">
+        <h3>Story Steps (Auto-Path)</h3>
+        <p class="muted small">You can press the buttons to animate the path for your chosen animal, or draw it yourself.</p>
+
+        <div id="storyStart" class="out" style="margin-bottom:8px"></div>
+
+        <div id="middleBox" class="card" style="background:#fff9f1">
+          <strong>🌿 Middle of the Journey</strong>
+          <p class="small muted">Choose one:</p>
+          <div id="middleChoices" class="row"></div>
+          <div class="row" style="margin-top:6px">
+            <label class="hint">Spaces to move</label>
+            <input type="number" id="midSpaces" min="1" max="6" step="1" value="2" />
+            <button class="btn blue" id="btnRunMiddle">Run Middle Step</button>
+          </div>
+          <p class="small muted">Pictures: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=cartoon+forest+path+for+children">cartoon forest path for children ↗</a></p>
+        </div>
+
+        <div id="storyEnd" class="out" style="margin-top:8px"></div>
+
+        <div class="row" style="margin-top:8px">
+          <button class="btn pink" id="btnRunStart">▶️ Run Starting Step</button>
+          <button class="btn leaf" id="btnRunFinal">🏡 Run Final Step</button>
+          <button class="btn blue" id="btnRunAll">✨ Run All</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sequencer (Build Your Own Path) -->
+  <section class="section" id="seq">
+    <h2>🌟 Movement Challenge — Build Your Own Path</h2>
+    <p class="muted">Drag tiles into the program (or click them) to make instructions. Then press “Run Plan” to draw on the map.</p>
+    <div class="card">
+      <div class="badge">Instruction Tiles</div>
+      <div class="palette" id="palette">
+        <div class="tile" draggable="true" data-cmd="QL">↺ Quarter-turn Left</div>
+        <div class="tile" draggable="true" data-cmd="QR">↻ Quarter-turn Right</div>
+        <div class="tile" draggable="true" data-cmd="H">⇆ Half-turn</div>
+        <div class="tile small" draggable="true" data-cmd="F1">↑ Move 1</div>
+        <div class="tile small" draggable="true" data-cmd="F2">↑↑ Move 2</div>
+        <div class="tile small" draggable="true" data-cmd="F3">↑↑↑ Move 3</div>
+      </div>
+      <div class="badge" style="margin-top:8px">Your Program</div>
+      <div class="prog-slot program" id="program" aria-label="Drop instructions here"></div>
+      <div class="prog-controls" style="margin-top:8px">
+        <button class="btn blue" id="btnRunProg">▶️ Run Plan</button>
+        <button class="btn ghost" id="btnStepProg">⏭️ Step</button>
+        <button class="btn ghost" id="btnClearProg">🗑️ Clear Plan</button>
+        <span class="hint">Start at the clearing (centre). Each “Move N” goes N spaces forward.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Writing Scaffold -->
+  <section class="section" id="write">
+    <h2>📝 Write Your Movement Story</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <p><strong>Use these sentence starters:</strong></p>
+        <ul>
+          <li>I chose <em>(rabbit/fox/frog)</em>.</li>
+          <li>First, I made a <em>quarter-turn/half-turn</em> and moved <em>__</em> spaces.</li>
+          <li>Then, I turned <em>left/right</em> and moved <em>__</em> spaces.</li>
+          <li>Finally, I reached the <em>burrow/den/lily pad</em>!</li>
+        </ul>
+        <textarea id="storyText" placeholder="Write your directions here..."></textarea>
+        <div class="row" style="margin-top:6px">
+          <button class="btn leaf" id="btnCopyStory">📋 Copy Text</button>
+          <span id="copyMsg" class="hint"></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="qcard">
+          <div class="q">Quick Check: A <em>quarter-turn</em> means turning…</div>
+          <label><input type="radio" name="qturn" value="a"> all the way around</label>
+          <label><input type="radio" name="qturn" value="b"> halfway around</label>
+          <label><input type="radio" name="qturn" value="c"> a small turn (like pointing to 3 on a clock)</label>
+          <button class="btn ghost" id="btnCheckQ">Check</button>
+          <div id="qResult" class="small" style="margin-top:6px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vocabulary (flip) -->
+  <section class="section" id="vocab">
+    <h2>📚 Animal Movement Words (Flip the cards)</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Hop</h4><p class="muted">Both feet jump</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Moving by jumping with both feet.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Trot</h4><p class="muted">Steady steps</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Moving at a steady pace.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Leap</h4><p class="muted">Big jump</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Making big jumps.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Quarter-turn</h4><p class="muted">Small turn</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Turn 90° (like pointing to 3 on a clock).</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Half-turn</h4><p class="muted">Halfway</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Turn 180° (like pointing to 6 on a clock).</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resource links -->
+  <section class="section" id="links">
+    <h2>🔍 Digital Resources</h2>
+    <ul>
+      <li>Animal Movement Videos: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=National+Geographic+Kids+animal+movements">National Geographic Kids — Animal Movements ↗</a></li>
+      <li>Forest Animals Guide: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Canadian+Wildlife+Federation+forest+animals">Canadian Wildlife Federation — Forest Animals ↗</a></li>
+      <li>Movement Games: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=PBS+Kids+animal+movement+activities">PBS Kids — Animal Movement Activities ↗</a></li>
+    </ul>
+  </section>
+
+  <footer class="wrap" style="color:#6b7f8c; font-size:12px; padding:26px 0 60px">
+    Built for Grade 2: bright theme, simple tools, dependable interactions. All content integrated from the story.
+  </footer>
+</div>
+
+<script>
+/* ===========================
+   PRINT / SAVE MAP
+=========================== */
+const btnPrint = document.getElementById('btnPrint');
+const btnSave = document.getElementById('btnSavePNG');
+btnPrint.onclick = () => window.print();
+btnSave.onclick = () => {
+  const link = document.createElement('a');
+  link.download = 'animal-adventure-map.png';
+  link.href = map.toDataURL('image/png');
+  link.click();
+};
+
+/* ===========================
+   MAP CANVAS (grid + draw)
+=========================== */
+const map = document.getElementById('map');
+const ctx = map.getContext('2d');
+const GRID_COLS = 12, GRID_ROWS = 8;
+let CELL = Math.floor(Math.min(map.width/GRID_COLS, map.height/GRID_ROWS));
+let originX = Math.floor((map.width - GRID_COLS*CELL)/2);
+let originY = Math.floor((map.height - GRID_ROWS*CELL)/2);
+
+function drawGrid(){
+  ctx.clearRect(0,0,map.width,map.height);
+  // background
+  const g = ctx.createLinearGradient(0,0,0,map.height);
+  g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#f9fcff');
+  ctx.fillStyle=g; ctx.fillRect(0,0,map.width,map.height);
+
+  // grid
+  ctx.lineWidth=1;
+  for(let c=0;c<=GRID_COLS;c++){
+    ctx.strokeStyle = c===Math.floor(GRID_COLS/2) ? '#b3c8df' : '#e8f0f6';
+    ctx.beginPath();
+    ctx.moveTo(originX + c*CELL, originY);
+    ctx.lineTo(originX + c*CELL, originY + GRID_ROWS*CELL);
+    ctx.stroke();
+  }
+  for(let r=0;r<=GRID_ROWS;r++){
+    ctx.strokeStyle = r===Math.floor(GRID_ROWS/2) ? '#b3c8df' : '#e8f0f6';
+    ctx.beginPath();
+    ctx.moveTo(originX, originY + r*CELL);
+    ctx.lineTo(originX + GRID_COLS*CELL, originY + r*CELL);
+    ctx.stroke();
+  }
+
+  // centre clearing
+  const cx = originX + Math.floor(GRID_COLS/2)*CELL;
+  const cy = originY + Math.floor(GRID_ROWS/2)*CELL;
+  ctx.fillStyle = 'rgba(255,184,77,.18)'; // orange glow
+  ctx.fillRect(cx, cy, CELL, CELL);
+  ctx.strokeStyle = '#ffb84d'; ctx.lineWidth=2;
+  ctx.strokeRect(cx+2, cy+2, CELL-4, CELL-4);
+
+  // landmarks (just for fun visuals)
+  drawEmojiCell(2,1,'🍓'); // berry bush
+  drawEmojiCell(9,2,'🪵'); // log
+  drawEmojiCell(3,6,'💧'); // pond
+  drawEmojiCell(1,7,'🕳️'); // burrow
+  drawEmojiCell(10,7,'🏚️'); // den
+  drawEmojiCell(6,0,'🌿'); // lily pad
+}
+
+function drawEmojiCell(col,row,emoji){
+  ctx.font = `${Math.floor(CELL*0.8)}px serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline='middle';
+  const x = originX + col*CELL + CELL/2;
+  const y = originY + row*CELL + CELL/2;
+  ctx.fillText(emoji, x, y+2);
+}
+drawGrid();
+
+// free draw tools
+let brush = 5, color = '#333', drawing=false, last=null;
+document.querySelectorAll('[data-brush]').forEach(b=>b.onclick=()=>brush=parseInt(b.dataset.brush));
+document.querySelectorAll('[data-col]').forEach(b=>b.onclick=()=>color=b.dataset.col);
+document.getElementById('btnClear').onclick = ()=>{ drawGrid(); };
+
+function canvasPos(e){
+  const rect = map.getBoundingClientRect();
+  const x = (e.touches?e.touches[0].clientX:e.clientX) - rect.left;
+  const y = (e.touches?e.touches[0].clientY:e.clientY) - rect.top;
+  return {x,y};
+}
+function startDraw(e){ drawing=true; last=canvasPos(e); }
+function moveDraw(e){
+  if(!drawing) return;
+  const p = canvasPos(e);
+  ctx.strokeStyle=color; ctx.lineWidth=brush; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke();
+  last=p; e.preventDefault();
+}
+function endDraw(){ drawing=false; }
+
+map.addEventListener('mousedown', startDraw);
+map.addEventListener('mousemove', moveDraw);
+window.addEventListener('mouseup', endDraw);
+map.addEventListener('touchstart', startDraw, {passive:false});
+map.addEventListener('touchmove', moveDraw, {passive:false});
+map.addEventListener('touchend', endDraw);
+
+/* ===========================
+   ANIMAL + STORY STEPS
+=========================== */
+const chosenOut = document.getElementById('chosenOut');
+let animal = null;
+
+const animals = {
+  rabbit: {
+    name:'Hoppy the Rabbit', emoji:'🐰', color:'#ff477e',
+    startText: 'Make a quarter-turn right and hop 3 spaces to the berry bush.',
+    startOps: ['QR','F3'],
+    middle: [
+      {id:'r1', label:'Half-turn to the carrot patch', ops:(n)=>['H',`F${n}`]},
+      {id:'r2', label:'Quarter-turn right to tall grass', ops:(n)=>['QR',`F${n}`]}
+    ],
+    finalText: 'Make two quarter-turns right, then hop 3 spaces to the burrow.',
+    finalOps: ['QR','QR','F3']
+  },
+  fox: {
+    name:'Fox the Explorer', emoji:'🦊', color:'#00a6fb',
+    startText: 'Make a half-turn and trot 4 spaces to the fallen log.',
+    startOps: ['H','F4'],
+    middle: [
+      {id:'f1', label:'Quarter-turn left to the rocky path', ops:(n)=>['QL',`F${n}`]},
+      {id:'f2', label:'Half-turn to the shady trees', ops:(n)=>['H',`F${n}`]}
+    ],
+    finalText: 'Make one half-turn, then walk 5 spaces to the den.',
+    finalOps: ['H','F5']
+  },
+  frog: {
+    name:'Leap the Frog', emoji:'🐸', color:'#2ecc71',
+    startText: 'Make a quarter-turn left and jump 2 spaces to the pond.',
+    startOps: ['QL','F2'],
+    middle: [
+      {id:'g1', label:'Quarter-turn right to the lily pads', ops:(n)=>['QR',`F${n}`]},
+      {id:'g2', label:'Half-turn to the muddy bank', ops:(n)=>['H',`F${n}`]}
+    ],
+    finalText: 'Make three quarter-turns left, then jump 2 spaces to the lily pad.',
+    finalOps: ['QL','QL','QL','F2']
+  }
+};
+
+document.querySelectorAll('#choose button[data-animal]').forEach(btn=>{
+  btn.onclick = ()=>{
+    animal = animals[btn.dataset.animal];
+    chosenOut.textContent = `${animal.emoji} You chose ${animal.name}.`;
+    storyStart.textContent = `${animal.emoji} Start: ${animal.startText}`;
+    storyEnd.textContent = `${animal.emoji} Final: ${animal.finalText}`;
+    renderMiddleChoices();
+    resetRunner();
+    drawGrid();
+  };
+});
+
+const storyStart = document.getElementById('storyStart');
+const storyEnd   = document.getElementById('storyEnd');
+const middleChoices = document.getElementById('middleChoices');
+const midSpaces = document.getElementById('midSpaces');
+
+function renderMiddleChoices(){
+  middleChoices.innerHTML = '';
+  if(!animal) return;
+  animal.middle.forEach(m=>{
+    const b=document.createElement('button');
+    b.className='btn ghost';
+    b.textContent = m.label;
+    b.dataset.choice = m.id;
+    b.onclick = ()=>{
+      document.querySelectorAll('#middleChoices .btn').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+      chosenMiddle = m;
+    };
+    middleChoices.appendChild(b);
+  });
+}
+
+/* ===========================
+   PATH RUNNER (grid-based)
+=========================== */
+let pose = {col:Math.floor(GRID_COLS/2), row:Math.floor(GRID_ROWS/2), dir:0}; // 0=N, 1=E, 2=S, 3=W
+let penColor = '#333';
+let chosenMiddle = null;
+function resetRunner(){
+  pose = {col:Math.floor(GRID_COLS/2), row:Math.floor(GRID_ROWS/2), dir:0};
+  penColor = animal? animal.color : '#333';
+}
+function centreOf(col,row){
+  return {
+    x: originX + col*CELL + CELL/2,
+    y: originY + row*CELL + CELL/2
+  };
+}
+function turn(op){
+  if(op==='QL'){ pose.dir = (pose.dir+3)%4; }
+  if(op==='QR'){ pose.dir = (pose.dir+1)%4; }
+  if(op==='H' ){ pose.dir = (pose.dir+2)%4; }
+}
+function stepForward(){
+  const before = {...pose};
+  if(pose.dir===0) pose.row = Math.max(0, pose.row-1);
+  if(pose.dir===1) pose.col = Math.min(GRID_COLS-1, pose.col+1);
+  if(pose.dir===2) pose.row = Math.min(GRID_ROWS-1, pose.row+1);
+  if(pose.dir===3) pose.col = Math.max(0, pose.col-1);
+  const a = centreOf(before.col,before.row);
+  const b = centreOf(pose.col,pose.row);
+  ctx.strokeStyle = penColor; ctx.lineWidth=4; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+}
+async function runOps(ops){
+  for(const op of ops){
+    if(op==='QL' || op==='QR' || op==='H'){ turn(op); await delay(200); continue; }
+    if(op.startsWith('F')){
+      const n = parseInt(op.slice(1),10);
+      for(let i=0;i<n;i++){ stepForward(); await delay(150); }
+    }
+  }
+}
+function delay(ms){ return new Promise(res=>setTimeout(res,ms)); }
+
+document.getElementById('btnRunStart').onclick = async ()=>{
+  if(!animal){ alert('Choose an animal first.'); return; }
+  await runOps(animal.startOps);
+};
+document.getElementById('btnRunMiddle').onclick = async ()=>{
+  if(!animal){ alert('Choose an animal first.'); return; }
+  if(!chosenMiddle){ alert('Choose a middle path option.'); return; }
+  const spaces = Math.max(1, Math.min(6, parseInt(midSpaces.value||'2',10)));
+  await runOps(chosenMiddle.ops(spaces));
+};
+document.getElementById('btnRunFinal').onclick = async ()=>{
+  if(!animal){ alert('Choose an animal first.'); return; }
+  await runOps(animal.finalOps);
+};
+document.getElementById('btnRunAll').onclick = async ()=>{
+  if(!animal){ alert('Choose an animal first.'); return; }
+  drawGrid(); resetRunner();
+  await runOps(animal.startOps);
+  const spaces = Math.max(1, Math.min(6, parseInt(midSpaces.value||'2',10)));
+  if(!chosenMiddle){ chosenMiddle = animal.middle[0]; }
+  await runOps(chosenMiddle.ops(spaces));
+  await runOps(animal.finalOps);
+};
+
+/* ===========================
+   SEQUENCER (drag, tap-add)
+=========================== */
+const palette = document.getElementById('palette');
+const program = document.getElementById('program');
+let draggingId = null;
+
+// palette tiles click to clone
+palette.addEventListener('click', (e)=>{
+  const t = e.target.closest('.tile'); if(!t) return;
+  addTileToProgram(t.dataset.cmd, t.textContent);
+});
+
+// allow drag from palette to program
+palette.addEventListener('dragstart', (e)=>{
+  const t = e.target.closest('.tile'); if(!t) return;
+  draggingId = t.dataset.cmd + '::' + t.textContent;
+  e.dataTransfer.setData('text/plain', draggingId);
+  e.dataTransfer.effectAllowed = 'copy';
+});
+program.addEventListener('dragover', (e)=>{ e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
+program.addEventListener('drop', (e)=>{
+  e.preventDefault();
+  const d = e.dataTransfer.getData('text/plain'); if(!d) return;
+  const [cmd,label] = d.split('::');
+  addTileToProgram(cmd,label);
+});
+
+function addTileToProgram(cmd,label){
+  const span = document.createElement('span');
+  span.className = 'tile small';
+  span.draggable = true;
+  span.dataset.cmd = cmd;
+  span.textContent = label;
+  // remove on double click
+  span.ondblclick = ()=> span.remove();
+  // allow re-order drag inside program
+  span.addEventListener('dragstart', (e)=>{ draggingId = 'PROG::'+cmd+'::'+label; e.dataTransfer.setData('text/plain',draggingId); e.dataTransfer.effectAllowed='move'; });
+  program.appendChild(span);
+}
+
+program.addEventListener('dragover', (e)=>{ e.preventDefault(); });
+program.addEventListener('drop', (e)=>{
+  const d = e.dataTransfer.getData('text/plain'); if(!d.startsWith('PROG::')) return;
+  // move tile to end (simple)
+});
+
+document.getElementById('btnRunProg').onclick = async ()=>{
+  const ops = [...program.querySelectorAll('.tile')].map(t=>t.dataset.cmd);
+  if(ops.length===0){ alert('Add some instructions first.'); return; }
+  drawGrid(); resetRunner();
+  for(const op of ops){
+    if(op==='QL' || op==='QR' || op==='H'){ turn(op); await delay(200); }
+    else if(op.startsWith('F')){
+      const n = parseInt(op.slice(1),10);
+      for(let i=0;i<n;i++){ stepForward(); await delay(160); }
+    }
+  }
+};
+
+document.getElementById('btnStepProg').onclick = ()=>{
+  const t = program.querySelector('.tile'); if(!t) return;
+  // run first instruction only
+  if(['QL','QR','H'].includes(t.dataset.cmd)) turn(t.dataset.cmd);
+  else {
+    const n = parseInt(t.dataset.cmd.slice(1),10) || 1;
+    for(let i=0;i<n;i++) stepForward();
+  }
+  t.remove();
+};
+document.getElementById('btnClearProg').onclick = ()=> program.innerHTML='';
+
+/* ===========================
+   VOCAB FLIP (tap support)
+=========================== */
+document.querySelectorAll('.flip').forEach(card=>{
+  card.addEventListener('click', e=>{
+    if(window.getSelection && String(window.getSelection())!=='') return;
+    card.classList.toggle('active');
+  });
+});
+
+/* ===========================
+   WRITE: copy & quiz
+=========================== */
+document.getElementById('btnCopyStory').onclick = async ()=>{
+  const text = document.getElementById('storyText').value || '';
+  try{
+    await navigator.clipboard.writeText(text);
+    document.getElementById('copyMsg').textContent = 'Copied!';
+    setTimeout(()=>document.getElementById('copyMsg').textContent='', 1500);
+  }catch(e){
+    document.getElementById('copyMsg').textContent = 'Copy not available.';
+  }
+};
+
+document.getElementById('btnCheckQ').onclick = ()=>{
+  const sel = document.querySelector('input[name="qturn"]:checked');
+  const out = document.getElementById('qResult');
+  if(!sel){ out.innerHTML = '<span class="warn">Choose an answer.</span>'; return; }
+  out.innerHTML = sel.value==='c' ? '<span class="ok">✅ Correct!</span>' : '<span class="bad">Try again.</span>';
+};
+
+</script>
+</body>
+</html>

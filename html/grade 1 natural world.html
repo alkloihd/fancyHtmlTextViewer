@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html lang="en-CA">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>🌿 Our Natural World — Grade 2 Interactive Primer</title>
+<style>
+  :root{
+    --bg:#f0fdf4; --ink:#083344; --muted:#0b3b57;
+    --panel:#ffffff; --line:#bbf7d0; --focus:#06b6d4;
+    --accent:#22c55e; --accent2:#06b6d4; --warn:#fb7185; --ok:#10b981;
+    --leaf:#22c55e; --rock:#9ca3af; --acorn:#f97316; --stick:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:"Nunito","Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{
+    position:sticky;top:0;z-index:9;
+    background:linear-gradient(90deg,#86efac,#67e8f9,#a78bfa);
+    padding:14px; border-bottom:3px solid var(--line); text-align:center
+  }
+  header h1{margin:0;font-size:1.35rem}
+  header .sub{font-weight:800}
+  main{max-width:1100px;margin:0 auto;padding:16px}
+  nav{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+  nav a{background:#dcfce7;border:2px solid var(--line);border-radius:999px;padding:6px 10px;font-weight:900;color:#065f46;text-decoration:none}
+  nav a:focus{outline:3px solid var(--focus)}
+  section.unit{background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:14px;margin:12px 0}
+  h2{margin:.2rem 0 .5rem 0;font-size:1.2rem}
+  h3{margin:.5rem 0 .3rem 0}
+  .pill{display:inline-block;background:#ecfccb;border:2px solid #bef264;border-radius:999px;padding:2px 8px;font-weight:900}
+  /* Flip cards */
+  .flipset{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+  .flip{perspective:1000px}
+  .flip button{
+    position:relative;width:100%;height:130px;border:0;border-radius:14px;cursor:pointer;
+    background:#e0f2fe;color:#0b3b57;font-weight:900;font-size:1.05rem;outline:2px solid #bae6fd
+  }
+  .flip button:focus{outline:3px solid var(--focus)}
+  .flip .front,.flip .back{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:8px;border-radius:14px;
+    backface-visibility:hidden;transition:transform .6s
+  }
+  .flip .front{background:#dcfce7}
+  .flip .back{background:#fef9c3;transform:rotateY(180deg)}
+  .flip button[aria-expanded="true"] .front{transform:rotateY(180deg)}
+  .flip button[aria-expanded="true"] .back{transform:rotateY(0)}
+  /* Sorter */
+  .itembar{display:flex;gap:6px;flex-wrap:wrap;margin:.4rem 0}
+  .token{
+    background:#cffafe;border:2px solid #22d3ee;color:#064e3b;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer;
+    min-height:40px
+  }
+  .token:focus{outline:3px solid var(--focus)}
+  .buckets{display:flex;gap:10px;flex-wrap:wrap}
+  .bucket{flex:1;min-width:240px;background:#ecfeff;border:2px dashed #67e8f9;border-radius:12px;padding:10px}
+  .bucket h4{margin:.2rem 0 .4rem 0}
+  .drop{display:flex;flex-wrap:wrap;gap:6px;min-height:46px}
+  .ok{box-shadow:0 0 0 3px var(--ok) inset}
+  .err{box-shadow:0 0 0 3px var(--warn) inset}
+  .note{color:#065f46;font-weight:800}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .btn{border:2px solid var(--accent2);background:#dbeafe;border-radius:10px;padding:8px 12px;font-weight:900;cursor:pointer}
+  .btn.green{border-color:#86efac;background:#dcfce7}
+  /* Counters & Graph */
+  .counter{display:flex;align-items:center;gap:8px;margin:8px 0}
+  .counter button{border:2px solid #a7f3d0;background:#bbf7d0;border-radius:8px;padding:6px 10px;font-weight:900;cursor:pointer;min-height:40px}
+  .counter .val{min-width:2ch;text-align:center;font-weight:900}
+  .graph-wrap{display:grid;grid-template-columns:100px 1fr;gap:10px;align-items:end}
+  .y-axis{position:relative;height:220px;border-right:2px solid #9ca3af;padding-right:6px}
+  .y-axis .tick{position:absolute;left:0;transform:translateY(50%);color:#0f172a;font-size:.9rem}
+  .grid{position:relative;height:220px;border-bottom:2px solid #9ca3af}
+  .grid .hline{position:absolute;left:0;right:0;height:1px;background:#cbd5e1;opacity:.6}
+  .bars{position:absolute;left:0;right:0;bottom:0;display:flex;gap:14px;align-items:flex-end;justify-content:space-around;height:100%;padding:0 8px}
+  .bar{width:60px;border:2px solid #111827;display:flex;align-items:flex-end;justify-content:center;border-radius:8px 8px 0 0;color:#111827;font-weight:900}
+  .bar.leaves{background:var(--leaf);border-color:#15803d}
+  .bar.rocks{background:var(--rock);border-color:#374151}
+  .bar.acorns{background:var(--acorn);border-color:#9a3412}
+  .bar.sticks{background:var(--stick);border-color:#92400e}
+  .bar .label{padding:4px;background:rgba(255,255,255,.7);border-radius:6px;margin:4px}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+  .legend .key{display:flex;align-items:center;gap:6px}
+  .legend .sw{width:14px;height:14px;border:2px solid #111827;border-radius:4px}
+  /* Accordion */
+  .acc button{width:100%;text-align:left;border:2px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:10px;padding:8px 10px;font-weight:900;cursor:pointer;margin:6px 0}
+  .acc .panel{display:none;background:#eef2ff;border-left:4px solid #a78bfa;border-radius:0 10px 10px 10px;padding:8px 10px}
+  /* Inputs & checklist */
+  input[type="text"]{border:2px solid #bfdbfe;border-radius:8px;padding:6px;width:100%;max-width:420px;min-height:40px}
+  .qbox{background:#fffbeb;border:2px solid #fde68a;border-radius:12px;padding:10px}
+  .checklist label{display:flex;gap:10px;align-items:center;margin:6px 0}
+  .checklist input{width:22px;height:22px}
+  /* Focus outlines for all buttons */
+  button:focus{outline:3px solid var(--focus)}
+  /* Print */
+  @media print{header,nav,.actions .btn#exportTxt{display:none}}
+</style>
+</head>
+<body>
+<header aria-label="Header">
+  <h1>🌿 Our Natural World — Grade 2 Interactive Primer</h1>
+  <div class="sub">Play • Explore • Count • Care</div>
+</header>
+
+<main>
+  <nav aria-label="Quick jump">
+    <a href="#ch1">Living vs Non-Living</a>
+    <a href="#ch2">Ontario Animals</a>
+    <a href="#ch3">Counting & Graph</a>
+    <a href="#ch4">Plants</a>
+    <a href="#ch5">Questions</a>
+    <a href="#ch6">Safety</a>
+    <a href="#ch7">Journal</a>
+  </nav>
+
+  <!-- Chapter 1 -->
+
+  <section id="ch1" class="unit" aria-labelledby="h-ch1">
+    <h2 id="h-ch1">Chapter 1: What Makes Something Living? 🐛</h2>
+    <p>Some things are living and some are not. Let’s learn the rules!</p>
+
+```
+<div class="flipset" role="list">
+  <div class="flip" role="listitem">
+    <button class="flipbtn" aria-expanded="false" aria-controls="fc1b">
+      <div class="front">🌱 Living</div>
+      <div id="fc1b" class="back" aria-hidden="true">Grow • Need food & water • Breathe • Move • Make babies</div>
+    </button>
+  </div>
+  <div class="flip" role="listitem">
+    <button class="flipbtn" aria-expanded="false" aria-controls="fc2b">
+      <div class="front">🪨 Non-Living</div>
+      <div id="fc2b" class="back" aria-hidden="true">Don’t grow • No food/water • Don’t breathe • Don’t move • Don’t make babies</div>
+    </button>
+  </div>
+</div>
+
+<h3>Try This! 🔍</h3>
+<div class="qbox">
+  <div style="display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))">
+    <label>3 living things? <input type="text" id="living3" placeholder="e.g., plant, fish, worm" aria-label="Three living things"></label>
+    <label>3 non-living things? <input type="text" id="nonliving3" placeholder="e.g., rock, desk, stapler" aria-label="Three non-living things"></label>
+  </div>
+  <p class="note">Images search: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Ontario+classroom+living+non-living+things+examples">Ontario classroom living/non-living examples</a></p>
+</div>
+
+<h3>Sort & Check</h3>
+<p class="note">Click a token to move it between areas. Start → Living → Non-Living → back to Start.</p>
+
+<div class="itembar source" aria-label="Start items">
+  <button class="token" data-id="t1" data-answer="living">🌸 flower</button>
+  <button class="token" data-id="t2" data-answer="nonliving">🧽 eraser</button>
+  <button class="token" data-id="t3" data-answer="living">🐜 ant</button>
+  <button class="token" data-id="t4" data-answer="nonliving">✏️ pencil</button>
+  <button class="token" data-id="t5" data-answer="living">🐌 snail</button>
+  <button class="token" data-id="t6" data-answer="nonliving">📘 book</button>
+</div>
+
+<div class="buckets">
+  <div class="bucket" data-key="living">
+    <h4>🌱 Living</h4>
+    <div class="drop" aria-label="Living drop zone"></div>
+  </div>
+  <div class="bucket" data-key="nonliving">
+    <h4>🪨 Non-Living</h4>
+    <div class="drop" aria-label="Non-living drop zone"></div>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn" id="sortCheck">✅ Check</button>
+  <button class="btn" id="sortReset">🧹 Reset</button>
+  <span id="sortMsg" class="note" role="status" aria-live="polite"></span>
+</div>
+```
+
+  </section>
+
+  <!-- Chapter 2 -->
+
+  <section id="ch2" class="unit" aria-labelledby="h-ch2">
+    <h2 id="h-ch2">Chapter 2: Amazing Ontario Animals 🦌</h2>
+
+```
+<h3>Forest Friends 🌲</h3>
+<div class="flipset">
+  <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="a1b"><div class="front">🐻 Black Bears</div><div id="a1b" class="back" aria-hidden="true">Big & furry • Eat berries & fish • Sleep all winter</div></button></div>
+  <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="a2b"><div class="front">🦌 White-tailed Deer</div><div id="a2b" class="back" aria-hidden="true">Run fast • Big ears • Babies are fawns</div></button></div>
+  <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="a3b"><div class="front">🐿️ Squirrels</div><div id="a3b" class="back" aria-hidden="true">Bushy tails • Collect nuts • Jump tree to tree</div></button></div>
+</div>
+
+<h3>Water Animals 💧</h3>
+<div class="flipset">
+  <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="a4b"><div class="front">🦫 Beavers</div><div id="a4b" class="back" aria-hidden="true">Flat tails • Build dams • Canada’s national animal</div></button></div>
+  <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="a5b"><div class="front">🐸 Frogs</div><div id="a5b" class="back" aria-hidden="true">Tadpoles → frogs • Strong legs • “Ribbit”</div></button></div>
+</div>
+
+<p class="note">Reference: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Environment+Canada+Ontario+native+animals">Environment Canada — Ontario Wildlife Guide</a></p>
+```
+
+  </section>
+
+  <!-- Chapter 3: Counters & Graph -->
+
+  <section id="ch3" class="unit" aria-labelledby="h-ch3">
+    <h2 id="h-ch3">Chapter 3: Counting Our Nature Collections 🔢</h2>
+    <p><span class="pill">Tip</span> Group by 5 to count faster. Use +5 to help.</p>
+
+```
+<div id="counters">
+  <div class="counter" data-key="Leaves">🍃 Leaves:
+    <button class="minus" aria-label="Decrease leaves">−</button><span class="val">0</span><button class="plus" aria-label="Increase leaves">+</button>
+    <button class="btn" data-plus5="+5">+5</button>
+  </div>
+  <div class="counter" data-key="Rocks">🪨 Rocks:
+    <button class="minus" aria-label="Decrease rocks">−</button><span class="val">0</span><button class="plus" aria-label="Increase rocks">+</button>
+    <button class="btn" data-plus5="+5">+5</button>
+  </div>
+  <div class="counter" data-key="Acorns">🌰 Acorns:
+    <button class="minus" aria-label="Decrease acorns">−</button><span class="val">0</span><button class="plus" aria-label="Increase acorns">+</button>
+    <button class="btn" data-plus5="+5">+5</button>
+  </div>
+  <div class="counter" data-key="Sticks">🪵 Sticks:
+    <button class="minus" aria-label="Decrease sticks">−</button><span class="val">0</span><button class="plus" aria-label="Increase sticks">+</button>
+    <button class="btn" data-plus5="+5">+5</button>
+  </div>
+</div>
+
+<div class="graph-wrap" aria-label="Bar graph with y-axis, ticks and legend">
+  <div class="y-axis" id="yAxis" aria-hidden="true"></div>
+  <div class="grid" id="grid">
+    <div class="bars" id="bars">
+      <div class="bar leaves" data-key="Leaves" style="height:20px"><span class="label">0</span></div>
+      <div class="bar rocks"  data-key="Rocks"  style="height:20px"><span class="label">0</span></div>
+      <div class="bar acorns" data-key="Acorns" style="height:20px"><span class="label">0</span></div>
+      <div class="bar sticks" data-key="Sticks" style="height:20px"><span class="label">0</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="legend" role="list" aria-label="Legend">
+  <span class="key" role="listitem"><span class="sw" style="background:var(--leaf)"></span> 🍃 Leaves</span>
+  <span class="key" role="listitem"><span class="sw" style="background:var(--rock)"></span> 🪨 Rocks</span>
+  <span class="key" role="listitem"><span class="sw" style="background:var(--acorn)"></span> 🌰 Acorns</span>
+  <span class="key" role="listitem"><span class="sw" style="background:var(--stick)"></span> 🪵 Sticks</span>
+</div>
+
+<div class="actions">
+  <button class="btn green" id="syncBars">🔄 Sync Graph</button>
+  <button class="btn" id="resetAll">🧹 Reset All</button>
+</div>
+
+<h3>Math Words We Use 📝</h3>
+<ul>
+  <li><strong>More than</strong>: bigger number (8 > 5)</li>
+  <li><strong>Less than</strong>: smaller number (3 < 7)</li>
+  <li><strong>Equal to</strong>: same number (4 = 4)</li>
+</ul>
+
+<div class="qbox">
+  Which has MORE? <input type="text" id="moreTxt" placeholder="Type item name (e.g., Leaves)"><br>
+  Which has LESS? <input type="text" id="lessTxt" placeholder="Type item name"><br>
+  Any SAME amount? <input type="text" id="sameTxt" placeholder="Type items">
+</div>
+```
+
+  </section>
+
+  <!-- Chapter 4 -->
+
+  <section id="ch4" class="unit" aria-labelledby="h-ch4">
+    <h2 id="h-ch4">Chapter 4: Ontario Plants Are Amazing! 🌸</h2>
+    <div class="flipset">
+      <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="p1b"><div class="front">🍁 Maple Trees</div><div id="p1b" class="back" aria-hidden="true">Maple syrup • Fall colours • On Canada’s flag</div></button></div>
+      <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="p2b"><div class="front">🌲 Pine Trees</div><div id="p2b" class="back" aria-hidden="true">Green all year • Needles • Pinecones</div></button></div>
+      <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="p3b"><div class="front">🌻 Sunflowers</div><div id="p3b" class="back" aria-hidden="true">Follow the sun • Big yellow petals • Seeds for birds</div></button></div>
+      <div class="flip"><button class="flipbtn" aria-expanded="false" aria-controls="p4b"><div class="front">🌷 Trilliums</div><div id="p4b" class="back" aria-hidden="true">Ontario’s flower • Three white petals • Spring bloom</div></button></div>
+    </div>
+
+```
+<h3>What Plants Need 🌱</h3>
+<ul>
+  <li>☀️ Sunlight</li><li>💧 Water</li><li>🌍 Soil</li><li>💨 Air</li>
+</ul>
+
+<p class="note">Reference: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Ontario+Parks+native+plants+children">Ontario Parks — Native Plants Guide</a></p>
+```
+
+  </section>
+
+  <!-- Chapter 5 -->
+
+  <section id="ch5" class="unit" aria-labelledby="h-ch5">
+    <h2 id="h-ch5">Chapter 5: Questions Good Scientists Ask 🤔</h2>
+    <div class="acc">
+      <button class="accbtn" aria-expanded="false" aria-controls="pa1">🐾 About Animals</button>
+      <div class="panel" id="pa1"><ul><li>Why do some animals have fur?</li><li>How do birds know how to fly?</li><li>Where do animals go when it rains?</li></ul></div>
+      <button class="accbtn" aria-expanded="false" aria-controls="pp1">🌿 About Plants</button>
+      <div class="panel" id="pp1"><ul><li>Why are leaves green?</li><li>How do flowers make seeds?</li><li>Why do some trees lose their leaves?</li></ul></div>
+      <button class="accbtn" aria-expanded="false" aria-controls="pn1">🔢 About Numbers</button>
+      <div class="panel" id="pn1"><ul><li>Which collection has more?</li><li>How can I count faster?</li><li>What patterns do I see?</li></ul></div>
+    </div>
+    <p>Write your own question: <input type="text" id="ownQ" placeholder="I wonder..."></p>
+    <p class="note">Reference: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=ROM+kids+nature+questions+Ontario">Royal Ontario Museum — Kids nature questions</a></p>
+  </section>
+
+  <!-- Chapter 6 -->
+
+  <section id="ch6" class="unit" aria-labelledby="h-ch6">
+    <h2 id="h-ch6">Chapter 6: Exploring Safely Outside 🦺</h2>
+    <div class="checklist">
+      <label><input type="checkbox"> ✅ Stay with your partner</label>
+      <label><input type="checkbox"> ✅ Listen to your teacher</label>
+      <label><input type="checkbox"> ✅ Look but don't touch unknown plants</label>
+      <label><input type="checkbox"> ✅ Be gentle with living things</label>
+      <label><input type="checkbox"> ✅ Wash hands after exploring</label>
+    </div>
+    <h3>Being Respectful 🤝</h3>
+    <ul>
+      <li>🌱 Don’t pick flowers or leaves</li>
+      <li>🐛 Don’t hurt insects or animals</li>
+      <li>🗑️ Don’t leave any garbage outside</li>
+      <li>👥 Share discoveries with friends</li>
+    </ul>
+  </section>
+
+  <!-- Chapter 7 -->
+
+  <section id="ch7" class="unit" aria-labelledby="h-ch7">
+    <h2 id="h-ch7">Chapter 7: Your Nature Journal 📖</h2>
+    <div style="display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="qbox">Today I Learned: ✏️ <input type="text" id="jl1"></div>
+      <div class="qbox">I Found These Living Things: 🐛 <input type="text" id="jl2"></div>
+      <div class="qbox">I Found These Non-Living Things: 🪨 <input type="text" id="jl3"></div>
+      <div class="qbox">My Favourite Discovery Was: ⭐ <input type="text" id="jl4"></div>
+    </div>
+
+```
+<h3>Fun Facts About Ontario Nature! 🎉</h3>
+<ul>
+  <li>🦫 Ontario has more lakes than the rest of the world combined!</li>
+  <li>🐻 Black bears can smell food from 5 kilometres away.</li>
+  <li>🍁 Ontario’s maple trees make ~75% of the world’s maple syrup.</li>
+  <li>🦌 A deer can run ~48 km/h.</li>
+  <li>🌲 Some Ontario pine trees are over 200 years old!</li>
+</ul>
+<p class="note">Reference: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Ontario+Nature+Foundation+fun+facts+kids">Ontario Nature Foundation — Fun facts</a></p>
+
+<div class="actions">
+  <button class="btn green" id="exportTxt">⬇️ Download My Learning Summary (.txt)</button>
+  <span id="exportMsg" class="note" role="status" aria-live="polite"></span>
+</div>
+```
+
+  </section>
+</main>
+
+<script>
+/* ===== Utilities ===== */
+function $(sel,root=document){return root.querySelector(sel)}
+function $$(sel,root=document){return Array.from(root.querySelectorAll(sel))}
+
+/* ===== Flip cards ===== */
+$$(".flipbtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const expanded = btn.getAttribute("aria-expanded")==="true";
+    btn.setAttribute("aria-expanded", expanded ? "false" : "true");
+    const back = $("#"+btn.getAttribute("aria-controls"));
+    if(back) back.setAttribute("aria-hidden", expanded ? "true" : "false");
+  });
+  btn.addEventListener("keydown", e=>{
+    if(e.key==="Enter" || e.key===" "){ e.preventDefault(); btn.click(); }
+  });
+});
+
+/* ===== Accordion ===== */
+$$(".accbtn").forEach(btn=>{
+  const panelId = btn.getAttribute("aria-controls");
+  const panel = $("#"+panelId);
+  btn.addEventListener("click", ()=>{
+    const open = btn.getAttribute("aria-expanded")==="true";
+    btn.setAttribute("aria-expanded", open ? "false" : "true");
+    if(panel) panel.style.display = open ? "none" : "block";
+  });
+});
+
+/* ===== Sorter with Check (no auto-placement) ===== */
+const sourceBar = $(".itembar.source");
+const livingDrop = $('.bucket[data-key="living"] .drop');
+const nonDrop = $('.bucket[data-key="nonliving"] .drop');
+
+function moveTokenCycle(tok){
+  const parent = tok.parentElement;
+  if(parent===sourceBar){ livingDrop.appendChild(tok); }
+  else if(parent===livingDrop){ nonDrop.appendChild(tok); }
+  else { sourceBar.appendChild(tok); }
+}
+$$(".token").forEach(tok=>{
+  tok.addEventListener("click", ()=>{
+    tok.classList.remove("ok","err");
+    moveTokenCycle(tok);
+  });
+  tok.addEventListener("keydown", e=>{
+    if(e.key==="Enter"||e.key===" "){ e.preventDefault(); tok.click(); }
+  });
+});
+
+$("#sortCheck").addEventListener("click", ()=>{
+  let correct=0, total=0;
+  const mark = (tok, inBucketKey)=>{
+    total++;
+    const ans = tok.getAttribute("data-answer");
+    const isOk = (ans===inBucketKey);
+    tok.classList.toggle("ok", isOk);
+    tok.classList.toggle("err", !isOk);
+    if(isOk) correct++;
+  };
+  // mark tokens currently in drops
+  $$(".drop .token").forEach(t=>{
+    const bucket = t.closest(".bucket");
+    const key = bucket.getAttribute("data-key");
+    mark(t, key);
+  });
+  // tokens in source are incorrect by definition
+  $$(".itembar.source .token").forEach(t=>{
+    t.classList.add("err"); total++;
+  });
+  $("#sortMsg").textContent = `Checked: ${correct} correct of ${total}.`;
+});
+
+$("#sortReset").addEventListener("click", ()=>{
+  $$(".token").forEach(t=>{
+    t.classList.remove("ok","err");
+    sourceBar.appendChild(t);
+  });
+  $("#sortMsg").textContent = "";
+});
+
+/* ===== Counters & Graph with axis/ticks/grid/legend ===== */
+const counts = {Leaves:0,Rocks:0,Acorns:0,Sticks:0};
+function renderCounts(){
+  $$(".counter").forEach(c=>{
+    const key = c.dataset.key;
+    $(".val",c).textContent = counts[key];
+  });
+}
+$$(".counter").forEach(c=>{
+  const key = c.dataset.key;
+  $(".plus",c).addEventListener("click", ()=>{ counts[key]++; renderCounts(); });
+  $(".minus",c).addEventListener("click", ()=>{ counts[key] = Math.max(0, counts[key]-1); renderCounts(); });
+  $("[data-plus5]",c).addEventListener("click", ()=>{ counts[key]+=5; renderCounts(); });
+});
+renderCounts();
+
+function niceTop(maxVal){
+  const raw = Math.max(5, maxVal);
+  const step = raw<=10?2: (raw<=20?5:10);
+  return Math.ceil(raw/step)*step;
+}
+function drawAxisAndGrid(top){
+  const axis = $("#yAxis"); const grid = $("#grid");
+  axis.innerHTML = ""; grid.querySelectorAll(".hline").forEach(el=>el.remove());
+  const h = 220; // px
+  const steps = 5; const stepVal = top/steps;
+  for(let i=0;i<=steps;i++){
+    const val = Math.round(i*stepVal);
+    const y = h - (i/steps)*h;
+    const tick = document.createElement("div");
+    tick.className = "tick";
+    tick.style.bottom = (h - y - 8) + "px";
+    tick.style.right = "6px";
+    tick.textContent = val.toString();
+    axis.appendChild(tick);
+    const line = document.createElement("div");
+    line.className="hline";
+    line.style.bottom = y + "px";
+    grid.appendChild(line);
+  }
+}
+
+function syncBars(){
+  const vals = Object.values(counts);
+  const max = Math.max(...vals, 1);
+  const top = niceTop(max);
+  drawAxisAndGrid(top);
+  const bars = $$("#bars .bar");
+  bars.forEach(b=>{
+    const key = b.getAttribute("data-key");
+    const val = counts[key] || 0;
+    const h = 200 * (val/top); // 0..200px + 20px baseline
+    b.style.height = (20 + h) + "px";
+    $(".label",b).textContent = String(val);
+  });
+}
+$("#syncBars").addEventListener("click", syncBars);
+
+$("#resetAll").addEventListener("click", ()=>{
+  Object.keys(counts).forEach(k=>counts[k]=0);
+  renderCounts(); syncBars();
+  $("#moreTxt").value=""; $("#lessTxt").value=""; $("#sameTxt").value="";
+});
+
+/* ===== Export Summary (.txt) ===== */
+$("#exportTxt").addEventListener("click", ()=>{
+  const lines = [];
+  lines.push("Our Natural World — Learning Summary");
+  lines.push("Date/Time: " + new Date().toLocaleString());
+  // Ch1
+  lines.push("\n[Living vs Non-Living]");
+  lines.push("Living examples: " + ($("#living3").value||""));
+  lines.push("Non-living examples: " + ($("#nonliving3").value||""));
+  const sorterCorrect = $$(".token.ok").length, sorterTotal = $$(".drop .token, .itembar.source .token").length;
+  if(sorterTotal) lines.push(`Sorter result: ${sorterCorrect}/${sorterTotal} correct (after last Check)`);
+  // Counters
+  lines.push("\n[Counts]");
+  lines.push(`Leaves=${counts.Leaves}, Rocks=${counts.Rocks}, Acorns=${counts.Acorns}, Sticks=${counts.Sticks}`);
+  lines.push("More: " + ($("#moreTxt").value||""));
+  lines.push("Less: " + ($("#lessTxt").value||""));
+  lines.push("Same: " + ($("#sameTxt").value||""));
+  // Own question & Journal
+  lines.push("\n[Questions & Journal]");
+  lines.push("My question: " + ($("#ownQ").value||""));
+  lines.push("Today I learned: " + ($("#jl1").value||""));
+  lines.push("Found living: " + ($("#jl2").value||""));
+  lines.push("Found non-living: " + ($("#jl3").value||""));
+  lines.push("Favourite discovery: " + ($("#jl4").value||""));
+  // Download
+  const blob = new Blob([lines.join("\n")], {type:"text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "my_nature_learning.txt"; a.click();
+  URL.revokeObjectURL(url);
+  $("#exportMsg").textContent = "Saved!";
+  setTimeout(()=>$("#exportMsg").textContent="", 1500);
+});
+
+/* Initialize graph grid once */
+syncBars();
+</script>
+
+</body>
+</html>

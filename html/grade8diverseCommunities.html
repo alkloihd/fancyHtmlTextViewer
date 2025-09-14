@@ -1,0 +1,461 @@
+Put your HTML text here<!DOCTYPE html>
+
+<html lang="en-CA">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lesson 1 — Diverse Communities (1800–1850) — Forest Paths</title>
+<style>
+  :root{
+    --bg:#F7FBF7;       /* soft cream */
+    --pine:#146B54;     /* primary deep green */
+    --deep:#0E4F3D;     /* darker green */
+    --leaf:#1E7A5A;
+    --amber:#D7A54A;    /* accent */
+    --paper:#FFFFFF;
+    --muted:#3b5a51;
+    --card-border:#dfeee6;
+    --shadow: 0 6px 18px rgba(10,30,20,0.08);
+    --radius:14px;
+    --accent:#0b6b4a;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+  }
+  html,body{height:100%; margin:0; background:linear-gradient(180deg,var(--bg),#eef7ee 60%); color:var(--deep); -webkit-font-smoothing:antialiased}
+  *{box-sizing:border-box}
+  a{color:var(--pine)}
+  header{position:sticky; top:0; z-index:40; background:transparent; padding:.8rem 1rem; backdrop-filter:blur(6px)}
+  .hero{max-width:1200px; margin:0 auto; display:flex; gap:1rem; align-items:center}
+  .logo{
+    width:86px; height:86px; border-radius:18px; background:linear-gradient(135deg,var(--pine),var(--deep));
+    display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:1.1rem; box-shadow:var(--shadow)
+  }
+  .titlewrap{flex:1}
+  h1{margin:.1rem 0 .05rem; font-size:1.2rem}
+  .subtitle{margin:0; color:var(--muted); font-size:.95rem}
+  .forestdecor{
+    width:100%; height:120px; margin-top:.6rem; overflow:hidden; pointer-events:none;
+    display:block;
+  }
+  /* Simple SVG trees background */
+  .forest-bg{position:fixed; left:0; bottom:0; width:100%; height:35vh; z-index:0; opacity:.12}
+  main{position:relative; z-index:5; max-width:1100px; margin:1rem auto; padding:1rem}
+  .card{background:var(--paper); border:1px solid var(--card-border); border-radius:var(--radius); padding:1rem; box-shadow:var(--shadow); margin-bottom:1rem}
+  .grid{display:grid; gap:1rem}
+  .grid.cols-2{grid-template-columns:1fr 360px}
+  @media (max-width:980px){ .grid.cols-2{grid-template-columns:1fr} .hero{flex-direction:row} }
+  .goals{background:linear-gradient(180deg,#fff, #f7fbf8); border-left:4px solid var(--pine)}
+  ul{margin:.4rem 0 0 1rem}
+  .muted{color:var(--muted); font-size:.95rem}
+  .vocab-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.8rem}
+  .flip{
+    perspective:1000px; height:110px; position:relative;
+  }
+  .card-inner{
+    position:relative; width:100%; height:100%; transition:transform .6s; transform-style:preserve-3d; border-radius:10px;
+  }
+  .flip[aria-pressed="true"] .card-inner{transform:rotateY(180deg)}
+  .card-face{position:absolute; inset:0; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; padding:.6rem; border-radius:10px}
+  .front{background:linear-gradient(180deg,#F0FBF0,#E6F6EA); border:1px solid #d7efe0; color:var(--deep); font-weight:700}
+  .back{background:linear-gradient(180deg,#146B54,#0E4F3D); color:#fff; transform:rotateY(180deg); font-weight:600}
+  .flip button{all:unset; display:block; width:100%; height:100%; cursor:pointer; border-radius:10px}
+  .controls{display:flex; gap:.5rem; margin-top:.5rem; flex-wrap:wrap}
+  .btn{background:var(--pine); color:#fff; border:0; padding:.5rem .7rem; border-radius:10px; cursor:pointer; font-weight:700}
+  .btn.secondary{background:#fff; color:var(--deep); border:1px solid var(--card-border)}
+  .hint{font-size:.95rem; color:var(--muted)}
+  /* Matching game */
+  .match-board{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.6rem}
+  .mcard{
+    background:linear-gradient(180deg,#fff,#f4faf5); border:1px solid var(--card-border); border-radius:10px; padding:.6rem; min-height:88px;
+    display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer; transition:transform .12s; user-select:none;
+  }
+  .mcard:active{transform:scale(.99)}
+  .mcard.revealed{background:linear-gradient(180deg,var(--amber),#f2e3bb); color:#2b2b20; font-weight:700}
+  .mcard.matched{background:linear-gradient(180deg,#dff6e8,#bfe9d0); border:2px solid var(--accent); color:var(--deep); font-weight:800}
+  .status{display:flex; align-items:center; gap:1rem; margin-top:.5rem; flex-wrap:wrap}
+  .leaf{
+    width:14px;height:14px;border-radius:3px;background:linear-gradient(180deg,var(--leaf),var(--pine)); display:inline-block;
+    box-shadow:0 2px 6px rgba(0,0,0,.08)
+  }
+  footer{max-width:1100px;margin:0 auto;padding:1rem;text-align:center;color:var(--muted); font-size:.9rem}
+  /* subtle floating leaf animation */
+  .floating-leaf{position:absolute; width:28px; height:28px; border-radius:6px; background:linear-gradient(180deg,var(--leaf),var(--pine)); opacity:.12; transform:rotate(-20deg); animation:float 8s linear infinite}
+  @keyframes float{0%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-18px) rotate(10deg)}100%{transform:translateY(0) rotate(-10deg)}}
+  /* focus */
+  .flip button:focus, .mcard:focus{outline:3px solid rgba(40,69,167,.15); outline-offset:3px}
+</style>
+</head>
+<body>
+  <div class="forest-bg" aria-hidden="true">
+    <!-- SVG forest silhouettes (decorative) -->
+    <svg width="100%" height="100%" viewBox="0 0 1200 300" preserveAspectRatio="none" role="img" aria-hidden="true">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#0E4F3D"/><stop offset="1" stop-color="#146B54"/></linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="transparent"></rect>
+      <g transform="translate(0,30)">
+        <ellipse cx="110" cy="200" rx="160" ry="80" fill="#a4d2ba" opacity="0.18"></ellipse>
+        <path d="M60 200 L100 80 L140 200Z" fill="#0E4F3D" opacity="0.14"></path>
+        <path d="M120 200 L150 70 L190 200Z" fill="#146B54" opacity="0.12"></path>
+        <ellipse cx="400" cy="210" rx="240" ry="90" fill="#95d1b2" opacity="0.12"></ellipse>
+        <ellipse cx="950" cy="210" rx="300" ry="110" fill="#b9e7ce" opacity="0.10"></ellipse>
+        <path d="M920 200 L960 60 L1000 200Z" fill="#0E4F3D" opacity="0.12"></path>
+      </g>
+    </svg>
+  </div>
+
+  <header>
+    <div class="hero" role="banner">
+      <div class="logo" aria-hidden="true">FP</div>
+      <div class="titlewrap">
+        <h1>Forest Paths — Diverse Communities in Early Canada (1800–1850)</h1>
+        <p class="subtitle">A Grade 8 learning page: primary sources, community snapshots, vocabulary flip cards, and an interactive matching activity — forest themed 🌲</p>
+      </div>
+      <div style="width:120px;text-align:right">
+        <div class="muted">Duration</div>
+        <div style="font-weight:800">30–45 mins</div>
+      </div>
+    </div>
+  </header>
+
+  <main role="main" aria-labelledby="mainTitle">
+    <h2 id="mainTitle" class="muted" style="margin-top:.6rem">Lesson 1 — Communities in Transition</h2>
+
+```
+<div class="grid cols-2">
+  <section class="card goals" aria-labelledby="goalsTitle">
+    <h3 id="goalsTitle">Learning Goals & Success Criteria</h3>
+    <ul>
+      <li><strong>Goals</strong> — identify diverse communities (First Nations, Métis, Inuit, British, French Canadian, African Canadian, immigrant groups); analyse primary sources; compare social structures & values.</li>
+      <li><strong>Success</strong> — identify ≥5 communities; use source evidence; compare ways of life; ask thoughtful historical questions.</li>
+    </ul>
+    <p class="muted" style="margin-top:.5rem">This page keeps the essential content and activities: read the short community snapshots, explore the primary-source quotes, practise vocabulary with flip cards, then play the matching activity to test understanding.</p>
+  </section>
+
+  <aside class="card" aria-labelledby="quickNav">
+    <h3 id="quickNav">Quick Navigation</h3>
+    <div class="muted">Jump to:</div>
+    <nav class="muted" style="margin-top:.5rem">
+      <a href="#snapshots">Community snapshots</a><br>
+      <a href="#sources">Primary source spotlights</a><br>
+      <a href="#vocab">Vocabulary flip cards</a><br>
+      <a href="#match">Matching activity</a><br>
+      <a href="#wrap">Summary & exit</a>
+    </nav>
+    <div style="margin-top:1rem">
+      <button class="btn" onclick="document.getElementById('vocab').scrollIntoView({behavior:'smooth'})">Start Vocabulary</button>
+      <button class="btn secondary" onclick="document.getElementById('match').scrollIntoView({behavior:'smooth'})">Try Matching</button>
+    </div>
+  </aside>
+</div>
+
+<!-- Snapshots -->
+<section id="snapshots" class="card" aria-labelledby="snapshots-h">
+  <h3 id="snapshots-h">Community snapshots (short reads)</h3>
+  <p class="muted">Each snippet preserves core descriptions so you can compare social structures and daily life. Expand any <em>Read more</em> to see slightly longer passages if you want the full detail.</p>
+
+  <div class="grid" style="margin-top:.8rem">
+    <details open class="card" aria-label="First Nations short">
+      <summary style="font-weight:700">First Nations — governance, economy, and resilience</summary>
+      <p><strong>Social structure:</strong> clans, hereditary chiefs, and in some nations (e.g., Haudenosaunee) clan mothers held political power. Women often played central roles in governance and cultural transmission.</p>
+      <p><strong>Daily life:</strong> hunting, fishing, gathering, small-scale agriculture or following buffalo herds depending on region. Potlatch and other ceremonies structured social ties on the Pacific coast.</p>
+    </details>
+
+    <details class="card">
+      <summary style="font-weight:700">Métis — blended identities & mobility</summary>
+      <p><strong>Origin:</strong> families of European traders and First Nations women developed a distinct Métis culture by 1800, often mobile and connected to the fur and buffalo economies.</p>
+      <p><strong>Language:</strong> many spoke Michif; governance during hunts could involve elected captains; settlements like the Red River were emerging cultural centres.</p>
+    </details>
+
+    <details class="card">
+      <summary style="font-weight:700">Inuit — Arctic expertise & cooperation</summary>
+      <p><strong>Adaptations:</strong> survival skills for ice, weather, and animals; extended family groups moved seasonally; elders were key knowledge keepers.</p>
+      <p><strong>Culture:</strong> storytelling, throat singing, and resource-sharing traditions reinforced community bonds.</p>
+    </details>
+
+    <details class="card">
+      <summary style="font-weight:700">British & French Canadian settlers — different colonial models</summary>
+      <p><strong>British:</strong> hierarchical social order with elites (Family Compact), towns like York formed administrative centres, rural settlers cleared land for farms.</p>
+      <p><strong>French Canadian:</strong> seigneurial land patterns in Lower Canada, parish-based communities, strong role of the Catholic Church in culture and education.</p>
+    </details>
+
+    <details class="card">
+      <summary style="font-weight:700">African Canadian & Immigrant communities</summary>
+      <p><strong>African Canadian:</strong> Black Loyalists, escaped people via the Underground Railroad, and other groups built churches, schools, and communities despite discrimination.</p>
+      <p><strong>Immigrants:</strong> Irish and Scottish arrivals shaped labour and settlement patterns; many faced prejudice and hard work but contributed to building communities.</p>
+    </details>
+  </div>
+</section>
+
+<!-- Primary source spotlights -->
+<section id="sources" class="card" aria-labelledby="sources-h">
+  <h3 id="sources-h">Primary source spotlights</h3>
+  <p class="muted">Primary quotes and brief documents help us see how people thought and lived. Read them and imagine being in that place/time.</p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:.6rem">
+    <blockquote class="card" style="border-left:4px solid var(--amber)"><strong>Haudenosaunee teaching:</strong><br>“The women are the progenitors of the nation. They are the life-givers. They are the keepers of the ceremonies and the culture.”</blockquote>
+
+    <div class="card" style="border-left:4px solid var(--pine)">
+      <strong>Diary excerpt (sample):</strong>
+      <p class="muted">A trader at a fur post: “Today the Métis hunters arrived with their packs—skins and pemmican—trading for blankets and iron. Without their skills the post would not thrive.”</p>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--amber)">
+      <strong>Inuit oral memory (short):</strong>
+      <p class="muted">Stories of following seals and reading ice — knowledge passed by elders that kept groups alive through the hard seasons.</p>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--pine)">
+      <strong>Settler notice (sample):</strong>
+      <p class="muted">A parish register entry or town ledger describing settlers, market days, and the role of the church in education and order.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Vocabulary flip cards -->
+<section id="vocab" class="card" aria-labelledby="vocab-h">
+  <h3 id="vocab-h">Vocabulary flip cards — learn & reveal</h3>
+  <p class="muted">Click or press Enter/Space on a card to flip it. Use keyboard Tab to move between cards.</p>
+  <div class="vocab-grid" style="margin-top:.8rem" id="vocabGrid">
+    <!-- Cards inserted by JS -->
+  </div>
+  <div class="controls" style="margin-top:.6rem">
+    <button class="btn" id="flipAll">Flip all</button>
+    <button class="btn secondary" id="resetVocab">Reset</button>
+  </div>
+</section>
+
+<!-- Matching activity -->
+<section id="match" class="card" aria-labelledby="match-h">
+  <h3 id="match-h">Matching activity — pair term & meaning</h3>
+  <p class="muted">Find pairs: click one card, then click another. If they match, they stay revealed. Try to match all cards. Keyboard: Tab to focus, Enter to select.</p>
+  <div class="match-board" id="board" style="margin-top:.8rem" aria-live="polite" role="application" aria-label="Matching cards activity">
+    <!-- cards via JS -->
+  </div>
+
+  <div class="status">
+    <div class="muted">Matches: <strong id="matches">0</strong> / <span id="totalPairs">0</span></div>
+    <div class="muted">Attempts: <strong id="attempts">0</strong></div>
+    <div style="margin-left:auto">
+      <button class="btn" id="shuffleBtn">Shuffle</button>
+      <button class="btn secondary" id="resetMatch">Reset</button>
+    </div>
+  </div>
+
+  <div id="celebrate" style="display:none; margin-top:.8rem" role="status" aria-live="polite">
+    <div style="padding:.6rem; border-radius:10px; background:linear-gradient(90deg,#fff8e0,#eafbe8); border:1px solid #e6f5e8">
+      <strong>Well done!</strong> You matched all pairs — you can review the community snapshots to deepen your evidence use.
+    </div>
+  </div>
+</section>
+
+<!-- Wrap -->
+<section id="wrap" class="card" aria-labelledby="wrap-h">
+  <h3 id="wrap-h">Wrap & Next steps</h3>
+  <p class="muted">How this page meets the rubric: you saw multiple communities (Knowledge), practiced reading primary quotes (Thinking & Inquiry), and used vocabulary/tools to prepare comparisons (Communication & Application).</p>
+  <ol>
+    <li>Review the snapshots and sources — notice differences in governance and daily life.</li>
+    <li>Use vocabulary cards to explain terms in your own words (speak to a partner or teacher).</li>
+    <li>Use the matching activity to check understanding; then ask a guiding question from the list below to research further.</li>
+  </ol>
+  <div style="margin-top:.6rem"><strong>Guiding question prompts:</strong>
+    <ul class="muted">
+      <li>How did geography shape one community’s economy or social life?</li>
+      <li>Find one example of cooperation and one example of conflict between communities.</li>
+      <li>How did the period 1800–1850 create different experiences for different groups?</li>
+    </ul>
+  </div>
+</section>
+```
+
+  </main>
+
+  <footer>
+    <div class="muted">Forest Paths — Lesson 1 • Designed for Grade 8 (Canada 1800–1850). Use as student-facing material in class. Accessibility: keyboard & focus support; no external resources required.</div>
+  </footer>
+
+  <!-- Floating decorative leaf -->
+
+  <div class="floating-leaf" style="left:8%; bottom:8%; transform:scale(1.2)"></div>
+  <div class="floating-leaf" style="left:62%; bottom:14%; animation-duration:10s"></div>
+  <div class="floating-leaf" style="left:88%; bottom:6%; animation-duration:9s; transform:scale(.9)"></div>
+
+<script>
+/* ====== Content: majority of student text preserved in snapshots and sources above.
+   Interactive components only: vocab flip cards and matching game.
+   No input fields or saving to storage (per request). ====== */
+
+/* Vocabulary list (term -> short definition) */
+const vocab = [
+  {term:"Community", def:"A group of people living together sharing common interests or characteristics."},
+  {term:"Social structure", def:"How a society organises relationships between groups of people."},
+  {term:"Primary source", def:"A document or object created during the time being studied."},
+  {term:"Perspective", def:"A way of understanding events based on one's experiences."},
+  {term:"Values", def:"Beliefs about what is important or worthwhile."},
+  {term:"Oral history", def:"Stories and knowledge passed down by word of mouth."},
+  {term:"Settlement", def:"A place where people establish a community to live."},
+  {term:"Interaction", def:"Ways different groups communicate and work together."}
+];
+
+/* Build flip cards */
+const vocabGrid = document.getElementById('vocabGrid');
+function createFlipCards(){
+  vocabGrid.innerHTML = '';
+  vocab.forEach((v, i)=>{
+    const flip = document.createElement('div');
+    flip.className = 'flip';
+    flip.setAttribute('role','button');
+    flip.setAttribute('aria-pressed','false');
+    flip.setAttribute('tabindex','0');
+    flip.setAttribute('aria-label', `Vocabulary card ${v.term}`);
+    flip.innerHTML = `
+      <div class="card-inner" aria-hidden="false">
+        <div class="card-face front"><div>${v.term}</div></div>
+        <div class="card-face back"><div style="padding:.4rem">${v.def}</div></div>
+      </div>
+    `;
+    // Toggle on click/keyboard
+    flip.addEventListener('click', ()=> toggleFlip(flip));
+    flip.addEventListener('keydown', (e)=> { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggleFlip(flip); }});
+    vocabGrid.appendChild(flip);
+  });
+}
+function toggleFlip(el){
+  const pressed = el.getAttribute('aria-pressed') === 'true';
+  el.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+}
+
+/* Controls */
+document.getElementById('flipAll').addEventListener('click', ()=>{
+  const flips = document.querySelectorAll('.flip');
+  flips.forEach(f => f.setAttribute('aria-pressed','true'));
+});
+document.getElementById('resetVocab').addEventListener('click', ()=>{
+  document.querySelectorAll('.flip').forEach(f => f.setAttribute('aria-pressed','false'));
+});
+
+/* Matching activity: create pairs (term <-> short definition snippet) */
+const pairs = [
+  {id:1, label:"Seigneurial system", type:"term"},
+  {id:1, label:"Landholding pattern where seigneurs granted land to habitants", type:"def"},
+  {id:2, label:"Michif", type:"term"},
+  {id:2, label:"A Métis language blending French and Cree elements", type:"def"},
+  {id:3, label:"Potlatch", type:"term"},
+  {id:3, label:"Ceremony on the Pacific coast to redistribute wealth and reinforce ties", type:"def"},
+  {id:4, label:"Pemmican", type:"term"},
+  {id:4, label:"Dried meat and fat used by Métis and traders as travel food", type:"def"}
+];
+
+let boardState = { first:null, second:null, attempts:0, matches:0, totalPairs: pairs.length/2 };
+
+/* Shuffle and render */
+function shuffleArray(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
+
+function renderBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  const items = shuffleArray(pairs.slice()); // copy then shuffle
+  items.forEach((it, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'mcard';
+    card.setAttribute('tabindex','0');
+    card.setAttribute('data-id', it.id);
+    card.setAttribute('data-idx', idx);
+    card.setAttribute('role','button');
+    card.innerHTML = `<div class="muted">${it.label}</div>`;
+    // click/keyboard handlers
+    card.addEventListener('click', ()=> selectCard(card));
+    card.addEventListener('keydown', (e)=> { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); selectCard(card); }});
+    board.appendChild(card);
+  });
+  document.getElementById('matches').textContent = boardState.matches;
+  document.getElementById('attempts').textContent = boardState.attempts;
+  document.getElementById('totalPairs').textContent = boardState.totalPairs;
+  document.getElementById('celebrate').style.display = 'none';
+}
+
+/* Selection logic */
+function selectCard(card){
+  if(card.classList.contains('matched') || card.classList.contains('revealed')) return;
+  if(!boardState.first){
+    reveal(card);
+    boardState.first = card;
+  } else if(!boardState.second && card !== boardState.first){
+    reveal(card);
+    boardState.second = card;
+    checkMatch();
+  }
+}
+
+function reveal(card){
+  card.classList.add('revealed');
+}
+
+function hide(card){
+  card.classList.remove('revealed');
+}
+
+function markMatched(a,b){
+  a.classList.add('matched'); b.classList.add('matched');
+  a.classList.remove('revealed'); b.classList.remove('revealed');
+}
+
+/* Check */
+function checkMatch(){
+  boardState.attempts++;
+  document.getElementById('attempts').textContent = boardState.attempts;
+  const a = boardState.first, b = boardState.second;
+  if(a.dataset.id === b.dataset.id){
+    // match
+    markMatched(a,b);
+    boardState.matches++;
+    document.getElementById('matches').textContent = boardState.matches;
+    boardState.first = null; boardState.second = null;
+    if(boardState.matches === boardState.totalPairs){
+      // celebrate
+      document.getElementById('celebrate').style.display = 'block';
+      // small confetti-like visual: temporary leaf flashes
+      spawnLeaves();
+    }
+  } else {
+    // not match — hide after short delay
+    setTimeout(()=>{ hide(a); hide(b); boardState.first=null; boardState.second=null; }, 800);
+  }
+}
+
+/* Buttons */
+document.getElementById('shuffleBtn').addEventListener('click', ()=> { boardState.attempts=0; boardState.matches=0; renderBoard(); document.getElementById('attempts').textContent='0'; });
+document.getElementById('resetMatch').addEventListener('click', ()=> { boardState.attempts=0; boardState.matches=0; renderBoard(); document.getElementById('attempts').textContent='0'; });
+
+/* small decorative leaf spawn on success */
+function spawnLeaves(){
+  for(let i=0;i<8;i++){
+    const leaf = document.createElement('div');
+    leaf.style.position='fixed';
+    leaf.style.left = (20 + Math.random()*60) + '%';
+    leaf.style.bottom = (10 + Math.random()*20) + '%';
+    leaf.style.width='16px'; leaf.style.height='16px';
+    leaf.style.borderRadius='4px';
+    leaf.style.background = 'linear-gradient(180deg,#1E7A5A,#146B54)';
+    leaf.style.opacity = '0.85';
+    leaf.style.transform = `rotate(${Math.random()*60-30}deg)`;
+    leaf.style.pointerEvents='none';
+    leaf.style.transition = 'transform 1600ms linear, opacity 1600ms linear';
+    document.body.appendChild(leaf);
+    setTimeout(()=> leaf.style.transform = `translateY(-120px) rotate(${Math.random()*360}deg)`, 20);
+    setTimeout(()=> leaf.style.opacity='0', 1400);
+    setTimeout(()=> document.body.removeChild(leaf), 1700);
+  }
+}
+
+/* Initialize */
+createFlipCards();
+renderBoard();
+
+/* Accessibility note: ensure keyboard users can tab through interactive elements (cards have tabindex). */
+
+/* Prevent accidental text selection on double-click during play */
+document.getElementById('board').addEventListener('mousedown', (e)=> e.preventDefault());
+</script>
+
+</body>
+</html>

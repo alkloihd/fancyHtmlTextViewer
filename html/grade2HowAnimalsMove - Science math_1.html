@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Animal Movement Adventure — Grade 2 Life Systems (Single Board)</title>
+<style>
+  :root{
+    --sky:#fafcff; --paper:#ffffff; --panel:#fff6e6; --ink:#183142; --muted:#5b7180; --line:#dfeaf6;
+    --pink:#ff9ac2; --orange:#ffc861; --leaf:#2ecc71; --blue:#6ec1ff; --violet:#b39cff;
+    --good:#1ea46f; --warn:#f59f00; --bad:#e05757;
+    --radius:18px; --shadow:0 12px 28px rgba(20,80,120,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{
+    margin:0;padding:0;background:
+      radial-gradient(1000px 420px at 95% -8%, #e8f2ff 0%, transparent 60%),
+      radial-gradient(1000px 520px at -5% -8%, #ffe9f4 0%, transparent 60%),
+      linear-gradient(180deg,#fffdfb,var(--sky) 60%,#f6fcff);
+    color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; line-height:1.35;
+  }
+  a{color:#0a66c2;text-decoration:none}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.88));border-bottom:1px solid var(--line);backdrop-filter:blur(6px);padding:14px 0}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+  h1{margin:0;font-size:clamp(22px,3.6vw,38px)}
+  .pill{display:inline-block;font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#556f80;margin-left:8px}
+
+  .hero{margin:14px 0 18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+  .section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:16px 0;box-shadow:var(--shadow)}
+  h2{font-size:clamp(18px,2.5vw,26px);margin:0 0 10px}
+  h3{margin:8px 0}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .grid{display:grid;gap:14px}
+  @media (min-width:1000px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} }
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px}
+  .btn{background:linear-gradient(180deg,#ffdca1,var(--orange));color:#3a2700;border:none;border-radius:14px;padding:9px 12px;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(255,200,97,.24)}
+  .btn.pink{background:linear-gradient(180deg,#ffc3dd,var(--pink));color:#4a1730;box-shadow:0 8px 18px rgba(255,154,194,.24)}
+  .btn.blue{background:linear-gradient(180deg,#bfe3ff,var(--blue));color:#06243d;box-shadow:0 8px 18px rgba(110,193,255,.24)}
+  .btn.leaf{background:linear-gradient(180deg,#bff0cf,var(--leaf));color:#04361e;box-shadow:0 8px 18px rgba(46,204,113,.24)}
+  .btn.ghost{background:#fff;color:#2a4c62;border:1px solid var(--line)}
+  .hint{font-size:12px;color:var(--muted)} .ok{color:var(--good);font-weight:800} .bad{color:var(--bad);font-weight:800}
+
+  /* Flip cards */
+  .flip{background:transparent;perspective:1000px;height:160px}
+  .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s ease}
+  .flip:hover .flip-inner,.flip:focus-within .flip-inner,.flip.active .flip-inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;padding:12px;border-radius:12px;border:1px solid var(--line);background:#fff;backface-visibility:hidden}
+  .back{transform:rotateY(180deg);background:#f7fbff}
+  .flip h4{margin:0 0 6px}
+  .tap{position:absolute;right:10px;bottom:8px;font-size:12px;opacity:.75}
+
+  /* Accordion */
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
+  summary{cursor:pointer;font-weight:800}
+
+  /* Board area */
+  .board-wrap{display:grid;gap:10px}
+  .controls{display:flex;flex-wrap:wrap;gap:8px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🌲 Animal Movement Adventure
+      <span class="pill">Grade 2 • Science + Language + Math</span>
+      <span class="pill">Single Board • Student-facing</span>
+    </h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p><strong>Welcome, Animal Explorer!</strong> Choose an animal and guide it home using <em>quarter-turns</em> and <em>half-turns</em>. This page uses one colourful grid with buttons that make the animal move step-by-step—no dragging. You can turn on Draw Mode to sketch your path.</p>
+    <details style="margin-top:6px">
+      <summary>🎯 How to Use This Guide</summary>
+      <ul>
+        <li>Read each section.</li>
+        <li>Pick 🐰 / 🦊 / 🐸 and press Start → Middle (A or B) → Final.</li>
+        <li>Say your moves with <em>quarter-turn</em> and <em>half-turn</em> words.</li>
+        <li>Optional: turn on Draw Mode to trace the route.</li>
+      </ul>
+    </details>
+  </section>
+
+  <!-- Single Board -->
+  <section class="section">
+    <h2>The Forest Grid</h2>
+    <div class="board-wrap">
+      <div class="row">
+        <button class="btn pink" data-animal="rabbit">🐰 Hoppy the Rabbit</button>
+        <button class="btn blue" data-animal="fox">🦊 Fox the Explorer</button>
+        <button class="btn leaf" data-animal="frog">🐸 Leap the Frog</button>
+        <span id="which" class="hint">Pick an animal to load landmarks.</span>
+      </div>
+
+      <div class="card">
+        <!-- two canvases stacked: base (grid/landmarks/token) + overlay (free drawing) -->
+        <div style="position:relative; width:672px; height:672px; margin:auto">
+          <canvas id="base" width="672" height="672" style="position:absolute;left:0;top:0"></canvas>
+          <canvas id="overlay" width="672" height="672" style="position:absolute;left:0;top:0"></canvas>
+        </div>
+        <div class="controls" style="margin-top:8px">
+          <button class="btn" id="btnStart">▶️ Start</button>
+          <button class="btn blue" id="btnMidA">🌿 Middle A</button>
+          <button class="btn blue" id="btnMidB">🌿 Middle B</button>
+          <button class="btn leaf" id="btnFinal">🏡 Final</button>
+          <button class="btn ghost" id="btnReset">↺ Reset</button>
+
+          <span class="badge">Draw Mode</span>
+          <button class="btn ghost" id="drawOn">On</button>
+          <button class="btn ghost" id="drawOff">Off</button>
+          <button class="btn ghost" id="drawClear">Erase</button>
+        </div>
+
+        <div class="legend small" style="margin-top:6px" id="legend"></div>
+      </div>
+
+      <!-- Story text (accordions) -->
+      <details class="card">
+        <summary>🌳 Starting Point: The Forest Clearing</summary>
+        <p><strong>Choose Your Animal Friend:</strong> 🐰 Hoppy the Rabbit • 🦊 Fox the Explorer • 🐸 Leap the Frog</p>
+        <ul>
+          <li><strong>For Hoppy:</strong> Make a quarter-turn right and hop 3 spaces to the berry bush.</li>
+          <li><strong>For Fox:</strong> Make a half-turn and trot 4 spaces to the fallen log.</li>
+          <li><strong>For Leap:</strong> Make a quarter-turn left and jump 2 spaces to the pond.</li>
+        </ul>
+      </details>
+
+      <details class="card">
+        <summary>🌿 Middle of the Journey</summary>
+        <ul>
+          <li><strong>Hoppy:</strong> Half-turn to the carrot patch <em>or</em> Quarter-turn right to the tall grass.</li>
+          <li><strong>Fox:</strong> Quarter-turn left to the rocky path <em>or</em> Half-turn to the shady trees.</li>
+          <li><strong>Leap:</strong> Quarter-turn right to the lily pads <em>or</em> Half-turn to the muddy bank.</li>
+        </ul>
+        <p class="small muted">Pictures:
+          <a target="_blank" rel="noopener" href="https://www.google.com/search?q=cartoon+forest+path+for+children">cartoon forest path for children ↗</a> •
+          <a target="_blank" rel="noopener" href="https://www.google.com/search?q=forest+animal+homes+cartoon">forest animal homes cartoon ↗</a>
+        </p>
+      </details>
+
+      <details class="card">
+        <summary>🏡 Finding Home</summary>
+        <ul>
+          <li><strong>Hoppy:</strong> Two quarter-turns right; hop 3 spaces to the burrow.</li>
+          <li><strong>Fox:</strong> One half-turn; walk 5 spaces to the den.</li>
+          <li><strong>Leap:</strong> Three quarter-turns left; jump 2 spaces to the lily pad.</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <!-- Movement challenge -->
+  <section class="section">
+    <h2>🌟 Movement Challenge</h2>
+    <p>Make your own path! Say the directions using <em>quarter-turns</em> and <em>half-turns</em>, then try them on the grid using Draw Mode to sketch.</p>
+  </section>
+
+  <!-- Vocabulary flip -->
+  <section class="section">
+    <h2>📚 Animal Movement Words (Flip the cards)</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner"><div class="face front"><h4>Hop</h4><p class="muted">Both feet jump</p><div class="tap small">Flip ↻</div></div><div class="face back"><p>Moving by jumping with both feet.</p></div></div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner"><div class="face front"><h4>Trot</h4><p class="muted">Steady steps</p><div class="tap small">Flip ↻</div></div><div class="face back"><p>Moving at a steady pace.</p></div></div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner"><div class="face front"><h4>Leap</h4><p class="muted">Big jump</p><div class="tap small">Flip ↻</div></div><div class="face back"><p>Making big jumps.</p></div></div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner"><div class="face front"><h4>Quarter-turn</h4><p class="muted">Small turn</p><div class="tap small">Flip ↻</div></div><div class="face back"><p>Turn 90° (like pointing to 3 on a clock).</p></div></div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner"><div class="face front"><h4>Half-turn</h4><p class="muted">Halfway</p><div class="tap small">Flip ↻</div></div><div class="face back"><p>Turn 180° (like pointing to 6 on a clock).</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MCQs -->
+  <section class="section">
+    <h2>Quick Questions ❓</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="qcard">
+          <div class="q">A <em>quarter-turn</em> means turning…</div>
+          <label><input type="radio" name="q2" value="a"> all the way around</label>
+          <label><input type="radio" name="q2" value="b"> halfway around</label>
+          <label><input type="radio" name="q2" value="c"> a small turn (like pointing to 3 on a clock)</label>
+          <button class="btn ghost" onclick="check('q2','c','q2r')">Check</button>
+          <div id="q2r" class="small" style="margin-top:6px"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="qcard">
+          <div class="q">Which word means “moving at a steady pace”?</div>
+          <label><input type="radio" name="q3" value="a"> hop</label>
+          <label><input type="radio" name="q3" value="b"> trot</label>
+          <label><input type="radio" name="q3" value="c"> leap</label>
+          <button class="btn ghost" onclick="check('q3','b','q3r')">Check</button>
+          <div id="q3r" class="small" style="margin-top:6px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources -->
+  <section class="section">
+    <h2>🔍 Digital Resources</h2>
+    <ul>
+      <li>Animal Movement Videos — National Geographic Kids:
+        <a target="_blank" rel="noopener" href="https://www.google.com/search?q=National+Geographic+Kids+animal+movements">search ↗</a></li>
+      <li>Forest Animals Guide — Canadian Wildlife Federation:
+        <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Canadian+Wildlife+Federation+forest+animals">search ↗</a></li>
+      <li>Movement Games — PBS Kids:
+        <a target="_blank" rel="noopener" href="https://www.google.com/search?q=PBS+Kids+animal+movement+activities">search ↗</a></li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Summary 🌟</h2>
+    <p>Use turns and steps to describe how animals move through their habitats. You guided 🐰, 🦊, or 🐸 across a grid to landmarks like berry bushes, logs, ponds, and homes—using <em>quarter-turns</em>, <em>half-turns</em>, and <em>spaces</em>.</p>
+  </section>
+</div>
+
+<script>
+/* ===== MCQ feedback ===== */
+function check(name, correct, outId){
+  const sel = document.querySelector(`input[name="${name}"]:checked`);
+  const out = document.getElementById(outId);
+  if(!sel){ out.innerHTML = '<span class="warn">Choose an option.</span>'; return; }
+  out.innerHTML = sel.value===correct ? '<span class="ok">✅ Correct!</span>' : '<span class="bad">Try again.</span>';
+}
+
+/* ===== Flip cards tap support ===== */
+document.querySelectorAll('.flip').forEach(card=>{
+  card.addEventListener('click', e=>{
+    if(window.getSelection && String(window.getSelection())!=='') return;
+    card.classList.toggle('active');
+  });
+});
+
+/* ===== Single-board engine (guaranteed landing) ===== */
+const base = document.getElementById('base');
+const over = document.getElementById('overlay');
+const bctx = base.getContext('2d');
+const octx = over.getContext('2d');
+
+const GRID = {cols:14, rows:14, size:48}; // 14x14 grid, 48 px cell = 672 px square
+const START = {col:6, row:6}; // centre-ish
+const DIRS = {N:0,E:1,S:2,W:3};
+
+let animal = null;     // current animal key
+let pos = {col:START.col, row:START.row};
+let dir = DIRS.N;      // start facing North
+let moving = false;
+let drawEnabled = false;
+
+/* Landmarks and scripted paths (cells chosen to match text moves exactly) */
+const ANIMALS = {
+  rabbit: {
+    name:'Hoppy the Rabbit', emoji:'🐰', color:'#ff5fa5',
+    // Start: QR, F3 → (9,6) = 🍓
+    // MidA: H, F2 → (7,6) = 🥕
+    // MidB: QR, F2 → (9,8) = 🌾
+    // Final: two rights, F3 → from MidA: East 3 → (10,6) = 🕳️ ; from MidB: North 3 → (9,5) = 🕳️
+    landmarks: [
+      {col:START.col, row:START.row, emoji:'⭐', label:'Clearing'},
+      {col:9, row:6, emoji:'🍓', label:'Berry Bush'},
+      {col:7, row:6, emoji:'🥕', label:'Carrot Patch'},
+      {col:9, row:8, emoji:'🌾', label:'Tall Grass'},
+      {col:10,row:6, emoji:'🕳️', label:'Burrow'},
+      {col:9, row:5, emoji:'🕳️', label:'Burrow'}
+    ],
+    startOps:['QR','F3'],
+    midAOps:['H','F2'],
+    midBOps:['QR','F2'],
+    finalOpsFromA:['QR','QR','F3'],
+    finalOpsFromB:['QR','QR','F3'] // same ops; landing differs by current dir/pos
+  },
+
+  fox: {
+    name:'Fox the Explorer', emoji:'🦊', color:'#0ca0ff',
+    // Start: H, F4 → (6,10) = 🪵
+    // MidA: QL, F2 → (8,10) = 🪨
+    // MidB: H, F2  → (6,8)  = 🌳
+    // Final: H, F5 → from A: West 5 → (3,10) = 🏚️ ; from B: South 5 → (6,13) = 🏚️
+    landmarks: [
+      {col:START.col, row:START.row, emoji:'⭐', label:'Clearing'},
+      {col:6, row:10, emoji:'🪵', label:'Fallen Log'},
+      {col:8, row:10, emoji:'🪨', label:'Rocky Path'},
+      {col:6, row:8,  emoji:'🌳', label:'Shady Trees'},
+      {col:3, row:10, emoji:'🏚️', label:'Den'},
+      {col:6, row:13, emoji:'🏚️', label:'Den'}
+    ],
+    startOps:['H','F4'],
+    midAOps:['QL','F2'],
+    midBOps:['H','F2'],
+    finalOpsFromA:['H','F5'],
+    finalOpsFromB:['H','F5']
+  },
+
+  frog: {
+    name:'Leap the Frog', emoji:'🐸', color:'#1fbf6a',
+    // Start: QL, F2 → (4,6) = 💧
+    // MidA: QR, F2 → (4,4) = 🌿
+    // MidB: H,  F1 → (5,6) = 🪵 (muddy bank icon)
+    // Final (three QL, F2): From A: E 2 → (6,4) = 🌿; From B: S 2 → (5,8) = 🌿
+    landmarks: [
+      {col:START.col, row:START.row, emoji:'⭐', label:'Clearing'},
+      {col:4, row:6,  emoji:'💧', label:'Pond'},
+      {col:4, row:4,  emoji:'🌿', label:'Lily Pads'},
+      {col:5, row:6,  emoji:'🪵', label:'Muddy Bank'},
+      {col:6, row:4,  emoji:'🌿', label:'Lily Pad Home'},
+      {col:5, row:8,  emoji:'🌿', label:'Lily Pad Home'}
+    ],
+    startOps:['QL','F2'],
+    midAOps:['QR','F2'],
+    midBOps:['H','F1'],
+    finalOpsFromA:['QL','QL','QL','F2'],
+    finalOpsFromB:['QL','QL','QL','F2']
+  }
+};
+
+/* --- Grid + drawing --- */
+function drawGrid(){
+  bctx.clearRect(0,0,base.width,base.height);
+  // background
+  const g=bctx.createLinearGradient(0,0,0,base.height);
+  g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#f7fbff');
+  bctx.fillStyle=g; bctx.fillRect(0,0,base.width,base.height);
+
+  // full grid: vertical + horizontal lines
+  bctx.lineWidth=1;
+  for(let c=0;c<=GRID.cols;c++){
+    bctx.strokeStyle = (c===START.col? '#a8c4e9':'#e7f0fa');
+    bctx.beginPath(); bctx.moveTo(c*GRID.size,0); bctx.lineTo(c*GRID.size, base.height); bctx.stroke();
+  }
+  for(let r=0;r<=GRID.rows;r++){
+    bctx.strokeStyle = (r===START.row? '#a8c4e9':'#e7f0fa');
+    bctx.beginPath(); bctx.moveTo(0,r*GRID.size); bctx.lineTo(base.width, r*GRID.size); bctx.stroke();
+  }
+
+  // landmarks
+  if(animal){
+    for(const L of ANIMALS[animal].landmarks){
+      drawLandmark(L.col, L.row, L.emoji);
+    }
+  }
+
+  // token
+  drawToken();
+}
+
+function centerPx(col,row){
+  return {x: col*GRID.size + GRID.size/2, y: row*GRID.size + GRID.size/2};
+}
+function drawLandmark(col,row,emoji){
+  const {x,y} = centerPx(col,row);
+  bctx.font = Math.floor(GRID.size*0.8)+'px serif';
+  bctx.textAlign='center'; bctx.textBaseline='middle';
+  bctx.fillText(emoji, x, y+2);
+}
+function drawToken(){
+  if(!animal) return;
+  const {x,y} = centerPx(pos.col,pos.row);
+  const col = ANIMALS[animal].color;
+  // ring
+  bctx.beginPath(); bctx.arc(x, y, GRID.size*0.36, 0, Math.PI*2);
+  bctx.fillStyle = '#fff'; bctx.fill();
+  bctx.lineWidth=4; bctx.strokeStyle = col; bctx.stroke();
+  // emoji
+  bctx.font = Math.floor(GRID.size*0.6)+'px serif';
+  bctx.textAlign='center'; bctx.textBaseline='middle';
+  bctx.fillText(ANIMALS[animal].emoji, x, y+1);
+}
+
+/* --- Movement engine (guaranteed landings) --- */
+function setAnimal(key){
+  animal = key;
+  pos = {col:START.col, row:START.row};
+  dir = DIRS.N;
+  document.getElementById('which').textContent = `${ANIMALS[key].emoji} ${ANIMALS[key].name} loaded.`;
+  updateLegend();
+  drawGrid();
+}
+function updateLegend(){
+  const el = document.getElementById('legend');
+  if(!animal){ el.textContent=''; return; }
+  const Ls = ANIMALS[animal].landmarks.map(L=>`<span class="badge">${L.emoji} ${L.label} (${L.col},${L.row})</span>`);
+  el.innerHTML = Ls.join(' ');
+}
+function turn(op){
+  if(op==='QL') dir = (dir+3)%4;
+  if(op==='QR') dir = (dir+1)%4;
+  if(op==='H')  dir = (dir+2)%4;
+}
+function step(){
+  if(dir===DIRS.N) pos.row = Math.max(0, pos.row-1);
+  if(dir===DIRS.E) pos.col = Math.min(GRID.cols-1, pos.col+1);
+  if(dir===DIRS.S) pos.row = Math.min(GRID.rows-1, pos.row+1);
+  if(dir===DIRS.W) pos.col = Math.max(0, pos.col-1);
+}
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+async function runOps(ops){
+  if(!animal || moving) return;
+  moving = true;
+  for(const op of ops){
+    if(op==='QL'||op==='QR'||op==='H'){ turn(op); }
+    else if(op.startsWith('F')){
+      const n = parseInt(op.slice(1),10)||1;
+      for(let i=0;i<n;i++){
+        const from = centerPx(pos.col,pos.row);
+        step();
+        const to = centerPx(pos.col,pos.row);
+        // draw step trail
+        bctx.strokeStyle = ANIMALS[animal].color; bctx.lineWidth=4; bctx.lineCap='round';
+        bctx.beginPath(); bctx.moveTo(from.x,from.y); bctx.lineTo(to.x,to.y); bctx.stroke();
+      }
+    }
+    drawGrid();
+    await sleep(220);
+  }
+  moving = false;
+}
+
+/* Track which middle was pressed so final uses the right landing */
+let lastMid = null;
+
+document.querySelectorAll('[data-animal]').forEach(b=>{
+  b.addEventListener('click', ()=>{ setAnimal(b.dataset.animal); lastMid=null; });
+});
+
+document.getElementById('btnReset').onclick = ()=>{ if(!animal) return; pos={col:START.col,row:START.row}; dir=DIRS.N; lastMid=null; drawGrid(); };
+document.getElementById('btnStart').onclick = ()=>{ if(!animal) return; runOps(ANIMALS[animal].startOps); };
+document.getElementById('btnMidA').onclick = ()=>{ if(!animal) return; lastMid='A'; runOps(ANIMALS[animal].midAOps); };
+document.getElementById('btnMidB').onclick = ()=>{ if(!animal) return; lastMid='B'; runOps(ANIMALS[animal].midBOps); };
+document.getElementById('btnFinal').onclick = async ()=>{
+  if(!animal) return;
+  // Use the same op list; landing differs due to current dir/pos by design (pre-set target cells exist)
+  if(lastMid==='A' || lastMid===null){
+    await runOps(ANIMALS[animal].finalOpsFromA);
+  } else {
+    await runOps(ANIMALS[animal].finalOpsFromB);
+  }
+};
+
+/* ===== Draw Mode on overlay ===== */
+function clearOverlay(){ octx.clearRect(0,0,over.width,over.height); }
+let drawing=false, last=null;
+
+function toOverlayPos(e){
+  const rect = over.getBoundingClientRect();
+  const px = (e.touches?e.touches[0].clientX:e.clientX) - rect.left;
+  const py = (e.touches?e.touches[0].clientY:e.clientY) - rect.top;
+  return {x:px, y:py};
+}
+function startDraw(e){ if(!drawEnabled) return; drawing=true; last=toOverlayPos(e); e.preventDefault(); }
+function moveDraw(e){ if(!drawing) return; const p=toOverlayPos(e); octx.strokeStyle='#444'; octx.lineWidth=4; octx.lineCap='round'; octx.beginPath(); octx.moveTo(last.x,last.y); octx.lineTo(p.x,p.y); octx.stroke(); last=p; e.preventDefault(); }
+function endDraw(){ drawing=false; }
+
+document.getElementById('drawOn').onclick = ()=>{ drawEnabled=true; };
+document.getElementById('drawOff').onclick = ()=>{ drawEnabled=false; };
+document.getElementById('drawClear').onclick = ()=>{ clearOverlay(); };
+
+over.addEventListener('mousedown', startDraw);
+over.addEventListener('mousemove', moveDraw);
+window.addEventListener('mouseup', endDraw);
+over.addEventListener('touchstart', startDraw, {passive:false});
+over.addEventListener('touchmove',  moveDraw,  {passive:false});
+over.addEventListener('touchend',   endDraw);
+
+/* Initial paint */
+drawGrid();
+</script>
+</body>
+</html>

@@ -1,0 +1,827 @@
+<!-- COVERAGE-CHECK
+Grade: K-2 (based on simple language, large concepts, basic activities)
+Subject: Integrated (Science - animal locomotion, Math - spatial sense/directions, Arts - visual representation)
+Learning Goals: ✓ All 3 integrated (animal movement description, directional instructions, artistic works)
+Success Criteria: ✓ All 4 integrated (describe movements, give directions, follow instructions, create art)
+Guiding Questions: ✓ All 4 incorporated throughout content
+Curriculum Expectations: ✓ Used as context (Science B2.2, Math E1.4, Arts D1.2)
+Rubric: N/A - used lesson goals/criteria for alignment
+Student Text: ✓ Majority included - all 6 chapters, vocabulary, activities, charts reorganized into engaging sections
+-->
+
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moving Like Animals - Interactive Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f0f8e8 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero p {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9em;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Content Cards */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .movement-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-left: 6px solid #4CAF50;
+            transition: transform 0.3s ease;
+        }
+        
+        .movement-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .movement-card h3 {
+            color: #2c5530;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .movement-icon {
+            font-size: 1.8em;
+        }
+        
+        /* Flip Cards for Vocabulary */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 120px;
+            perspective: 1000px;
+        }
+        
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .flip-card-front {
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+            color: white;
+            font-size: 1.1em;
+        }
+        
+        .flip-card-back {
+            background: #fff3e0;
+            color: #e65100;
+            transform: rotateY(180deg);
+            padding: 10px;
+            font-size: 0.9em;
+        }
+        
+        /* Accordions */
+        .accordion-section {
+            margin: 30px 0;
+        }
+        
+        .accordion-item {
+            background: white;
+            border-radius: 10px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .accordion-header {
+            background: linear-gradient(135deg, #9C27B0, #673AB7);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        
+        .accordion-header:hover {
+            background: linear-gradient(135deg, #8E24AA, #5E35B1);
+        }
+        
+        .accordion-arrow {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+        
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .accordion-item.active .accordion-content {
+            max-height: 800px;
+        }
+        
+        .accordion-inner {
+            padding: 25px;
+            background: #f8f9fa;
+        }
+        
+        /* Sticky Learning Goals */
+        .sticky-goals {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            margin-bottom: 30px;
+        }
+        
+        .sticky-goals .accordion-header {
+            background: linear-gradient(135deg, #4CAF50, #388E3C);
+        }
+        
+        .sticky-goals .accordion-header:hover {
+            background: linear-gradient(135deg, #45a049, #2E7D32);
+        }
+        
+        /* Movement Chart */
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .movement-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        
+        .movement-table th {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .movement-table td {
+            padding: 12px 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .movement-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Activity Workspace */
+        .workspace {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-left: 6px solid #FF9800;
+        }
+        
+        .direction-practice {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .practice-card {
+            background: #fff8e1;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ffb74d;
+        }
+        
+        .practice-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin: 5px 0;
+        }
+        
+        .practice-input:focus {
+            border-color: #FF9800;
+            outline: none;
+        }
+        
+        /* Digital Resources */
+        .resources {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .resource-link {
+            display: block;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: #1565c0;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            border-left: 4px solid #2196F3;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-link:hover {
+            background: linear-gradient(135deg, #bbdefb, #90caf9);
+            transform: translateX(5px);
+        }
+        
+        /* Summary Section */
+        .summary {
+            background: linear-gradient(135deg, #f3e5f5, #e8f5e8);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .key-point {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-top: 4px solid #9C27B0;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 2px solid #eee;
+            margin-top: 40px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2em;
+            }
+            
+            .hero p {
+                font-size: 1.1em;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .flip-card {
+                height: 100px;
+            }
+            
+            .accordion-header {
+                padding: 15px;
+                font-size: 1em;
+            }
+        }
+        
+        /* Focus Styles for Accessibility */
+        .accordion-header:focus,
+        .flip-card:focus,
+        .practice-input:focus,
+        .resource-link:focus {
+            outline: 3px solid #FF9800;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>🐾 Moving Like Animals</h1>
+            <p>Discover how different animals move through their world! Learn about walking, hopping, swimming, flying, and crawling while practising giving directions with special movement words.</p>
+            <div>
+                <span class="badge">🔬 Science</span>
+                <span class="badge">📐 Math</span>
+                <span class="badge">🎨 Arts</span>
+                <span class="badge">🧭 Directions</span>
+            </div>
+        </section>
+
+        <!-- Learning Goals - Sticky Accordion -->
+        <section class="accordion-section sticky-goals">
+            <div class="accordion-item active" id="learning-goals">
+                <div class="accordion-header" onclick="toggleAccordion('learning-goals')" tabindex="0">
+                    🎯 Learning Goals & Success Criteria
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-inner">
+                        <h4>Learning Goals:</h4>
+                        <ul style="margin: 10px 0 20px 20px;">
+                            <li>Describe and demonstrate various ways animals move in their environments</li>
+                            <li>Give and follow multi-step instructions involving movement, distance, and turns</li>
+                            <li>Create artistic works that capture animal movement patterns</li>
+                        </ul>
+                        <h4>Success Criteria:</h4>
+                        <ul style="margin: 10px 0 0 20px;">
+                            <li>✅ I can describe how different animals move in their environment</li>
+                            <li>✅ I can give clear directions using words like half-turn, quarter-turn, and distance</li>
+                            <li>✅ I can follow movement instructions accurately</li>
+                            <li>✅ I can create art that shows how animals move</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Guiding Questions -->
+        <section class="accordion-section">
+            <div class="accordion-item" id="guiding-questions">
+                <div class="accordion-header" onclick="toggleAccordion('guiding-questions')" tabindex="0">
+                    🤔 Guiding Questions
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-inner">
+                        <ul style="margin-left: 20px; font-size: 1.1em;">
+                            <li style="margin: 10px 0;">How do different animals move?</li>
+                            <li style="margin: 10px 0;">What words can we use to describe animal movements?</li>
+                            <li style="margin: 10px 0;">How can we give clear directions about movement?</li>
+                            <li style="margin: 10px 0;">Why do different animals move in different ways?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Animal Movement Types -->
+        <section>
+            <h2 style="text-align: center; margin: 40px 0 30px; font-size: 2.2em; color: #2c5530;">🐾 Types of Animal Movement</h2>
+            
+            <div class="content-grid">
+                <!-- Walking Animals -->
+                <div class="movement-card">
+                    <h3><span class="movement-icon">🚶‍♂️</span>Walking Animals</h3>
+                    <p><strong>Walking</strong> means moving one foot at a time in a pattern.</p>
+                    <div style="margin: 15px 0;">
+                        <strong>Animals that walk:</strong><br>
+                        🐎 <strong>Horses</strong> - Walk with four legs<br>
+                        🐕 <strong>Dogs</strong> - Walk and run on four paws<br>
+                        🐻 <strong>Bears</strong> - Walk slowly on four big paws
+                    </div>
+                    <div style="background: #e8f5e8; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                        <strong>💡 Did You Know?</strong><br>
+                        A horse can walk about 4 kilometres in one hour! That's like walking from your school to the grocery store.
+                    </div>
+                </div>
+
+                <!-- Hopping Animals -->
+                <div class="movement-card">
+                    <h3><span class="movement-icon">🦘</span>Hopping Animals</h3>
+                    <p><strong>Hopping</strong> means pushing off the ground with legs and landing again.</p>
+                    <div style="margin: 15px 0;">
+                        <strong>Animals that hop:</strong><br>
+                        🐰 <strong>Rabbits</strong> - Hop with strong back legs<br>
+                        🐸 <strong>Frogs</strong> - Jump from lily pad to lily pad<br>
+                        🦘 <strong>Kangaroos</strong> - Can hop very far with each jump
+                    </div>
+                    <div style="background: #e8f5e8; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                        <strong>💡 Did You Know?</strong><br>
+                        A rabbit can hop 3 metres in one jump! That's longer than your classroom.
+                    </div>
+                </div>
+
+                <!-- Swimming Animals -->
+                <div class="movement-card">
+                    <h3><span class="movement-icon">🏊‍♀️</span>Swimming Animals</h3>
+                    <p><strong>Swimming</strong> means moving through water using fins, flippers, or webbed feet.</p>
+                    <div style="margin: 15px 0;">
+                        <strong>Animals that swim:</strong><br>
+                        🐟 <strong>Fish</strong> - Use fins and tail to swim<br>
+                        🦆 <strong>Ducks</strong> - Use webbed feet like paddles<br>
+                        🦭 <strong>Seals</strong> - Use flippers to swim fast
+                    </div>
+                    <div style="background: #e8f5e8; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                        <strong>💡 Did You Know?</strong><br>
+                        A duck's webbed feet work like swim fins! The skin between their toes helps them paddle.
+                    </div>
+                </div>
+
+                <!-- Flying Animals -->
+                <div class="movement-card">
+                    <h3><span class="movement-icon">🕊️</span>Flying Animals</h3>
+                    <p><strong>Flying</strong> means moving through the air using wings.</p>
+                    <div style="margin: 15px 0;">
+                        <strong>Animals that fly:</strong><br>
+                        🐦 <strong>Birds</strong> - Flap wings to fly<br>
+                        🦇 <strong>Bats</strong> - Fly at night using wing membranes<br>
+                        🦋 <strong>Butterflies</strong> - Flutter colorful wings
+                    </div>
+                    <div style="background: #e8f5e8; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                        <strong>💡 Did You Know?</strong><br>
+                        A hummingbird can flap its wings 80 times in one second! That's faster than you can blink.
+                    </div>
+                </div>
+
+                <!-- Crawling Animals -->
+                <div class="movement-card">
+                    <h3><span class="movement-icon">🐍</span>Crawling Animals</h3>
+                    <p><strong>Crawling</strong> means moving close to the ground without legs.</p>
+                    <div style="margin: 15px 0;">
+                        <strong>Animals that crawl:</strong><br>
+                        🐍 <strong>Snakes</strong> - Slither in S-shaped curves<br>
+                        🪱 <strong>Worms</strong> - Crawl by stretching and shrinking<br>
+                        🐛 <strong>Caterpillars</strong> - Crawl using many tiny legs
+                    </div>
+                    <div style="background: #e8f5e8; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                        <strong>💡 Did You Know?</strong><br>
+                        A snake moves by pushing against the ground with its belly scales. It's like having tiny feet all along its body!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Movement Vocabulary -->
+        <section>
+            <h2 style="text-align: center; margin: 40px 0 20px; font-size: 2em; color: #2c5530;">🔤 Movement Vocabulary</h2>
+            <p style="text-align: center; margin-bottom: 30px; font-size: 1.2em;">Click on each word to see its meaning!</p>
+            
+            <div class="vocab-grid">
+                <div class="flip-card" onclick="flipCard(this)" tabindex="0">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Walking</div>
+                        <div class="flip-card-back">Moving by putting one foot in front of the other</div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)" tabindex="0">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Hopping</div>
+                        <div class="flip-card-back">Moving by jumping with both feet together</div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)" tabindex="0">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Swimming</div>
+                        <div class="flip-card-back">Moving through water using fins or webbed feet</div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)" tabindex="0">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Flying</div>
+                        <div class="flip-card-back">Moving through the air using wings</div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)" tabindex="0">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Half-turn</div>
+                        <div class="flip-card-back">Turning halfway around (180 degrees)</div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)" tabindex="0">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Quarter-turn</div>
+                        <div class="flip-card-back">Turning one-fourth of the way around (90 degrees)</div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)" tabindex="0">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Direction</div>
+                        <div class="flip-card-back">The way something moves (forward, backward, left, right)</div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)" tabindex="0">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">Distance</div>
+                        <div class="flip-card-back">How far something moves from one place to another</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Movement Comparison Chart -->
+        <section class="chart-container">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #2c5530;">📊 Animal Movement Comparison</h2>
+            <table class="movement-table">
+                <thead>
+                    <tr>
+                        <th>Movement Type</th>
+                        <th>Animals</th>
+                        <th>Body Parts Used</th>
+                        <th>Speed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🚶‍♂️ Walking</td>
+                        <td>Horse, Dog, Bear</td>
+                        <td>Four legs</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>🦘 Hopping</td>
+                        <td>Rabbit, Frog, Kangaroo</td>
+                        <td>Strong back legs</td>
+                        <td>Fast</td>
+                    </tr>
+                    <tr>
+                        <td>🏊‍♀️ Swimming</td>
+                        <td>Fish, Duck, Seal</td>
+                        <td>Fins, webbed feet</td>
+                        <td>Varies</td>
+                    </tr>
+                    <tr>
+                        <td>✈️ Flying</td>
+                        <td>Bird, Bat, Butterfly</td>
+                        <td>Wings</td>
+                        <td>Very fast</td>
+                    </tr>
+                    <tr>
+                        <td>🐍 Crawling</td>
+                        <td>Snake, Worm, Caterpillar</td>
+                        <td>Belly, tiny legs</td>
+                        <td>Slow</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Student Workspace -->
+        <section class="workspace">
+            <h2 style="color: #e65100; margin-bottom: 20px;">🎯 Practice Giving Directions</h2>
+            <p style="margin-bottom: 20px;">Practice writing movement instructions using direction words!</p>
+            
+            <div class="direction-practice">
+                <div class="practice-card">
+                    <h4>🐰 Make a Rabbit Hop</h4>
+                    <p>Write instructions for a rabbit:</p>
+                    <input type="text" class="practice-input" placeholder="Hop 3 times forward...">
+                    <input type="text" class="practice-input" placeholder="Make a quarter-turn left...">
+                </div>
+                
+                <div class="practice-card">
+                    <h4>🐟 Guide a Fish</h4>
+                    <p>Write swimming directions:</p>
+                    <input type="text" class="practice-input" placeholder="Swim 5 metres forward...">
+                    <input type="text" class="practice-input" placeholder="Make a half-turn...">
+                </div>
+                
+                <div class="practice-card">
+                    <h4>🦋 Direct a Butterfly</h4>
+                    <p>Write flying instructions:</p>
+                    <input type="text" class="practice-input" placeholder="Flutter 2 metres up...">
+                    <input type="text" class="practice-input" placeholder="Turn right and fly...">
+                </div>
+                
+                <div class="practice-card">
+                    <h4>🐍 Move a Snake</h4>
+                    <p>Write slithering directions:</p>
+                    <input type="text" class="practice-input" placeholder="Slither forward slowly...">
+                    <input type="text" class="practice-input" placeholder="Curve in an S-shape...">
+                </div>
+            </div>
+        </section>
+
+        <!-- Digital Resources -->
+        <section class="resources">
+            <h2 style="color: #1565c0; margin-bottom: 20px; text-align: center;">🔗 Digital Resources</h2>
+            
+            <a href="https://www.canadiangeographic.ca/kids" target="_blank" rel="noopener" class="resource-link">
+                🇨🇦 Canadian Geographic Kids - Animal Movement Videos
+            </a>
+            <a href="https://www.google.com/search?q=Canadian+Geographic+%22Animal+Movement+Kids%22" target="_blank" rel="noopener" class="resource-link">
+                🔍 Search: Canadian Geographic Animal Movement
+            </a>
+            
+            <a href="https://www.nfb.ca/education/" target="_blank" rel="noopener" class="resource-link">
+                🎬 National Film Board - Animal Locomotion Studies
+            </a>
+            <a href="https://www.google.com/search?q=National+Film+Board+%22Animal+Locomotion+Studies%22" target="_blank" rel="noopener" class="resource-link">
+                🔍 Search: NFB Animal Locomotion
+            </a>
+            
+            <a href="https://www.rom.on.ca/en/learn" target="_blank" rel="noopener" class="resource-link">
+                🏛️ ROM - Animal Adaptations Movement
+            </a>
+            <a href="https://www.google.com/search?q=ROM+%22Animal+Adaptations+Movement%22" target="_blank" rel="noopener" class="resource-link">
+                🔍 Search: ROM Animal Adaptations
+            </a>
+            
+            <a href="https://www.google.com/search?q=animals+walking+four+legs+kids+pictures" target="_blank" rel="noopener" class="resource-link">
+                🖼️ Find Images: Walking Animals
+            </a>
+            <a href="https://www.google.com/search?q=swimming+animals+fins+webbed+feet+educational" target="_blank" rel="noopener" class="resource-link">
+                🖼️ Find Images: Swimming Animals
+            </a>
+        </section>
+
+        <!-- Summary -->
+        <section class="summary">
+            <h2 style="margin-bottom: 20px; color: #7b1fa2;">📖 What We Learned</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <h4>5 Movement Types</h4>
+                    <p>Walking, hopping, swimming, flying, and crawling</p>
+                </div>
+                <div class="key-point">
+                    <h4>Body Parts</h4>
+                    <p>Different movements use different body parts</p>
+                </div>
+                <div class="key-point">
+                    <h4>Direction Words</h4>
+                    <p>Half-turn, quarter-turn, forward, backward</p>
+                </div>
+                <div class="key-point">
+                    <h4>Environments</h4>
+                    <p>Animals move differently in water, air, and land</p>
+                </div>
+            </div>
+            
+            <h3 style="color: #7b1fa2; margin: 30px 0 15px;">🌟 Key Vocabulary You Now Know:</h3>
+            <p><strong>Walking • Hopping • Swimming • Flying • Crawling • Direction • Half-turn • Quarter-turn • Distance • Pattern • Wings • Fins • Webbed feet</strong></p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>🌟 Great job learning about animal movement! This interactive lesson works completely offline in a single HTML file. 🐾</p>
+        </footer>
+    </div>
+
+    <script>
+        // Flip Card Functionality
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+        }
+        
+        // Accordion Functionality
+        function toggleAccordion(id) {
+            const item = document.getElementById(id);
+            item.classList.toggle('active');
+        }
+        
+        // Keyboard Support for Flip Cards
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('flip-card') && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                flipCard(e.target);
+            }
+        });
+        
+        // Keyboard Support for Accordions
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('accordion-header') && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                const id = e.target.parentElement.id;
+                toggleAccordion(id);
+            }
+        });
+        
+        // Initialize Learning Goals as Open
+        document.addEventListener('DOMContentLoaded', function() {
+            const learningGoals = document.getElementById('learning-goals');
+            if (learningGoals && !learningGoals.classList.contains('active')) {
+                learningGoals.classList.add('active');
+            }
+        });
+        
+        // Simple Animation for Movement Cards
+        function animateCards() {
+            const cards = document.querySelectorAll('.movement-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+        
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.movement-card');
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            });
+            
+            setTimeout(animateCards, 300);
+        });
+        
+        // Input Enhancement for Practice Section
+        const inputs = document.querySelectorAll('.practice-input');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    this.style.borderColor = '#4CAF50';
+                    this.style.backgroundColor = '#f1f8e9';
+                } else {
+                    this.style.borderColor = '#ddd';
+                    this.style.backgroundColor = 'white';
+                }
+            });
+        });
+        
+        console.log('🐾 Moving Like Animals - Interactive lesson loaded successfully!');
+    </script>
+</body>
+</html>

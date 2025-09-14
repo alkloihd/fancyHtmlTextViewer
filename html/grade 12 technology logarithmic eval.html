@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chapter 7 — Technology-Supported Logarithmic Evaluation (Gr.12, Light)</title>
+  <style>
+    :root{
+      --bg:#f6f9ff; --paper:#ffffff; --panel:#eef4ff; --ink:#172a3a; --muted:#53697c;
+      --line:#dbe7f5; --accent:#2f7df4; --teal:#00b3a4; --peach:#ffb25b;
+      --good:#14866d; --warn:#f59e0b; --bad:#e23d3a;
+      --radius:16px; --shadow:0 10px 28px rgba(22,44,88,.08);
+      --mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:
+      radial-gradient(1200px 500px at 90% -8%, #e7f0ff 0%, transparent 60%),
+      linear-gradient(180deg,#f3f8ff,var(--bg) 60%,#f8fbff);
+      color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; line-height:1.35}
+    a{color:#1558d6;text-decoration:none}
+    header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.85));
+      backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:14px 0}
+    .wrap{max-width:1160px;margin:0 auto;padding:0 16px}
+    h1{margin:0;font-size:clamp(22px,3.2vw,36px)}
+    .pill{display:inline-block;font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:#4a6175;background:#fff;margin-left:8px}
+    .hero{margin:14px 0 18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+    .section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:16px 0;box-shadow:var(--shadow)}
+    h2{font-size:clamp(18px,2.3vw,26px);margin:0 0 12px}
+    h3{margin:8px 0}
+    .muted{color:var(--muted)} .small{font-size:12px}
+    .grid{display:grid;gap:12px}
+    @media (min-width:900px){.cols-2{grid-template-columns:1fr 1fr}.cols-3{grid-template-columns:repeat(3,1fr)}}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    button{background:linear-gradient(180deg,#7eb6ff,var(--accent));color:#05132a;border:none;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(47,125,244,.18)}
+    button.ghost{background:#fff;color:#345;border:1px solid var(--line)}
+    button.teal{background:linear-gradient(180deg,#69ebdf,var(--teal));color:#003b36;box-shadow:0 6px 18px rgba(0,179,164,.18)}
+    button.peach{background:linear-gradient(180deg,#ffd7a2,var(--peach));color:#3a2200;box-shadow:0 6px 18px rgba(255,178,91,.20)}
+    input[type="number"],input[type="text"]{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:150px}
+    code,.code{font-family:var(--mono)}
+    .out{background:#f8fbff;border:1px dashed var(--line);border-radius:12px;padding:10px;font-family:var(--mono)}
+    .ok{color:var(--good);font-weight:700}.warn{color:var(--warn);font-weight:700}.bad{color:var(--bad);font-weight:700}
+    table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:#fff}
+    th,td{border:1px solid var(--line);padding:8px;text-align:left;font-size:14px}
+    footer{color:#6f8aa3;font-size:12px;padding:24px 0 60px}
+
+    /* Flip cards */
+    .flip{background:transparent;perspective:1000px;height:160px}
+    .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s ease}
+    .flip:hover .flip-inner,.flip:focus-within .flip-inner,.flip.active .flip-inner{transform:rotateY(180deg)}
+    .face{position:absolute;inset:0;padding:12px;border-radius:12px;border:1px solid var(--line);background:#fff;backface-visibility:hidden}
+    .back{transform:rotateY(180deg);background:#f7fbff}
+    .flip h4{margin:0 0 6px}
+    .tap{position:absolute;right:10px;bottom:8px;font-size:12px;opacity:.75}
+
+    /* Matching game */
+    .match-wrap{display:grid;gap:12px}
+    @media (min-width:900px){.match-wrap{grid-template-columns:1fr 1fr}}
+    .list{display:grid;gap:10px}
+    .draggable,.droppable{background:#fff;border:2px dashed #e7eef8;border-radius:12px;padding:10px;min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .draggable{cursor:grab}.draggable:active{cursor:grabbing}
+    .droppable{min-height:56px}
+    .slot{opacity:.65;font-size:12px}
+    .correct{border-color:rgba(31,169,113,.95);background:#eaf9f2}
+    .wrong{border-color:rgba(226,61,58,.9);background:#ffecec;animation:shake .2s}
+    .locked{opacity:.7;pointer-events:none}
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}100%{transform:translateX(0)}}
+
+    /* Print */
+    @media print{header .row button{display:none}.flip:hover .flip-inner{transform:none}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Chapter 7 — Technology-Supported Logarithmic Evaluation
+      <span class="pill">Grade 12 • Advanced Functions / Calculus</span>
+      <span class="pill">Student-facing • Light Theme</span>
+    </h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="muted">
+      In the digital age, evaluating logarithms blends number sense with tech: graphing calculators, spreadsheets, and computational tools.
+      This page follows your chapter structure (7.1–7.8), keeps your text, adds dependable calculators, flip-cards, one drag-and-drop match,
+      and links to trustworthy tools. No external libraries; works offline.
+    </p>
+    <div class="row" style="margin-top:6px">
+      <button id="btnPrint" class="teal">🖨️ Print / Save as PDF</button>
+    </div>
+  </section>
+
+  <!-- 7.1 -->
+  <section class="section" id="sec71">
+    <h2>7.1 Introduction to Computational Logarithmic Methods</h2>
+    <div class="card">
+      <p>
+        Logarithmic evaluation has evolved beyond manual steps to include graphing calculators, spreadsheets, and CAS software—methods that
+        boost precision and understanding. Approximating logs with technology is essential for complex bases and irrational results.
+      </p>
+      <p>
+        As established earlier, logarithms invert exponentiation: <span class="code">log_b(x)=y</span> iff <span class="code">b^y=x</span>.
+        Practical evaluation often needs computation to reach useful precision.
+      </p>
+      <p>🍁 <strong>Canadian context:</strong> Statistics Canada uses logarithmic modelling to analyse provincial/territorial population trends.</p>
+      <p class="small muted">
+        Explore: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Statistics+Canada+population+logarithmic+modeling">Statistics Canada population models ↗</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 7.2 -->
+  <section class="section" id="sec72">
+    <h2>7.2 Systematic Approximation Strategies</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Understanding Logarithmic Positioning</h3>
+        <p>For <span class="code">log₃(29)</span>:</p>
+        <ul>
+          <li>3³ = 27 (less than 29)</li>
+          <li>3⁴ = 81 (greater than 29)</li>
+        </ul>
+        <p>So <span class="code">log₃(29) ∈ (3,4)</span>. Refining with tech gives ≈ 3.07.</p>
+        <p class="small muted">Visuals: <a target="_blank" rel="noopener" href="https://www.desmos.com/calculator">Desmos Log Functions ↗</a> |
+          <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Desmos+logarithmic+function+graphing">Backup search ↗</a></p>
+      </div>
+      <div class="card">
+        <h3>Systematic Trial Method</h3>
+        <ol>
+          <li>Establish bounds using known powers</li>
+          <li>Use technology to refine</li>
+          <li>Verify with multiple approaches</li>
+          <li>Interpret in context</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:10px">
+      <h3>Example Bounds & Approximations</h3>
+      <table>
+        <thead><tr><th>Base</th><th>Number</th><th>Lower Bound</th><th>Upper Bound</th><th>Approx Value</th></tr></thead>
+        <tbody id="approxExamples">
+          <tr><td>2</td><td>10</td><td>3 (2³=8)</td><td>4 (2⁴=16)</td><td>3.32</td></tr>
+          <tr><td>5</td><td>30</td><td>2 (5²=25)</td><td>3 (5³=125)</td><td>2.11</td></tr>
+          <tr><td>10</td><td>250</td><td>2 (10²=100)</td><td>3 (10³=1000)</td><td>2.40</td></tr>
+        </tbody>
+      </table>
+      <div class="row" style="margin-top:10px">
+        <label>b</label><input type="number" id="apx_b" step="any" value="3">
+        <label>x</label><input type="number" id="apx_x" step="any" value="29">
+        <button id="apx_go" class="peach">Approximate log_b(x)</button>
+      </div>
+      <div id="apx_out" class="out" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <!-- 7.3 -->
+  <section class="section" id="sec73">
+    <h2>7.3 Technological Evaluation Techniques</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>Graphing Calculator</h3>
+        <p><strong>Method 1: Direct log</strong></p>
+        <ol class="small">
+          <li>Open LOG menu</li>
+          <li>Select base or use base-change</li>
+          <li>Enter argument</li>
+          <li>Interpret result</li>
+        </ol>
+        <p class="small"><strong>Method 2: Change of base</strong><br>
+          <span class="code">log_b(x)=log(x)/log(b)=ln(x)/ln(b)</span></p>
+      </div>
+      <div class="card">
+        <h3>Spreadsheet (Excel/Sheets)</h3>
+        <ul class="small">
+          <li><span class="code">=LOG(number, base)</span> (any base)</li>
+          <li><span class="code">=LOG10(number)</span> (base 10)</li>
+          <li><span class="code">=LN(number)</span> (natural)</li>
+        </ul>
+        <p class="small">Example: <span class="code">=LOG(150,7) ≈ 2.59</span></p>
+      </div>
+      <div class="card">
+        <h3>Quick Change-of-Base</h3>
+        <div class="row">
+          <label>b</label><input type="number" id="cb_b" step="any" value="3">
+          <label>x</label><input type="number" id="cb_x" step="any" value="29">
+          <button id="cb_go" class="teal">Compute</button>
+        </div>
+        <div id="cb_out" class="out" style="margin-top:8px"></div>
+        <p class="small muted">Tip: use <span class="code">ln</span> or <span class="code">log</span> buttons as needed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7.4 -->
+  <section class="section" id="sec74">
+    <h2>7.4 Real-World Applications: Population Modelling</h2>
+    <div class="card">
+      <p><strong>Exponential model:</strong> <span class="code">P(t)=P₀·e^{rt}</span>. &nbsp; <strong>Solve time:</strong> <span class="code">t=ln(P/P₀)/r</span></p>
+      <p class="small muted">Data: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Statistics+Canada+population+estimates">Statistics Canada — Population estimates ↗</a></p>
+    </div>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Time to Reach Target</h3>
+        <div class="row">
+          <label>P₀</label><input type="number" id="pop_P0" step="any" value="2930000">
+          <label>P (target)</label><input type="number" id="pop_P" step="any" value="4000000">
+          <label>r (per yr)</label><input type="number" id="pop_r" step="any" value="0.012">
+          <button id="pop_t" class="peach">Compute t</button>
+        </div>
+        <div id="pop_out_t" class="out" style="margin-top:8px"></div>
+        <p class="small muted">Toronto example: 2.93M @ 1.2% → ~25.9 years ⇒ around 2046.</p>
+      </div>
+      <div class="card">
+        <h3>Population After t Years</h3>
+        <div class="row">
+          <label>P₀</label><input type="number" id="pop2_P0" step="any" value="2930000">
+          <label>t (years)</label><input type="number" id="pop2_t" step="any" value="26">
+          <label>r (per yr)</label><input type="number" id="pop2_r" step="any" value="0.012">
+          <button id="pop_Pt" class="teal">Compute P(t)</button>
+        </div>
+        <div id="pop_out_P" class="out" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7.5 -->
+  <section class="section" id="sec75">
+    <h2>7.5 Radioactive Decay Modelling</h2>
+    <div class="card">
+      <p><strong>Decay model:</strong> <span class="code">N(t)=N₀·e^{-λt}</span>, &nbsp; <strong>Half-life:</strong> <span class="code">t₁/₂=ln(2)/λ</span></p>
+      <p>Canada’s CANDU context: uranium-235 half-life ≈ 704 million years.</p>
+    </div>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Mass Remaining After t</h3>
+        <div class="row">
+          <label>N₀</label><input type="number" id="dec_N0" step="any" value="100">
+          <label>t (years)</label><input type="number" id="dec_t" step="any" value="1000000000">
+          <label>t₁/₂ (years)</label><input type="number" id="dec_hl" step="any" value="704000000">
+          <button id="dec_compute" class="peach">Compute N(t)</button>
+        </div>
+        <div id="dec_out" class="out" style="margin-top:8px"></div>
+        <p class="small muted">U-235 example ⇒ ~37.4 g after 1 billion years.</p>
+      </div>
+      <div class="card">
+        <h3>Half-life from λ</h3>
+        <div class="row">
+          <label>λ (per year)</label><input type="number" id="dec_lambda" step="any" value="9.84e-10">
+          <button id="hl_from_lambda" class="teal">t₁/₂</button>
+        </div>
+        <div id="hl_out" class="out" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7.6 -->
+  <section class="section" id="sec76">
+    <h2>7.6 Computational Strategies and Number Sense</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Benchmarks</h4><p class="muted">log₂(1000) ≈ 9.97</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Because 2¹⁰ = 1024.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>log₁₀(2)</h4><p class="muted">≈ 0.301</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>10^0.3 ≈ 2.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>ln(10)</h4><p class="muted">≈ 2.303</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>e^2.3 ≈ 10.</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="small muted" style="margin-top:6px">Interactive tool: <a target="_blank" rel="noopener" href="https://www.geogebra.org/calculator">GeoGebra Log Calculator ↗</a> |
+      <a target="_blank" rel="noopener" href="https://www.google.com/search?q=GeoGebra+logarithmic+function+calculator">Backup search ↗</a></p>
+  </section>
+
+  <!-- 7.7 -->
+  <section class="section" id="sec77">
+    <h2>7.7 Advanced Computational Techniques</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Newton–Raphson for <span class="code">log_b(x)=y</span></h3>
+        <p class="small">Solve <span class="code">f(y)=b^y−x=0</span>, <span class="code">f'(y)=b^y ln b</span>:</p>
+        <p class="small"><span class="code">y_{n+1}=y_n − (b^{y_n}−x)/(b^{y_n} ln b)</span></p>
+        <div class="row">
+          <label>b</label><input type="number" id="nr_b" step="any" value="3">
+          <label>x</label><input type="number" id="nr_x" step="any" value="29">
+          <label>y₀ (guess)</label><input type="number" id="nr_y0" step="any" value="3">
+          <button id="nr_go" class="teal">Iterate</button>
+        </div>
+        <div id="nr_out" class="out" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <h3>Spreadsheet Modelling Project (idea)</h3>
+        <ul class="small">
+          <li>Import daily data (e.g., case counts)</li>
+          <li>Apply log transform</li>
+          <li>Run regression</li>
+          <li>Project and validate</li>
+        </ul>
+        <p class="muted small">Example idea: model decline using logarithmic regression.</p>
+      </div>
+    </div>
+    <div class="section" style="padding:12px;margin:12px 0">
+      <h3>Match the Concept to Its Formula (drag or tap)</h3>
+      <div class="match-wrap">
+        <div>
+          <div class="row" style="margin-bottom:6px"><strong>Cards</strong></div>
+          <div id="expList" class="list"></div>
+        </div>
+        <div>
+          <div class="row" style="margin-bottom:6px"><strong>Drop Zones</strong> <span class="small muted">(empty until matched)</span></div>
+          <div id="logList" class="list"></div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <span>Score: <span id="score" class="ok">0</span>/<span id="total">0</span></span>
+        <button id="btnShuffle" class="peach">Shuffle / Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7.8 -->
+  <section class="section" id="sec78">
+    <h2>7.8 Chapter Summary and Applications</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <ul>
+          <li>✅ Systematic approximation of logarithmic values</li>
+          <li>✅ Tech proficiency (calculators & spreadsheets)</li>
+          <li>✅ Real-world modelling (population, decay)</li>
+          <li>✅ Number-sense for log expressions</li>
+          <li>✅ Computational verification methods</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Essential Formulas</h3>
+        <table>
+          <thead><tr><th>Formula</th><th>Application</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td class="code">log_b(x)=log(x)/log(b)</td><td>Any base</td><td class="code">log₃(50)=log(50)/log(3)</td></tr>
+            <tr><td class="code">P(t)=P₀e^{rt}</td><td>Population</td><td>Toronto projection</td></tr>
+            <tr><td class="code">N(t)=N₀e^{-λt}</td><td>Decay</td><td>U-235 half-life</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="small muted">Practice: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Khan+Academy+logarithm+evaluation+practice">Khan Academy — Log evaluation ↗</a></p>
+  </section>
+
+  <footer>Light theme • All chapter text represented • Offline calculators • Flip-cards • Matching game • Print-friendly</footer>
+</div>
+
+<script>
+  // --- helpers ---
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const num = v => (v===''||v==null)?NaN:parseFloat(v);
+  const fmt = (n,d=6)=>Number.isFinite(n)?(+n).toFixed(d).replace(/\.?0+$/,''):'—';
+  const validBase = b => b>0 && Math.abs(b-1)>1e-12;
+
+  // print
+  $('#btnPrint').onclick = () => window.print();
+
+  // 7.2 approximate log_b(x)
+  $('#apx_go').onclick = ()=>{
+    const b = num($('#apx_b').value), x = num($('#apx_x').value);
+    const out = $('#apx_out');
+    if(!validBase(b)){ out.innerHTML='<span class="bad">Base must be &gt;0 and ≠1.</span>'; return; }
+    if(!(x>0)){ out.innerHTML='<span class="bad">x must be &gt; 0.</span>'; return; }
+
+    const y = Math.log(x)/Math.log(b); // primary
+    // bounds using integer powers
+    const n = Math.floor(y);
+    const lb = n, ub = n+1;
+    const bl = Math.pow(b,lb), bu = Math.pow(b,ub);
+
+    const via_ln = Math.log(x)/Math.log(b);
+    const via_log10 = (Math.log10?Math.log10(x):Math.log(x)/Math.log(10)) /
+                      (Math.log10?Math.log10(b):Math.log(b)/Math.log(10));
+
+    out.innerHTML = `
+      <div><strong>Bounds:</strong> ${fmt(bl)} ≤ x &lt; ${fmt(bu)} ⇒ <span class="code">${lb} &lt; log_${fmt(b)}(${fmt(x)}) &lt; ${ub}</span></div>
+      <div><strong>Approx:</strong> <span class="code">log_${fmt(b)}(${fmt(x)}) ≈ ${fmt(y,8)}</span></div>
+      <div class="small muted">Verification — ln-based: ${fmt(via_ln,8)} • log10-based: ${fmt(via_log10,8)}</div>
+    `;
+  };
+
+  // 7.3 change-of-base quick
+  $('#cb_go').onclick = ()=>{
+    const b = num($('#cb_b').value), x = num($('#cb_x').value);
+    const out = $('#cb_out');
+    if(!validBase(b)){ out.innerHTML='<span class="bad">Base must be &gt;0 and ≠1.</span>'; return; }
+    if(!(x>0)){ out.innerHTML='<span class="bad">x must be &gt; 0.</span>'; return; }
+    const v = Math.log(x)/Math.log(b);
+    out.innerHTML = `<strong>Result:</strong> <span class="code">log_${fmt(b)}(${fmt(x)}) = ${fmt(v,8)}</span>`;
+  };
+
+  // 7.4 population calculators
+  $('#pop_t').onclick = ()=>{
+    const P0=num($('#pop_P0').value), P=num($('#pop_P').value), r=num($('#pop_r').value);
+    const out=$('#pop_out_t');
+    if(!(P0>0&&P>0&&r>0)){ out.innerHTML='<span class="bad">Require P₀&gt;0, P&gt;0, r&gt;0.</span>'; return; }
+    const t = Math.log(P/P0)/r;
+    out.innerHTML = `t = ln(P/P₀)/r = <span class="code">${fmt(t,6)}</span> years`;
+  };
+  $('#pop_Pt').onclick = ()=>{
+    const P0=num($('#pop2_P0').value), t=num($('#pop2_t').value), r=num($('#pop2_r').value);
+    const out=$('#pop_out_P');
+    if(!(P0>0&&r>=0&&Number.isFinite(t))){ out.innerHTML='<span class="bad">Require P₀&gt;0, r≥0, finite t.</span>'; return; }
+    const P = P0*Math.exp(r*t);
+    out.innerHTML = `P(t) = P₀ e^{rt} = <span class="code">${fmt(P,4)}</span>`;
+  };
+
+  // 7.5 decay calculators
+  $('#dec_compute').onclick = ()=>{
+    const N0=num($('#dec_N0').value), t=num($('#dec_t').value), hl=num($('#dec_hl').value);
+    const out=$('#dec_out');
+    if(!(N0>=0 && hl>0 && Number.isFinite(t))){ out.innerHTML='<span class="bad">Require N₀≥0, t finite, t₁/₂&gt;0.</span>'; return; }
+    const lambda = Math.log(2)/hl;
+    const Nt = N0*Math.exp(-lambda*t);
+    out.innerHTML = `λ = ln2/t₁/₂ = ${fmt(lambda,8)} → N(t) = <span class="code">${fmt(Nt,6)}</span>`;
+  };
+  $('#hl_from_lambda').onclick = ()=>{
+    const lam = num($('#dec_lambda').value);
+    const out=$('#hl_out');
+    if(!(lam>0)){ out.innerHTML='<span class="bad">Require λ&gt;0.</span>'; return; }
+    const hl = Math.log(2)/lam;
+    out.innerHTML = `t₁/₂ = ln2/λ = <span class="code">${fmt(hl,6)}</span> years`;
+  };
+
+  // 7.7 Newton–Raphson
+  $('#nr_go').onclick = ()=>{
+    const b=num($('#nr_b').value), x=num($('#nr_x').value), y0=num($('#nr_y0').value);
+    const out=$('#nr_out');
+    if(!validBase(b)){ out.innerHTML='<span class="bad">Base must be &gt;0 and ≠1.</span>'; return; }
+    if(!(x>0)){ out.innerHTML='<span class="bad">x must be &gt; 0.</span>'; return; }
+    let y=y0, rows = ['<table><thead><tr><th>n</th><th>yₙ</th><th>b^{yₙ}</th><th>Δ</th></tr></thead><tbody>'];
+    for(let n=0;n<6;n++){
+      const by = Math.pow(b,y);
+      const delta = (by - x)/(by*Math.log(b));
+      rows.push(`<tr><td>${n}</td><td>${fmt(y,10)}</td><td>${fmt(by,10)}</td><td>${fmt(delta,10)}</td></tr>`);
+      y = y - delta;
+    }
+    rows.push('</tbody></table>');
+    const exact = Math.log(x)/Math.log(b);
+    rows.push(`<div style="margin-top:6px">Approx y ≈ <strong>${fmt(y,10)}</strong> • Check: exact = ${fmt(exact,10)}</div>`);
+    out.innerHTML = rows.join('');
+  };
+
+  // 7.7 Matching game
+  const PAIRS = [
+    {id:'p1', left:'Change of base', right:'log_b(x)=log(x)/log(b)'},
+    {id:'p2', left:'Population growth', right:'P(t)=P₀ e^{rt}'},
+    {id:'p3', left:'Radioactive decay', right:'N(t)=N₀ e^{-λt}'},
+    {id:'p4', left:'Half-life', right:'t₁/₂=ln2/λ'},
+  ];
+  const expList=$('#expList'), logList=$('#logList'), scoreEl=$('#score'), totalEl=$('#total');
+  totalEl.textContent=PAIRS.length; let score=0, selectedId=null;
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+  function renderLists(){
+    score=0; scoreEl.textContent=score; expList.innerHTML=''; logList.innerHTML='';
+    const L=shuffle([...PAIRS]), R=shuffle([...PAIRS]);
+    L.forEach(p=>{
+      const d=document.createElement('div'); d.className='draggable'; d.draggable=true; d.dataset.id=p.id;
+      d.innerHTML=`<span>${p.left}</span><span class="slot">drag</span>`;
+      d.addEventListener('dragstart', ev=>ev.dataTransfer.setData('text/plain', p.id));
+      d.addEventListener('click', ()=>{selectedId=p.id; $$('.draggable').forEach(x=>x.classList.remove('correct')); d.classList.add('correct'); setTimeout(()=>d.classList.remove('correct'),400);});
+      expList.appendChild(d);
+    });
+    R.forEach(p=>{
+      const z=document.createElement('div'); z.className='droppable'; z.dataset.answer=p.id;
+      z.innerHTML=`<span>${p.right}</span><span class="slot">drop here</span>`;
+      z.addEventListener('dragover', ev=>ev.preventDefault());
+      z.addEventListener('drop', ev=>{ev.preventDefault(); handleMatch(z, ev.dataTransfer.getData('text/plain'));});
+      z.addEventListener('click', ()=>{if(selectedId) handleMatch(z, selectedId);});
+      logList.appendChild(z);
+    });
+  }
+  function handleMatch(zone, draggedId){
+    const ans=zone.dataset.answer;
+    if(ans===draggedId){
+      zone.classList.add('correct','locked'); zone.querySelector('.slot').textContent='matched';
+      const drag=[...document.querySelectorAll('.draggable')].find(d=>d.dataset.id===draggedId);
+      if(drag){drag.classList.add('locked','correct'); drag.querySelector('.slot').textContent='✓'; drag.draggable=false;}
+      score++; scoreEl.textContent=score;
+    }else{
+      zone.classList.add('wrong'); setTimeout(()=>zone.classList.remove('wrong'),350);
+    }
+    selectedId=null;
+  }
+  $('#btnShuffle').onclick = renderLists; renderLists();
+
+  // flip cards tap support
+  $$('.flip').forEach(card=>{
+    card.addEventListener('click', e=>{
+      if(window.getSelection && String(window.getSelection())!=='') return;
+      card.classList.toggle('active');
+    });
+  });
+</script>
+</body>
+</html>

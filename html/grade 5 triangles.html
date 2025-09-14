@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Triangle Explorer — Grade 5 Interactive Chapter</title>
+  <style>
+    :root{
+      --bg:#0b132b; --panel:#10203f; --card:#13264d; --ink:#f3f6ff; --muted:#cfe1ff;
+      --accent:#39b6ff; --accent2:#ff8a3d; --good:#3ddc97; --warn:#ffd166; --bad:#ef476f;
+      --line:rgba(255,255,255,.14); --shadow:0 10px 24px rgba(0,0,0,.35); --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:
+      radial-gradient(1200px 600px at 80% -10%, #1b3a8a 0%, transparent 60%),
+      linear-gradient(180deg,#091024,#0b132b 40%, #0a1022);
+      color:var(--ink); font-family:system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      line-height:1.3}
+    a{color:var(--accent); text-decoration:none}
+    header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg, rgba(11,19,43,.95), rgba(11,19,43,.8));
+      backdrop-filter: blur(8px); border-bottom:1px solid var(--line); padding:18px 0}
+    .wrap{max-width:1100px; margin:0 auto; padding:0 16px}
+    h1{margin:0; font-size:clamp(22px,3.2vw,36px)}
+    .pill{display:inline-block; font-size:12px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); margin-left:10px}
+    .hero{margin:16px 0 22px; background:linear-gradient(180deg,#0f1d3a,#10203f); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
+    .section{background:linear-gradient(180deg,#0f1d3a,#12244a); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin:18px 0; box-shadow:var(--shadow)}
+    h2{font-size:clamp(18px,2.4vw,26px); margin:8px 0 12px}
+    .grid{display:grid; gap:12px}
+    @media (min-width:860px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} }
+    .card{background:linear-gradient(180deg,#13264d,#173563); border:1px solid var(--line); border-radius:14px; padding:12px}
+    .muted{color:var(--muted)}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    button{background:linear-gradient(180deg,#44c6ff,#2e9fff); color:#00121e; border:none; border-radius:12px; padding:9px 12px; font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(57,182,255,.35)}
+    button.ghost{background:transparent; color:var(--ink); border:1px solid var(--line)}
+    label{font-size:13px; color:var(--muted)}
+    input[type="number"], input[type="text"]{background:#0b1a37; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 10px; width:120px}
+    table{width:100%; border-collapse:collapse; border:1px solid var(--line)}
+    th,td{border:1px solid var(--line); padding:8px; text-align:left; font-size:14px}
+    .ok{color:var(--good); font-weight:700} .bad{color:var(--bad); font-weight:700} .warn{color:var(--warn); font-weight:700}
+    footer{color:#a9c4ff; font-size:12px; padding:30px 0 60px}
+
+    /* Flip cards */
+    .flip{background:transparent; perspective:1000px; height:160px}
+    .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .55s ease}
+    .flip:hover .flip-inner,.flip:focus-within .flip-inner,.flip.active .flip-inner{transform:rotateY(180deg)}
+    .face{position:absolute; inset:0; padding:12px; border-radius:12px; border:1px solid var(--line); background:linear-gradient(180deg,#13264d,#173563); backface-visibility:hidden}
+    .back{transform:rotateY(180deg); background:linear-gradient(180deg,#14324f,#184667)}
+    .flip h4{margin:0 0 6px}
+    .tap{position:absolute; right:10px; bottom:8px; font-size:12px; opacity:.75}
+
+    /* SVG panels */
+    .svgwrap{background:#0c1a35; border:1px solid var(--line); border-radius:12px; padding:10px}
+    .legend span{display:inline-flex; align-items:center; gap:6px; margin-right:10px; font-size:13px}
+    .dot{width:12px; height:12px; border-radius:99px; display:inline-block}
+    .c-red{background:#ef476f} .c-blue{background:#39b6ff}
+    .btnrow{display:flex; gap:8px; flex-wrap:wrap}
+    .small{font-size:12px}
+
+    /* Checklist */
+    .checklist label{display:flex; gap:8px; align-items:center; background:#0b1a37; border:1px solid var(--line); border-radius:10px; padding:8px}
+
+    /* Hide on print */
+    @media print{
+      header .row button{ display:none }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Triangle Explorer <span class="pill">Grade 5 • Math & Science</span> <span class="pill">Offline • Single File</span></h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p class="muted">Triangles help bridges and buildings stay strong. Explore types of triangles, see where <em>compression</em> (pushing) and <em>tension</em> (pulling) act, and record your own measurements. Flip cards open for quick facts and links. Everything here is lightweight and works without the internet.</p>
+    <div class="row" style="margin-top:8px">
+      <button id="btnPrint">🖨️ Print / Save as PDF</button>
+      <button class="ghost" id="btnReset">↺ Reset worksheet</button>
+    </div>
+  </section>
+
+  <!-- Triangle types -->
+  <section class="section" id="types">
+    <h2>Types of Triangles 🔍</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Equilateral</h4>
+            <p class="muted">All three sides equal.</p>
+            <div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>All angles are 60°. Super stable in trusses.</p>
+            <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=equilateral+triangle+diagram">See images ↗</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Isosceles</h4>
+            <p class="muted">Two sides equal.</p>
+            <div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>Base angles are equal. Common in roof supports.</p>
+            <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=isosceles+triangle+diagram">Learn more ↗</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Scalene</h4>
+            <p class="muted">All sides different.</p>
+            <div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>Flexible in design; angles all different.</p>
+            <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=scalene+triangle+diagram">See examples ↗</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="row">
+        <strong>Triangle Types Diagram</strong>
+        <div class="btnrow">
+          <button class="ghost small" data-show="eq">Equilateral</button>
+          <button class="ghost small" data-show="iso">Isosceles</button>
+          <button class="ghost small" data-show="sca">Scalene</button>
+        </div>
+      </div>
+      <div class="svgwrap" id="typesSVG" aria-label="Triangle types diagram">
+        <!-- Inline SVG with three mini-panels -->
+        <svg width="100%" height="200" viewBox="0 0 900 200" role="img">
+          <!-- Equilateral -->
+          <g id="g-eq" transform="translate(30,10)">
+            <rect width="260" height="180" rx="10" fill="#0b1a37" stroke="rgba(255,255,255,.15)"/>
+            <text x="10" y="20" fill="#cfe1ff" font-size="14">Equilateral</text>
+            <polygon points="140,30 40,160 240,160" fill="none" stroke="#39b6ff" stroke-width="3"/>
+            <text x="120" y="28" fill="#39b6ff" font-size="12">60°</text>
+            <text x="24" y="170" fill="#39b6ff" font-size="12">60°</text>
+            <text x="236" y="170" fill="#39b6ff" font-size="12">60°</text>
+            <line x1="40" y1="160" x2="240" y2="160" stroke="#ff8a3d" stroke-width="3"/>
+            <line x1="140" y1="30" x2="40" y2="160" stroke="#ff8a3d" stroke-width="3"/>
+            <line x1="140" y1="30" x2="240" y2="160" stroke="#ff8a3d" stroke-width="3"/>
+          </g>
+          <!-- Isosceles -->
+          <g id="g-iso" transform="translate(320,10)">
+            <rect width="260" height="180" rx="10" fill="#0b1a37" stroke="rgba(255,255,255,.15)"/>
+            <text x="10" y="20" fill="#cfe1ff" font-size="14">Isosceles</text>
+            <polygon points="160,40 70,160 250,160" fill="none" stroke="#39b6ff" stroke-width="3"/>
+            <text x="66" y="170" fill="#39b6ff" font-size="12">≅</text>
+            <text x="244" y="170" fill="#39b6ff" font-size="12">≅</text>
+            <line x1="70" y1="160" x2="250" y2="160" stroke="#ff8a3d" stroke-width="3"/>
+            <line x1="160" y1="40" x2="70" y2="160" stroke="#ff8a3d" stroke-width="3"/>
+            <line x1="160" y1="40" x2="250" y2="160" stroke="#ff8a3d" stroke-width="3"/>
+          </g>
+          <!-- Scalene -->
+          <g id="g-sca" transform="translate(610,10)">
+            <rect width="260" height="180" rx="10" fill="#0b1a37" stroke="rgba(255,255,255,.15)"/>
+            <text x="10" y="20" fill="#cfe1ff" font-size="14">Scalene</text>
+            <polygon points="60,160 240,160 210,60" fill="none" stroke="#39b6ff" stroke-width="3"/>
+            <text x="42" y="170" fill="#39b6ff" font-size="12">a</text>
+            <text x="236" y="170" fill="#39b6ff" font-size="12">b</text>
+            <text x="214" y="56" fill="#39b6ff" font-size="12">c</text>
+            <line x1="60" y1="160" x2="240" y2="160" stroke="#ff8a3d" stroke-width="3"/>
+            <line x1="240" y1="160" x2="210" y2="60" stroke="#ff8a3d" stroke-width="3"/>
+            <line x1="60" y1="160" x2="210" y2="60" stroke="#ff8a3d" stroke-width="3"/>
+          </g>
+        </svg>
+      </div>
+      <p class="muted small" style="margin-top:6px">Tip: The CN Tower uses triangular bracing to resist wind.</p>
+    </div>
+  </section>
+
+  <!-- Forces -->
+  <section class="section" id="forces">
+    <h2>Forces at Work 🏗️</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <p><strong>Compression</strong> pushes inward. <strong>Tension</strong> pulls outward.</p>
+        <p class="muted">Click a button to highlight where each force might act in a simple truss triangle.</p>
+        <div class="btnrow" style="margin:8px 0 6px">
+          <button class="ghost small" id="btnComp">Show Compression</button>
+          <button class="ghost small" id="btnTens">Show Tension</button>
+          <button class="ghost small" id="btnClearForces">Clear</button>
+        </div>
+        <div class="legend">
+          <span><span class="dot c-red"></span> Compression</span>
+          <span><span class="dot c-blue"></span> Tension</span>
+        </div>
+      </div>
+      <div class="svgwrap">
+        <svg id="forceSVG" width="100%" height="200" viewBox="0 0 320 200" role="img" aria-label="Triangle truss with force highlight">
+          <polygon id="tri" points="40,160 280,160 170,50" fill="none" stroke="#93cfff" stroke-width="3"/>
+          <line id="edge1" x1="40" y1="160" x2="280" y2="160" stroke="#93cfff" stroke-width="6" stroke-linecap="round"/>
+          <line id="edge2" x1="40" y1="160" x2="170" y2="50"  stroke="#93cfff" stroke-width="6" stroke-linecap="round"/>
+          <line id="edge3" x1="280" y1="160" x2="170" y2="50" stroke="#93cfff" stroke-width="6" stroke-linecap="round"/>
+          <!-- labels -->
+          <circle cx="40" cy="160" r="4" fill="#fff"/>
+          <circle cx="280" cy="160" r="4" fill="#fff"/>
+          <circle cx="170" cy="50" r="4" fill="#fff"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Measurement worksheet -->
+  <section class="section" id="measure">
+    <h2>Interactive Measurement Activity ✏️</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <p><strong>Materials:</strong> ruler, protractor, grid paper.</p>
+        <p class="muted">Enter what you measured. We’ll sanity-check and classify.</p>
+        <div class="row">
+          <label>Side 1</label><input type="number" id="s1" min="0" step="0.1">
+          <label>Side 2</label><input type="number" id="s2" min="0" step="0.1">
+          <label>Side 3</label><input type="number" id="s3" min="0" step="0.1">
+        </div>
+        <div class="row" style="margin-top:6px">
+          <label>Angle 1 (°)</label><input type="number" id="a1" min="0" max="180" step="0.1">
+          <label>Angle 2 (°)</label><input type="number" id="a2" min="0" max="180" step="0.1">
+          <label>Angle 3 (°)</label><input type="number" id="a3" min="0" max="180" step="0.1">
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button id="btnClassify">Classify Triangle</button>
+          <button class="ghost" id="btnCheck">Check Angle Sum & Inequality</button>
+          <button class="ghost" id="btnRecord">Record Row</button>
+        </div>
+        <div id="result" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <table aria-label="recorded measurements">
+          <thead><tr><th>Side 1</th><th>Side 2</th><th>Side 3</th><th>A1°</th><th>A2°</th><th>A3°</th><th>By Sides</th><th>By Angles</th><th>Action</th></tr></thead>
+          <tbody id="tbl"></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="muted small" style="margin-top:6px">Reminder: angle sum should be ≈ 180°. Triangle inequality must hold: each side &lt; sum of other two.</p>
+  </section>
+
+  <!-- Practice checklist -->
+  <section class="section" id="practice">
+    <h2>Practice Time!</h2>
+    <div class="grid cols-2">
+      <div class="card checklist">
+        <label><input type="checkbox"> Found three triangles in our classroom</label>
+        <label><input type="checkbox"> Drew and labelled side lengths</label>
+        <label><input type="checkbox"> Measured and wrote angles</label>
+        <label><input type="checkbox"> Explained how each triangle helps make structures stronger</label>
+      </div>
+      <div class="card">
+        <p><strong>Why triangles make structures strong:</strong></p>
+        <ul>
+          <li>Distribute weight evenly</li>
+          <li>Resist bending and twisting</li>
+          <li>Keep their shape under pressure</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Glossary -->
+  <section class="section" id="glossary">
+    <h2>Important Terms</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Vertex</h4><p class="muted">Where two sides meet</p><div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>A corner point of a triangle.</p>
+          </div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Base</h4><p class="muted">Bottom side</p><div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>We often draw the triangle resting on this side.</p>
+          </div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Angle</h4><p class="muted">Space between two sides</p><div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>Measured with a protractor in degrees (°).</p>
+          </div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front">
+            <h4>Structure</h4><p class="muted">Built to support weight</p><div class="tap small">Flip ↻</div>
+          </div>
+          <div class="face back">
+            <p>Bridges, towers, roofs, frames—and more.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery & resources -->
+  <section class="section" id="gallery">
+    <h2>Real-World Connections 🌉</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <h3 style="margin:6px 0 8px">Famous Bridges</h3>
+        <p class="muted">Spot the triangular trusses.</p>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=bridge+truss+triangles">See images ↗</a></p>
+      </div>
+      <div class="card">
+        <h3 style="margin:6px 0 8px">Pyramids & Skyscrapers</h3>
+        <p class="muted">Triangles and bracing keep tall structures stable.</p>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=skyscraper+triangular+bracing">Explore ↗</a></p>
+      </div>
+      <div class="card">
+        <h3 style="margin:6px 0 8px">Nature’s Triangles</h3>
+        <p class="muted">Spider webs & tree branches use triangular patterns.</p>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=triangles+in+nature+structures">Discover ↗</a></p>
+      </div>
+    </div>
+
+    <h2 style="margin-top:18px">Digital Resources</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <strong>Engineering for Kids — Triangle Strength</strong>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=engineering+for+kids+triangle+strength">Open search ↗</a></p>
+      </div>
+      <div class="card">
+        <strong>Virtual Triangle Constructor</strong>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=virtual+triangle+constructor+geogebra">Open search ↗</a></p>
+      </div>
+      <div class="card">
+        <strong>Building with Shapes Game</strong>
+        <p><a target="_blank" rel="noopener" href="https://www.google.com/search?q=building+with+shapes+game+kids">Open search ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built for Grade 5: light interactions, flip-cards, force highlights, and a practical worksheet. Print-friendly.
+  </footer>
+</div>
+
+<script>
+  // Utilities
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const num = v => (v===null||v===undefined||v==="") ? NaN : parseFloat(v);
+
+  // Print & Reset
+  $('#btnPrint').onclick = () => window.print();
+  $('#btnReset').onclick = () => {
+    ['s1','s2','s3','a1','a2','a3'].forEach(id => document.getElementById(id).value = '');
+    $('#result').innerHTML = '';
+    $('#tbl').innerHTML = '';
+  };
+
+  // Flip cards mobile tap support
+  $$('.flip').forEach(card=>{
+    card.addEventListener('click', e=>{
+      if(window.getSelection && String(window.getSelection())!=='') return;
+      card.classList.toggle('active');
+    });
+  });
+
+  // Types diagram toggles: simply scroll/focus the chosen block (kept visual & simple)
+  const map = {eq:'#g-eq', iso:'#g-iso', sca:'#g-sca'};
+  $$('#types .card .btnrow button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const which = btn.getAttribute('data-show');
+      const target = document.querySelector(map[which]);
+      if(target){ target.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'}); }
+    });
+  });
+
+  // Forces highlight
+  const e1 = $('#edge1'), e2 = $('#edge2'), e3 = $('#edge3');
+  function clearForces(){
+    [e1,e2,e3].forEach(e=>{ e.style.stroke = '#93cfff'; e.style.strokeWidth = '6'; });
+  }
+  $('#btnComp').onclick = () => { // base in compression, sides neutral
+    clearForces();
+    e1.style.stroke = '#ef476f'; e1.style.strokeWidth = '8';
+  };
+  $('#btnTens').onclick = () => { // sides in tension
+    clearForces();
+    e2.style.stroke = '#39b6ff'; e3.style.stroke = '#39b6ff';
+    e2.style.strokeWidth = e3.style.strokeWidth = '8';
+  };
+  $('#btnClearForces').onclick = clearForces;
+  clearForces();
+
+  // Measurement helpers
+  function classifyBySides(a,b,c,tol=1e-6){
+    if(!isFinite(a)||!isFinite(b)||!isFinite(c)) return '—';
+    const eq = (x,y)=>Math.abs(x-y) <= tol;
+    if(a<=0||b<=0||c<=0) return 'invalid';
+    if(!(a+b>c && a+c>b && b+c>a)) return 'fails inequality';
+    if(eq(a,b) && eq(b,c)) return 'equilateral';
+    if(eq(a,b) || eq(a,c) || eq(b,c)) return 'isosceles';
+    return 'scalene';
+  }
+  function classifyByAngles(A,B,C,tol=0.8){
+    if(!isFinite(A)||!isFinite(B)||!isFinite(C)) return '—';
+    const sum = A+B+C;
+    if(Math.abs(sum-180) > 2) return 'angles ≠ 180°';
+    if([A,B,C].some(x=>x<=0 || x>=180)) return 'invalid';
+    if([A,B,C].some(x=>Math.abs(x-90)<=tol)) return 'right';
+    if([A,B,C].every(x=>x<90)) return 'acute';
+    if([A,B,C].some(x=>x>90)) return 'obtuse';
+    return '—';
+  }
+  function checkAngleSum(A,B,C){
+    if(![A,B,C].every(isFinite)) return {ok:false,msg:'Enter all three angles.'};
+    const sum=A+B+C, ok=Math.abs(sum-180)<=2;
+    return {ok, msg: ok?`Angle sum ≈ 180° (sum=${sum.toFixed(1)}°)`:`Angle sum off (sum=${sum.toFixed(1)}°)`};
+  }
+  function checkInequality(a,b,c){
+    if(![a,b,c].every(isFinite)) return {ok:false,msg:'Enter all three sides.'};
+    const ok=(a+b>c)&&(a+c>b)&&(b+c>a);
+    return {ok, msg: ok?'Triangle inequality holds':'Triangle inequality fails'};
+  }
+
+  // Buttons
+  $('#btnClassify').onclick = ()=>{
+    const a = num($('#s1').value), b = num($('#s2').value), c = num($('#s3').value);
+    const A = num($('#a1').value), B = num($('#a2').value), C = num($('#a3').value);
+    const bySides = classifyBySides(a,b,c);
+    const byAngles = classifyByAngles(A,B,C);
+    $('#result').innerHTML = `
+      <div><strong>By sides:</strong> ${label(bySides)}</div>
+      <div><strong>By angles:</strong> ${label(byAngles)}</div>
+    `;
+  };
+  $('#btnCheck').onclick = ()=>{
+    const a = num($('#s1').value), b = num($('#s2').value), c = num($('#s3').value);
+    const A = num($('#a1').value), B = num($('#a2').value), C = num($('#a3').value);
+    const ang = checkAngleSum(A,B,C);
+    const tri = checkInequality(a,b,c);
+    $('#result').innerHTML = `
+      <div>${ang.ok?'<span class="ok">✔</span>':'<span class="bad">✘</span>'} ${ang.msg}</div>
+      <div>${tri.ok?'<span class="ok">✔</span>':'<span class="bad">✘</span>'} ${tri.msg}</div>
+    `;
+  };
+  $('#btnRecord').onclick = ()=>{
+    const s1=$('#s1').value, s2=$('#s2').value, s3=$('#s3').value;
+    const a1=$('#a1').value, a2=$('#a2').value, a3=$('#a3').value;
+    if([s1,s2,s3,a1,a2,a3].every(v=>v==='')){ alert('Enter some values first.'); return; }
+    const byS = classifyBySides(num(s1),num(s2),num(s3));
+    const byA = classifyByAngles(num(a1),num(a2),num(a3));
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s1||'—'}</td><td>${s2||'—'}</td><td>${s3||'—'}</td>
+                    <td>${a1||'—'}</td><td>${a2||'—'}</td><td>${a3||'—'}</td>
+                    <td>${byS}</td><td>${byA}</td>
+                    <td><button class="ghost small">Delete</button></td>`;
+    tr.querySelector('button').onclick = ()=> tr.remove();
+    $('#tbl').appendChild(tr);
+  };
+
+  function label(txt){
+    if(/equilateral|isosceles|scalene|acute|right|obtuse/.test(txt)) return `<span class="ok">${txt}</span>`;
+    if(/fail|invalid|angles ≠/.test(txt)) return `<span class="bad">${txt}</span>`;
+    return `<span class="warn">${txt}</span>`;
+  }
+</script>
+</body>
+</html>

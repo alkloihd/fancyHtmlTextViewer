@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Global Water Systems — Grade 7 Geography • Math • Language</title>
+  <style>
+    :root{
+      --bg:#f4fbff; --paper:#ffffff; --panel:#e9f6ff; --ink:#183142; --muted:#4a6778;
+      --line:#d7e9f5; --accent:#1e90ff; --teal:#15b39a; --gold:#ffb94e; --rose:#ee6a6a; --leaf:#2bb673;
+      --radius:16px; --shadow:0 10px 28px rgba(20,80,120,.12);
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;padding:0;
+      background:
+        radial-gradient(1000px 400px at 90% -10%, #dff1ff 0%, transparent 60%),
+        linear-gradient(180deg,#f1fbff,var(--bg) 60%,#f7fdff);
+      color:var(--ink);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      line-height:1.35;
+    }
+    a{color:#0e5edb;text-decoration:none}
+    header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.85));
+      backdrop-filter:blur(6px);
+      border-bottom:1px solid var(--line);
+      padding:14px 0;
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+    h1{margin:0;font-size:clamp(22px,3.2vw,36px)}
+    .pill{display:inline-block;font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:#38607a;background:#fff;margin-left:8px}
+    .hero{margin:14px 0 18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+    .section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:16px 0;box-shadow:var(--shadow)}
+    h2{font-size:clamp(18px,2.3vw,26px);margin:0 0 10px}
+    h3{margin:8px 0}
+    .muted{color:var(--muted)} .small{font-size:12px}
+    .grid{display:grid;gap:12px}
+    @media (min-width:900px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} }
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    button{
+      background:linear-gradient(180deg,#92d0ff,var(--accent));
+      color:#032f5f;border:none;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(30,144,255,.18)
+    }
+    button.ghost{background:#fff;color:#345;border:1px solid var(--line)}
+    button.teal{background:linear-gradient(180deg,#98efe2,var(--teal));color:#003c33;box-shadow:0 6px 18px rgba(21,179,154,.18)}
+    button.gold{background:linear-gradient(180deg,#ffe2a6,var(--gold));color:#4a3000;box-shadow:0 6px 18px rgba(255,185,78,.20)}
+    label{font-size:13px;color:#37586b}
+    input[type="number"],input[type="text"]{
+      background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:160px
+    }
+    table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:#fff}
+    th,td{border:1px solid var(--line);padding:8px;text-align:left;font-size:14px}
+    .ok{color:var(--leaf);font-weight:700}
+    .warn{color:#f59e0b;font-weight:700}
+    .bad{color:var(--rose);font-weight:700}
+    .out{background:#f8fbff;border:1px dashed var(--line);border-radius:12px;padding:10px;font-family:var(--mono)}
+    footer{color:#6a88a0;font-size:12px;padding:24px 0 60px}
+
+    /* Flip-cards */
+    .flip{background:transparent;perspective:1000px;height:160px}
+    .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s ease}
+    .flip:hover .flip-inner,.flip:focus-within .flip-inner,.flip.active .flip-inner{transform:rotateY(180deg)}
+    .face{position:absolute;inset:0;padding:12px;border-radius:12px;border:1px solid var(--line);background:#fff;backface-visibility:hidden}
+    .back{transform:rotateY(180deg);background:#f7fbff}
+    .flip h4{margin:0 0 6px}
+    .tap{position:absolute;right:10px;bottom:8px;font-size:12px;opacity:.75}
+
+    /* Matching (drag & drop) */
+    .match-wrap{display:grid;gap:12px}
+    @media (min-width:900px){ .match-wrap{grid-template-columns:1fr 1fr} }
+    .list{display:grid;gap:10px}
+    .draggable,.droppable{
+      background:#fff;border:2px dashed #e7eef8;border-radius:12px;padding:10px;min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:8px
+    }
+    .draggable{cursor:grab} .draggable:active{cursor:grabbing}
+    .droppable{min-height:60px}
+    .slot{opacity:.65;font-size:12px}
+    .correct{border-color:rgba(43,182,115,.95);background:#eaf9f2}
+    .wrong{border-color:rgba(238,106,106,.95);background:#ffecec;animation:shake .2s}
+    .locked{opacity:.7;pointer-events:none}
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}100%{transform:translateX(0)}}
+
+    /* Quiz */
+    .qcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+    .qcard .q{font-weight:700;margin-bottom:6px}
+    .qcard label{display:flex;gap:8px;align-items:flex-start;margin:4px 0}
+
+    /* Print */
+    @media print{header .row button{display:none}.flip:hover .flip-inner{transform:none}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Global Water Systems 🌊
+      <span class="pill">Grade 7 • Geography • Math • Language</span>
+      <span class="pill">Student-facing • Light Theme</span>
+    </h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <p><strong>Introduction to Earth's Water Networks</strong><br>
+      Water moves through connected systems—rivers, lakes, oceans, and aquifers—that shape land, support life, and connect distant regions.
+      Understanding these networks reveals how natural processes and human choices create the world we see.</p>
+    <p class="muted"><strong>Key Question:</strong> How do water systems connect different parts of our planet?</p>
+    <div class="row" style="margin-top:6px">
+      <button id="btnPrint" class="teal">🖨️ Print / Save as PDF</button>
+    </div>
+  </section>
+
+  <!-- Section 1 -->
+  <section class="section" id="sec1">
+    <h2>Section 1: Major Water Bodies and Their Characteristics</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>River Systems — Earth’s Flowing Highways 🏞️</h3>
+        <p>Rivers carry water, sediment, and nutrients across continents. A river system includes a main channel and its tributaries.</p>
+        <ul>
+          <li><strong>Amazon River System</strong> (South America) — largest by volume</li>
+          <li><strong>Nile River System</strong> (Africa) — longest (~6,650 km)</li>
+          <li><strong>Mississippi–Missouri System</strong> (North America) — drains the central U.S.</li>
+          <li><strong>Yangtze River</strong> (Asia) — China’s longest, key transport route</li>
+        </ul>
+        <p class="small muted">🔗 <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Amazon+River+satellite+images">Amazon River Satellite Images ↗</a></p>
+        <p class="small muted"><em>Margin:</em> Rivers move millions of tons of sediment each year, reshaping land.</p>
+      </div>
+      <div class="card">
+        <h3>Drainage Basins — Nature’s Collection Areas 💧</h3>
+        <p>A <strong>drainage basin</strong> (watershed) is land where all surface water drains to the same outlet.</p>
+        <table aria-label="Major drainage basins">
+          <thead><tr><th>Major Basin</th><th>Location</th><th>Size (km²)</th><th>Outlet</th></tr></thead>
+          <tbody>
+            <tr><td>Amazon Basin</td><td>South America</td><td>7,000,000</td><td>Atlantic Ocean</td></tr>
+            <tr><td>Congo Basin</td><td>Central Africa</td><td>3,700,000</td><td>Atlantic Ocean</td></tr>
+            <tr><td>Mississippi Basin</td><td>North America</td><td>3,200,000</td><td>Gulf of Mexico</td></tr>
+            <tr><td>Ob Basin</td><td>Russia</td><td>2,990,000</td><td>Arctic Ocean</td></tr>
+          </tbody>
+        </table>
+        <p class="small muted">🔗 <a target="_blank" rel="noopener" href="https://www.google.com/search?q=world+drainage+basins+map">World Drainage Basins Map ↗</a></p>
+      </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:12px">
+      <div class="card">
+        <h3>Lakes — Nature’s Storage Tanks 🏔️</h3>
+        <ul>
+          <li><strong>Caspian Sea</strong> (technically a lake) — 371,000 km²</li>
+          <li><strong>Lake Superior</strong> — 82,100 km²</li>
+          <li><strong>Lake Victoria</strong> — 68,870 km²</li>
+          <li><strong>Lake Huron</strong> — 59,600 km²</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Vocabulary Box</h3>
+        <ul>
+          <li><strong>Tributary</strong>: a smaller river that flows into a larger river</li>
+          <li><strong>Watershed</strong>: land that drains to a river or lake</li>
+          <li><strong>Estuary</strong>: where a river meets the ocean (fresh + salt mix)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <section class="section" id="sec2">
+    <h2>Section 2: Natural Processes That Shape Water Systems</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>The Water Cycle ☁️</h3>
+        <p>Evaporation → Condensation → Precipitation → Collection</p>
+        <p class="small muted">🔗 <a target="_blank" rel="noopener" href="https://www.google.com/search?q=water+cycle+animation">Water Cycle Animation ↗</a></p>
+      </div>
+      <div class="card">
+        <h3>Erosion & Deposition 🏔️</h3>
+        <ul>
+          <li><strong>Grand Canyon</strong> — carved by the Colorado River</li>
+          <li><strong>Nile Delta</strong> — built by deposited sediment</li>
+          <li><strong>Mississippi Delta</strong> — grows with river deposits</li>
+        </ul>
+        <p class="small muted"><em>Margin:</em> ~500 million tons of Mississippi sediment reach the Gulf yearly!</p>
+      </div>
+      <div class="card">
+        <h3>Climate Change Impacts 🌡️</h3>
+        <ul>
+          <li>Glacial melting raises sea levels</li>
+          <li>Shifting rainfall → droughts/floods</li>
+          <li>Higher evaporation</li>
+          <li>More extreme weather</li>
+        </ul>
+        <p class="small muted">🔗 <a target="_blank" rel="noopener" href="https://www.google.com/search?q=glacial+melting+effects+on+rivers">Glacial Melting Effects on Rivers ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3 -->
+  <section class="section" id="sec3">
+    <h2>Section 3: Human Activities and Water Systems</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Dams & Reservoirs 🏗️</h3>
+        <p>Built to generate power, control floods, store water, and create recreation.</p>
+        <ul>
+          <li><strong>Three Gorges Dam</strong> (China) — largest hydroelectric dam</li>
+          <li><strong>Hoover Dam</strong> (USA) — controls the Colorado River</li>
+          <li><strong>Aswan High Dam</strong> (Egypt) — controls Nile flooding</li>
+        </ul>
+        <table style="margin-top:6px">
+          <thead><tr><th>Benefits</th><th>Challenges</th></tr></thead>
+          <tbody>
+            <tr><td>Clean energy</td><td>Fish migration blocked</td></tr>
+            <tr><td>Flood control</td><td>Sediment trapped</td></tr>
+            <tr><td>Water storage</td><td>Downstream erosion</td></tr>
+            <tr><td>Recreation</td><td>Habitat disruption</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Irrigation & Water Use 🌾💦</h3>
+        <p><strong>Irrigation</strong> moves water to crops:</p>
+        <ul>
+          <li>Surface irrigation (flooding fields)</li>
+          <li>Sprinklers (spray)</li>
+          <li>Drip irrigation (to roots)</li>
+        </ul>
+        <p class="small muted">🔗 <a target="_blank" rel="noopener" href="https://www.google.com/search?q=modern+irrigation+systems">Modern Irrigation Systems ↗</a></p>
+        <p><strong>Water extraction & bottling:</strong> water from aquifers can stress local supplies.</p>
+        <p class="small muted"><em>Margin:</em> An aquifer is like an underground lake in rock and soil.</p>
+      </div>
+    </div>
+
+    <!-- Drag-and-drop activity -->
+    <div class="section" style="padding:12px;margin:12px 0">
+      <h3>Activity — Sort Dam Impacts (drag or tap)</h3>
+      <div class="match-wrap">
+        <div>
+          <div class="row" style="margin-bottom:6px"><strong>Cards</strong></div>
+          <div id="cardsList" class="list"></div>
+        </div>
+        <div>
+          <div class="row" style="margin-bottom:6px"><strong>Drop Zones</strong> <span class="small muted">(match each card)</span></div>
+          <div class="list">
+            <div id="zoneBenefits" class="droppable" data-answer="benefit"><span>Benefits</span><span class="slot">drop here</span></div>
+            <div id="zoneChallenges" class="droppable" data-answer="challenge"><span>Challenges</span><span class="slot">drop here</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <span>Matched: <span id="score" class="ok">0</span>/<span id="total">0</span></span>
+        <button id="btnResetMatch" class="gold">Shuffle / Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4 -->
+  <section class="section" id="sec4">
+    <h2>Section 4: Environmental Impacts & Sustainability</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Pollution Threats ⚠️</h3>
+        <ul>
+          <li>Industrial waste (chemicals, metals)</li>
+          <li>Agricultural runoff (fertilizers, pesticides)</li>
+          <li>Urban stormwater (oil, trash, chemicals)</li>
+          <li>Sewage discharge (untreated waste)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Case Study — The Great Lakes</h3>
+        <ul>
+          <li>Industrial chemical contamination</li>
+          <li>Nutrient runoff → algae blooms</li>
+          <li>Invasive species</li>
+          <li>Microplastics</li>
+        </ul>
+        <p class="small muted">🔗 <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Great+Lakes+environmental+issues">Great Lakes Environmental Issues ↗</a></p>
+      </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:12px">
+      <div class="card">
+        <h3>Water Scarcity & Conservation 💧</h3>
+        <p>Causes: population growth, climate change, groundwater overuse, pollution.</p>
+        <ul>
+          <li>Rainwater harvesting</li>
+          <li>Wastewater treatment & reuse</li>
+          <li>Efficient irrigation</li>
+          <li>Protect watershed forests</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Interconnected Systems 🌍</h3>
+        <p>Water crosses borders—rivers and currents link countries.</p>
+        <ul>
+          <li>Danube (10 countries)</li>
+          <li>Mekong (6 nations)</li>
+          <li>Colorado (USA–Mexico)</li>
+          <li>Nile (11 countries)</li>
+        </ul>
+        <p class="small muted">🔗 <a target="_blank" rel="noopener" href="https://www.google.com/search?q=international+river+conflicts">International River Conflicts ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5 -->
+  <section class="section" id="sec5">
+    <h2>Section 5: The Future of Water Systems</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Emerging Technologies 🔬</h3>
+        <ul>
+          <li>Desalination (sea → fresh)</li>
+          <li>Smart irrigation (sensors)</li>
+          <li>Satellites (levels & quality)</li>
+          <li>Constructed wetlands (natural treatment)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Climate Adaptation 🌡️</h3>
+        <ul>
+          <li>Flood barriers & levees</li>
+          <li>Water storage systems</li>
+          <li>Drought-resistant crops</li>
+          <li>Wetland restoration</li>
+        </ul>
+        <p class="small muted"><em>Margin:</em> Wetlands act like sponges—soaking up floods, releasing water slowly later.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools: calculators -->
+  <section class="section" id="tools">
+    <h2>Math Tools — Quick Water Calculations</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Rainfall → Runoff Volume</h3>
+        <p class="small muted">Estimate how much water hits a basin (no infiltration assumed).</p>
+        <div class="row">
+          <label>Rainfall (mm)</label><input type="number" id="rf_mm" step="any" value="25">
+          <label>Area (km²)</label><input type="number" id="area_km2" step="any" value="150">
+          <button id="calc_runoff" class="teal">Compute</button>
+        </div>
+        <div id="runoff_out" class="out" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <h3>Sediment Transport Rate</h3>
+        <p class="small muted">Convert annual million tons to tons/day and kg/s.</p>
+        <div class="row">
+          <label>Annual load (million tons)</label><input type="number" id="sed_mtpy" step="any" value="500">
+          <button id="calc_sed" class="gold">Convert</button>
+        </div>
+        <div id="sed_out" class="out" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Summary -->
+  <section class="section" id="summary">
+    <h2>Chapter Summary 📚</h2>
+    <p>Water systems are complex and connected—rivers, lakes, oceans, and aquifers. They change through erosion, deposition, and climate variations. Human actions (dams, irrigation, extraction) bring both benefits and challenges. Understanding these systems helps us make wise choices about conservation and protection as the planet warms and populations grow.</p>
+    <ul>
+      <li>Water systems connect across the globe</li>
+      <li>Natural processes reshape water bodies</li>
+      <li>Human activities have major impacts</li>
+      <li>Sustainable management is crucial</li>
+      <li>International cooperation matters</li>
+    </ul>
+  </section>
+
+  <!-- Questions -->
+  <section class="section" id="questions">
+    <h2>Comprehension Questions ❓</h2>
+    <ol>
+      <li>Describe three major types of water systems and give an example of each.</li>
+      <li>Explain how erosion and deposition work together to change river systems over time.</li>
+      <li>Compare the benefits and challenges of building dams on rivers.</li>
+      <li>Analyze why water pollution in one country can affect other countries downstream.</li>
+      <li>Evaluate three strategies that communities can use to conserve water resources.</li>
+      <li>Create a diagram showing how a drainage basin collects water from different sources.</li>
+    </ol>
+
+    <!-- Short MCQ check (no answer reveal on wrong) -->
+    <div class="grid cols-2" style="margin-top:10px">
+      <div class="qcard">
+        <div class="q">MCQ 1: An <em>estuary</em> is…</div>
+        <label><input type="radio" name="q1" value="a"> the source of a river high in the mountains</label>
+        <label><input type="radio" name="q1" value="b"> a lake that has no outlet</label>
+        <label><input type="radio" name="q1" value="c"> where a river meets the ocean and mixes waters</label>
+        <button class="ghost" onclick="checkMCQ('q1','c','mcq1r')">Check</button>
+        <div id="mcq1r" class="small" style="margin-top:6px"></div>
+      </div>
+      <div class="qcard">
+        <div class="q">MCQ 2: Which list shows the water cycle in order?</div>
+        <label><input type="radio" name="q2" value="a"> Precipitation → Evaporation → Condensation → Collection</label>
+        <label><input type="radio" name="q2" value="b"> Evaporation → Condensation → Precipitation → Collection</label>
+        <label><input type="radio" name="q2" value="c"> Condensation → Collection → Precipitation → Evaporation</label>
+        <button class="ghost" onclick="checkMCQ('q2','b','mcq2r')">Check</button>
+        <div id="mcq2r" class="small" style="margin-top:6px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vocabulary -->
+  <section class="section" id="vocab">
+    <h2>Vocabulary Review 📖 (flip the cards)</h2>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>River system</h4><p class="muted">What is it?</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>A network of rivers and tributaries draining a region.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Drainage basin</h4><p class="muted">Another name?</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Watershed—land that drains to one outlet.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Tributary</h4><p class="muted">Small to big</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Smaller river flowing into a larger river.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Aquifer</h4><p class="muted">Underground…</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Rock/soil layer that stores water.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Erosion</h4><p class="muted">Wears away</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Water/wind/ice remove soil and rock.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Deposition</h4><p class="muted">Drops off</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Material is laid down when water slows.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Irrigation</h4><p class="muted">For crops</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Artificially providing water to fields.</p></div>
+        </div>
+      </div>
+      <div class="flip" tabindex="0">
+        <div class="flip-inner">
+          <div class="face front"><h4>Water scarcity</h4><p class="muted">Not enough</p><div class="tap small">Flip ↻</div></div>
+          <div class="face back"><p>Insufficient water to meet needs.</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="small muted" style="margin-top:8px">🔗 <a target="_blank" rel="noopener" href="https://www.google.com/search?q=interactive+water+systems+quiz">Interactive Water Systems Quiz ↗</a></p>
+  </section>
+
+  <footer>Built for Grade 7: light theme, dependable interactions, print-friendly. All content drawn from the provided text with age-appropriate tools.</footer>
+</div>
+
+<script>
+  // helpers
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const num = v => (v===''||v==null)?NaN:parseFloat(v);
+  const fmt = (n,d=3)=>Number.isFinite(n)?(+n).toFixed(d).replace(/\.?0+$/,''):'—';
+
+  // print
+  $('#btnPrint').onclick = () => window.print();
+
+  // flip-cards tap support
+  $$('.flip').forEach(card=>{
+    card.addEventListener('click', e=>{
+      if(window.getSelection && String(window.getSelection())!=='') return;
+      card.classList.toggle('active');
+    });
+  });
+
+  // Drag-and-drop: Dam benefits vs challenges
+  const CARDS = [
+    {id:'b1', text:'Clean energy production', type:'benefit'},
+    {id:'b2', text:'Flood control', type:'benefit'},
+    {id:'b3', text:'Water storage', type:'benefit'},
+    {id:'b4', text:'Recreation opportunities', type:'benefit'},
+    {id:'c1', text:'Fish migration blocked', type:'challenge'},
+    {id:'c2', text:'Sediment trapped behind dam', type:'challenge'},
+    {id:'c3', text:'Downstream erosion', type:'challenge'},
+    {id:'c4', text:'Habitat disruption', type:'challenge'}
+  ];
+  const cardsList = $('#cardsList');
+  const scoreEl = $('#score');
+  const totalEl = $('#total');
+  const zones = [$('#zoneBenefits'), $('#zoneChallenges')];
+  totalEl.textContent = CARDS.length;
+  let score = 0, selectedId = null;
+
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function renderCards(){
+    score=0; scoreEl.textContent=score; cardsList.innerHTML='';
+    zones.forEach(z=>{ z.classList.remove('correct','wrong','locked'); z.querySelector('.slot').textContent='drop here'; z.dataset.count='0'; });
+    shuffle([...CARDS]).forEach(p=>{
+      const d=document.createElement('div');
+      d.className='draggable'; d.draggable=true; d.dataset.id=p.id; d.dataset.type=p.type;
+      d.innerHTML = `<span>${p.text}</span><span class="slot">drag</span>`;
+      d.addEventListener('dragstart', ev=>ev.dataTransfer.setData('text/plain', p.id));
+      d.addEventListener('click', ()=>{ selectedId = p.id; $$('.draggable').forEach(x=>x.classList.remove('correct')); d.classList.add('correct'); setTimeout(()=>d.classList.remove('correct'),400); });
+      cardsList.appendChild(d);
+    });
+  }
+  function handleDrop(zone, id){
+    const dragged = [...document.querySelectorAll('.draggable')].find(d=>d.dataset.id===id);
+    if(!dragged) return;
+    const okType = zone.dataset.answer;
+    if(dragged.dataset.type === okType){
+      zone.classList.add('correct');
+      dragged.classList.add('locked','correct'); dragged.querySelector('.slot').textContent='✓'; dragged.draggable=false;
+      score++; scoreEl.textContent = score;
+      // move the card into zone for visual grouping
+      zone.appendChild(dragged);
+    } else {
+      zone.classList.add('wrong'); setTimeout(()=>zone.classList.remove('wrong'),300);
+    }
+    selectedId = null;
+  }
+  zones.forEach(z=>{
+    z.addEventListener('dragover', ev=>ev.preventDefault());
+    z.addEventListener('drop', ev=>{ ev.preventDefault(); handleDrop(z, ev.dataTransfer.getData('text/plain')); });
+    z.addEventListener('click', ()=>{ if(selectedId) handleDrop(z, selectedId); });
+  });
+  $('#btnResetMatch').onclick = renderCards;
+  renderCards();
+
+  // Calculators
+  // Rainfall → Runoff volume
+  $('#calc_runoff').onclick = ()=>{
+    const mm = num($('#rf_mm').value);
+    const km2 = num($('#area_km2').value);
+    const out = $('#runoff_out');
+    if(!(mm>=0 && km2>=0)){ out.innerHTML = '<span class="bad">Enter non-negative numbers.</span>'; return; }
+    const m = mm/1000; // m
+    const m2 = km2*1e6; // m²
+    const m3 = m*m2; // m³
+    const L = m3*1000; // litres
+    out.innerHTML = `Volume ≈ <strong>${fmt(m3,3)} m³</strong> (${fmt(L,3)} L)`;
+  };
+
+  // Sediment rate conversion
+  $('#calc_sed').onclick = ()=>{
+    const mtpy = num($('#sed_mtpy').value); // million tons per year
+    const out = $('#sed_out');
+    if(!(mtpy>=0)){ out.innerHTML = '<span class="bad">Enter a non-negative number.</span>'; return; }
+    const tonsPerYear = mtpy*1e6;
+    const tonsPerDay = tonsPerYear/365;
+    const kgPerSec = (tonsPerYear*1000)/ (365*24*3600);
+    out.innerHTML = `${fmt(mtpy,3)} million tons/yr ≈ <strong>${fmt(tonsPerDay,1)} tons/day</strong> • <strong>${fmt(kgPerSec,2)} kg/s</strong>`;
+  };
+
+  // MCQ checks — no reveal of correct answer, only feedback
+  function checkMCQ(name, correct, targetId){
+    const sel = document.querySelector(`input[name="${name}"]:checked`);
+    const t = document.getElementById(targetId);
+    if(!sel){ t.innerHTML = '<span class="warn">Choose an option.</span>'; return; }
+    if(sel.value === correct){ t.innerHTML = '<span class="ok">✅ Correct!</span>'; }
+    else { t.innerHTML = '<span class="bad">Try again.</span>'; }
+  }
+  window.checkMCQ = checkMCQ;
+</script>
+</body>
+</html>

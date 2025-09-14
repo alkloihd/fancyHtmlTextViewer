@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Grade 5 Drama — Role-Play Studio (Flip-Cards + Drag-Drop)</title>
+    <style>
+      :root {
+        /* Light “Playhouse Pop” palette */
+        --bg: #fff8ef;
+        /* cream */
+        --panel: #ffffff;
+        /* cards */
+        --ink: #0f172a;
+        /* text */
+        --muted: #475569;
+        /* secondary text */
+        --line: #e5e7eb;
+        /* borders */
+        --stage: #ffd9c7;
+        /* soft stage red */
+        --gold: #f59e0b;
+        /* gold accent */
+        --blue: #0ea5e9;
+        /* links/accent */
+        --green: #10b981;
+        /* ok */
+        --red: #ef4444;
+        /* error */
+      }
+
+      * {
+        box-sizing: border-box
+      }
+
+      html,
+      body {
+        height: 100%
+      }
+
+      body {
+        margin: 0;
+        font-family: "Nunito", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color: var(--ink);
+        background: radial-gradient(900px 400px at 20% -10%, #ffe8db 25%, transparent 60%), radial-gradient(900px 400px at 80% -10%, #ffeecb 25%, transparent 60%), var(--bg);
+      }
+
+      a {
+        color: var(--blue)
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: linear-gradient(90deg, #ffe6dc, #fff0d8);
+        border-bottom: 3px solid #ffd0a6;
+        color: #1f2937;
+        padding: 14px;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 1.25rem
+      }
+
+      header .sub {
+        font-weight: 800;
+        opacity: .9
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 16px
+      }
+
+      nav.quick {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0
+      }
+
+      nav.quick a {
+        background: #fff;
+        border: 2px solid var(--stage);
+        color: #475569;
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 900
+      }
+
+      nav.quick a:focus {
+        outline: 3px solid var(--gold)
+      }
+
+      section.unit {
+        background: var(--panel);
+        border: 2px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 12px 0;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .06)
+      }
+
+      h2 {
+        margin: .2rem 0 .6rem;
+        color: #b45309;
+        font-size: 1.2rem
+      }
+
+      h3 {
+        margin: .6rem 0 .3rem;
+        color: #ea580c
+      }
+
+      p.note {
+        color: var(--muted);
+        font-weight: 700
+      }
+
+      .btn {
+        border: 2px solid #fecba1;
+        background: #fff3e8;
+        color: #7c2d12;
+        border-radius: 10px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-weight: 900
+      }
+
+      .btn.alt {
+        border-color: #c7eaff;
+        background: #eff8ff;
+        color: #0b5a7a
+      }
+
+      .btn.green {
+        border-color: #b7f7d7;
+        background: #e9fff6;
+        color: #065f46
+      }
+
+      .btn.red {
+        border-color: #fecaca;
+        background: #fff1f2;
+        color: #7f1d1d
+      }
+
+      button:focus,
+      .chip:focus,
+      .token:focus,
+      select:focus,
+      input:focus,
+      label.card:focus {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px
+      }
+
+      /* Accordion */
+      .acc button {
+        width: 100%;
+        text-align: left;
+        border: 2px solid var(--stage);
+        background: #fff3ef;
+        color: #7c2d12;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 900;
+        cursor: pointer
+      }
+
+      .acc .panel {
+        display: none;
+        background: #fff7f3;
+        border-left: 4px solid #ffb4a2;
+        border-radius: 0 10px 10px 10px;
+        padding: 10px;
+        margin-top: 6px
+      }
+
+      /* Accessible, JS-free flip cards using checkbox toggle /
+.flipset{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.flip{
+perspective:1000px;
+}
+.flip input{
+/ screen-reader only, still focusable /
+position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;
+}
+.card{
+position:relative; display:block; width:100%; height:150px; cursor:pointer;
+border-radius:12px; outline:2px solid var(--stage); background:transparent;
+}
+.scene3d{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .6s}
+.face{
+position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+padding:12px; border-radius:12px; backface-visibility:hidden; font-weight:800; text-align:center
+}
+.front{background:#fff6f2}
+.back{background:#fff4d6; transform:rotateY(180deg)}
+.flip input:checked + label.card .scene3d{transform:rotateY(180deg)}
+/ Hide back from AT until flipped */
+      .flip input:not(:checked)+label.card .back {
+        visibility: hidden
+      }
+
+      .flip input:checked+label.card .back {
+        visibility: visible
+      }
+
+      /* Chips */
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 8px 0
+      }
+
+      .chip {
+        background: #ffffff;
+        border: 2px solid var(--stage);
+        color: #374151;
+        padding: 8px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 900
+      }
+
+      .chip.sel {
+        background: #ffeadf;
+        border-color: #ffb4a2
+      }
+
+      /* Drag & Drop Sorter */
+      .legend {
+        font-weight: 800;
+        color: var(--muted)
+      }
+
+      .areas {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1.1fr 1fr 1fr
+      }
+
+      @media (max-width:900px) {
+        .areas {
+          grid-template-columns: 1fr
+        }
+      }
+
+      .bin {
+        background: #fffdfa;
+        border: 2px dashed var(--stage);
+        border-radius: 12px;
+        padding: 10px;
+        min-height: 92px
+      }
+
+      .bin h4 {
+        margin: .1rem 0 .4rem
+      }
+
+      .tokens {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 34px
+      }
+
+      .token {
+        background: #ffffff;
+        border: 2px solid var(--stage);
+        color: #7c2d12;
+        border-radius: 999px;
+        padding: 8px 12px;
+        cursor: grab;
+        font-weight: 900
+      }
+
+      .token:active .bin.over {
+        outline: 3px dashed #94a3b8
+      }
+
+      .token.ok {
+        border-color: var(--green);
+        background: #e9fff6
+      }
+
+      .token.err {
+        border-color: var(--red);
+        background: #fff1f2
+      }
+
+      .msg {
+        font-weight: 900;
+        margin-left: 6px;
+        color: #7c2d12
+      }
+
+      /* Match table */
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 6px
+      }
+
+      th,
+      td {
+        border: 1px solid #e5e7eb;
+        padding: 8px;
+        vertical-align: top
+      }
+
+      th {
+        background: #fff2e6
+      }
+
+      select {
+        width: 100%;
+        padding: 6px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #111827
+      }
+
+      .okcell {
+        background: #e9fff6
+      }
+
+      .errcell {
+        background: #fff1f2
+      }
+
+      /* Inputs */
+      .grid {
+        display: grid;
+        gap: 10px
+      }
+
+      .g-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+      }
+
+      @media (max-width:800px) {
+        .g-2 {
+          grid-template-columns: 1fr
+        }
+      }
+
+      .qbox {
+        background: #fffdfa;
+        border: 2px solid #ffe9d8;
+        border-radius: 12px;
+        padding: 10px
+      }
+
+      input[type=text] {
+        width: 100%;
+        max-width: 540px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 8px;
+        background: #ffffff;
+        color: #111827
+      }
+
+      /* MCQ */
+      .mcq .q {
+        font-weight: 900;
+        margin-top: 8px
+      }
+
+      .opts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 6px 0
+      }
+
+      .opt {
+        border: 2px solid #ffe3c5;
+        background: #fff7ef;
+        color: #7c2d12;
+        border-radius: 10px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-weight: 900
+      }
+
+      .opt.sel {
+        outline: 3px solid var(--gold)
+      }
+
+      .opt.ok {
+        background: #e9fff6;
+        border-color: var(--green)
+      }
+
+      .opt.err {
+        background: #fff1f2;
+        border-color: var(--red)
+      }
+
+      .feedback {
+        font-weight: 800;
+        color: var(--muted);
+        margin-top: 4px
+      }
+
+      footer.note {
+        color: #6b7280;
+        font-weight: 800;
+        text-align: center;
+        margin: 14px 0
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Grade 5 Drama — Role-Play Studio</h1>
+      <div class="sub">Flip-cards + Drag-Drop + Checks — light, accessible, classroom-ready.</div>
+    </header>
+    <main>
+      <nav class="quick" aria-label="Quick jump">
+        <a href="#intro">Intro</a>
+        <a href="#flip1">Role-play</a>
+        <a href="#toolkit">Toolkit</a>
+        <a href="#sorter">Sorter</a>
+        <a href="#emotions">Emotions</a>
+        <a href="#character">Character</a>
+        <a href="#issue">Social Issue</a>
+        <a href="#match">Match</a>
+        <a href="#mcq">Quiz</a>
+        <a href="#reflect">Reflect</a>
+        <a href="#export">Export</a>
+      </nav>
+      <!-- Intro + accordion -->
+      <section id="intro" class="unit">
+        <h2>📚 Welcome</h2>
+        <p>
+          <strong>Role-play</strong> lets us step into a character’s shoes to explore how they think, feel, and act. We use voice, movement, space, and time to tell stories and understand issues — together.
+        </p>
+        <div class="acc">
+          <button type="button" aria-expanded="false" aria-controls="didyou">💡 Did You Know?</button>
+          <div id="didyou" class="panel" role="region" aria-live="polite"> Role-play has been used for thousands of years to tell stories and teach lessons in cultures around the world. </div>
+        </div>
+      </section>
+      <!-- Flip: Role-play is… (checkbox flip cards, no JS needed) -->
+      <section id="flip1" class="unit">
+        <h2>Role-play is… 🎭</h2>
+        <div class="flipset">
+          <div class="flip">
+            <input id="rp1" type="checkbox" />
+            <label class="card" for="rp1" tabindex="0" aria-label="Flip card: Perspective">
+              <div class="scene3d">
+                <div class="face front">Perspective</div>
+                <div class="face back">See as the character • Practice empathy</div>
+              </div>
+            </label>
+          </div>
+          <div class="flip">
+            <input id="rp2" type="checkbox" />
+            <label class="card" for="rp2" tabindex="0" aria-label="Flip card: Imagination">
+              <div class="scene3d">
+                <div class="face front">Imagination</div>
+                <div class="face back">Pretend safely • Try ideas & feelings</div>
+              </div>
+            </label>
+          </div>
+          <div class="flip">
+            <input id="rp3" type="checkbox" />
+            <label class="card" for="rp3" tabindex="0" aria-label="Flip card: Collaboration">
+              <div class="scene3d">
+                <div class="face front">Collaboration</div>
+                <div class="face back">Listen & respond • Build scenes together</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </section>
+      <!-- Flip: Toolkit -->
+      <section id="toolkit" class="unit">
+        <h2>Actor’s Toolkit 🎬</h2>
+        <div class="flipset">
+          <div class="flip">
+            <input id="tk1" type="checkbox" />
+            <label class="card" for="tk1" tabindex="0" aria-label="Flip card: Voice">
+              <div class="scene3d">
+                <div class="face front">Voice</div>
+                <div class="face back">How loud/soft • Tone shows emotion</div>
+              </div>
+            </label>
+          </div>
+          <div class="flip">
+            <input id="tk2" type="checkbox" />
+            <label class="card" for="tk2" tabindex="0" aria-label="Flip card: Movement">
+              <div class="scene3d">
+                <div class="face front">Movement</div>
+                <div class="face back">Body • gesture • posture • expression</div>
+              </div>
+            </label>
+          </div>
+          <div class="flip">
+            <input id="tk3" type="checkbox" />
+            <label class="card" for="tk3" tabindex="0" aria-label="Flip card: Space">
+              <div class="scene3d">
+                <div class="face front">Space</div>
+                <div class="face back">Where actors stand/move • Blocking</div>
+              </div>
+            </label>
+          </div>
+          <div class="flip">
+            <input id="tk4" type="checkbox" />
+            <label class="card" for="tk4" tabindex="0" aria-label="Flip card: Time">
+              <div class="scene3d">
+                <div class="face front">Time</div>
+                <div class="face back">When it happens • Past/Present/Future</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </section>
+      <!-- Drag & Drop Sorter -->
+      <section id="sorter" class="unit">
+        <h2>Sorter: Performance vs Context</h2>
+        <p class="legend">Drag a token to a bin. Then press <em>Check</em>. (Keyboard fallback: click to cycle Source → A → B → Source.) </p>
+        <div class="areas">
+          <div class="bin" id="src" aria-label="Source (drag from here)">
+            <h4>Source</h4>
+            <div class="tokens"></div>
+          </div>
+          <div class="bin" id="binA" aria-label="A — Performance choices">
+            <h4>A — Performance choices (voice/movement)</h4>
+            <div class="tokens"></div>
+          </div>
+          <div class="bin" id="binB" aria-label="B — Context & stagecraft">
+            <h4>B — Context & stagecraft (space/time)</h4>
+            <div class="tokens"></div>
+          </div>
+        </div>
+        <div class="actions" style="margin-top:8px">
+          <button class="btn green" id="sortCheck" type="button">✅ Check</button>
+          <button class="btn red" id="sortReset" type="button">🧹 Reset</button>
+          <span id="sortMsg" class="msg"></span>
+        </div>
+      </section>
+      <!-- Emotions chips -->
+      <section id="emotions" class="unit">
+        <h2>Body-Only Emotions — Pick 3</h2>
+        <div class="chips" id="chips">
+          <button class="chip" type="button">Happy</button>
+          <button class="chip" type="button">Sad</button>
+          <button class="chip" type="button">Angry</button>
+          <button class="chip" type="button">Excited</button>
+          <button class="chip" type="button">Nervous</button>
+          <button class="chip" type="button">Confident</button>
+          <button class="chip" type="button">Scared</button>
+          <button class="chip" type="button">Curious</button>
+        </div>
+        <p id="chipsMsg" class="note"></p>
+      </section>
+      <!-- Character -->
+      <section id="character" class="unit">
+        <h2>Character Builder 👥 — Profile</h2>
+        <div class="grid g-2">
+          <div class="qbox">Name: <input id="c_name" type="text" placeholder="e.g., Sam">
+          </div>
+          <div class="qbox">Age: <input id="c_age" type="text" placeholder="e.g., 11">
+          </div>
+          <div class="qbox">Background (where from?): <input id="c_bg" type="text" placeholder="e.g., small town">
+          </div>
+          <div class="qbox">Personality: <input id="c_person" type="text" placeholder="e.g., shy but brave">
+          </div>
+          <div class="qbox">Main Goal: <input id="c_goal" type="text" placeholder="e.g., fix a friendship">
+          </div>
+          <div class="qbox">Biggest Fear: <input id="c_fear" type="text" placeholder="e.g., public speaking">
+          </div>
+          <div class="qbox">Relationships: <input id="c_rel" type="text" placeholder="e.g., best friend, teacher">
+          </div>
+        </div>
+      </section>
+      <!-- Social issue -->
+      <section id="issue" class="unit">
+        <h2>Social-Issue Planner 🌍</h2>
+        <div class="grid g-2">
+          <div class="qbox">Chosen issue (e.g., bullying, inclusion, environment): <input id="i_issue" type="text">
+          </div>
+          <div class="qbox">How would your character feel? <input id="i_feel" type="text">
+          </div>
+          <div class="qbox">How would your character talk about it? <input id="i_talk" type="text">
+          </div>
+          <div class="qbox">How might your character try to solve it? <input id="i_solve" type="text">
+          </div>
+        </div>
+      </section>
+      <!-- Match table -->
+      <section id="match" class="unit">
+        <h2>Match the Element to the Best Example</h2>
+        <p>Choose an example for each element, then press <em>Check</em>. </p>
+        <table id="matchTable">
+          <thead>
+            <tr>
+              <th>Drama Element</th>
+              <th>Choose an example</th>
+              <th>Why it fits</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-answer="How loud/soft; choose a tone">
+              <td>Voice</td>
+              <td>
+                <select>
+                  <option value="">— Select —</option>
+                  <option>How loud/soft; choose a tone</option>
+                  <option>Where the story takes place</option>
+                  <option>When the story happens</option>
+                </select>
+              </td>
+              <td>Whisper to share a secret</td>
+            </tr>
+            <tr data-answer="Body, gesture, posture">
+              <td>Movement</td>
+              <td>
+                <select>
+                  <option value="">— Select —</option>
+                  <option>Body, gesture, posture</option>
+                  <option>Audience seating area</option>
+                  <option>Historical time period</option>
+                </select>
+              </td>
+              <td>Slumped shoulders to show sadness</td>
+            </tr>
+            <tr data-answer="Where the story takes place">
+              <td>Setting</td>
+              <td>
+                <select>
+                  <option value="">— Select —</option>
+                  <option>Where the story takes place</option>
+                  <option>How characters feel inside</option>
+                  <option>How loudly to speak</option>
+                </select>
+              </td>
+              <td>Classroom, park, library</td>
+            </tr>
+            <tr data-answer="When the story happens">
+              <td>Time</td>
+              <td>
+                <select>
+                  <option value="">— Select —</option>
+                  <option>When the story happens</option>
+                  <option>Lighting colour</option>
+                  <option>Prop list</option>
+                </select>
+              </td>
+              <td>Past, present, or future</td>
+            </tr>
+            <tr data-answer="Use of stage areas">
+              <td>Stage Space</td>
+              <td>
+                <select>
+                  <option value="">— Select —</option>
+                  <option>Use of stage areas</option>
+                  <option>Theme of the play</option>
+                  <option>Costume patterns</option>
+                </select>
+              </td>
+              <td>Downstage, upstage, crossing paths</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="actions">
+          <button class="btn green" id="matchCheck" type="button">✅ Check</button>
+          <button class="btn red" id="matchReset" type="button">🧹 Reset</button>
+          <span id="matchMsg" class="msg"></span>
+        </div>
+      </section>
+      <!-- MCQ -->
+      <section id="mcq" class="unit mcq">
+        <h2>Check Your Understanding ✅</h2>
+        <div class="q" data-answer-index="1"> Role-play helps us most with: <div class="opts">
+            <button class="opt" data-index="0" type="button">Memorizing exact lines only</button>
+            <button class="opt" data-index="1" type="button">Understanding different perspectives</button>
+            <button class="opt" data-index="2" type="button">Ignoring others while acting</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="q" data-answer-index="1"> Which pair belongs to “Voice” and “Movement”? <div class="opts">
+            <button class="opt" data-index="0" type="button">Setting and time period</button>
+            <button class="opt" data-index="1" type="button">Volume and gesture</button>
+            <button class="opt" data-index="2" type="button">Upstage and downstage</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="q" data-answer-index="1"> Blocking is mostly about: <div class="opts">
+            <button class="opt" data-index="0" type="button">How characters feel inside</button>
+            <button class="opt" data-index="1" type="button">Where actors move on stage</button>
+            <button class="opt" data-index="2" type="button">What time the story is set</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="actions">
+          <button id="quizCheck" class="btn green" type="button">✅ Check Answers</button>
+          <button id="quizReset" class="btn red" type="button">🧹 Reset</button>
+          <span id="quizMsg" class="msg"></span>
+        </div>
+      </section>
+      <!-- Reflection -->
+      <section id="reflect" class="unit">
+        <h2>Reflection</h2>
+        <div class="grid g-2">
+          <div class="qbox">What did you learn about building a character? <input id="r_char" type="text">
+          </div>
+          <div class="qbox">How did voice or movement change the scene? <input id="r_vm" type="text">
+          </div>
+          <div class="qbox">How did your group work respectfully? <input id="r_group" type="text">
+          </div>
+        </div>
+      </section>
+      <!-- Export -->
+      <section id="export" class="unit">
+        <h2>Export Your Learning</h2>
+        <p>Download a text summary of your notes and results.</p>
+        <div class="actions">
+          <button id="exportBtn" class="btn green" type="button">⬇️ Download Drama Summary (.txt)</button>
+          <span id="exportMsg" class="msg"></span>
+        </div>
+      </section>
+      <footer class="note">© Grade 5 Drama • Flip-cards + Drag-Drop • Accessible and offline-ready.</footer>
+    </main>
+    <script>
+      (function() {
+          const $ = (sel, root = document) => root.querySelector(sel);
+          const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel)); /* Accordion */
+          $$('.acc button').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const p = $('#' + btn.getAttribute('aria-controls'));
+              const open = btn.getAttribute('aria-expanded') === 'true';
+              btn.setAttribute('aria-expanded', String(!open));
+              p.style.display = open ? 'none' : 'block';
+            });
+          }); /* Emotions chips (limit 3) */
+          const chipsMsg = $('#chipsMsg');
+          $$('.chip').forEach(ch => {
+            ch.addEventListener('click', () => {
+              const selected = $$('.chip.sel');
+              if (ch.classList.contains('sel')) {
+                ch.classList.remove('sel');
+                chipsMsg.textContent = '';
+                return;
+              }
+              if (selected.length >= 3) {
+                chipsMsg.textContent = 'Pick up to 3 emotions.';
+                return;
+              }
+              ch.classList.add('sel');
+              chipsMsg.textContent = '';
+            });
+          }); /* Drag & Drop Sorter (HTML5 DnD) + keyboard click cycle fallback */
+          const src = $('#src .tokens'),
+            binA = $('#binA .tokens'),
+            binB = $('#binB .tokens');
+          const zones = [src, binA, binB];
+          const TOKENS = [{
+            id: 't1',
+            label: 'Volume',
+            ans: 'A'
+          }, {
+            id: 't2',
+            label: 'Tone',
+            ans: 'A'
+          }, {
+            id: 't3',
+            label: 'Gesture',
+            ans: 'A'
+          }, {
+            id: 't4',
+            label: 'Posture',
+            ans: 'A'
+          }, {
+            id: 't5',
+            label: 'Facial expression',
+            ans: 'A'
+          }, {
+            id: 't6',
+            label: 'Setting',
+            ans: 'B'
+          }, {
+            id: 't7',
+            label: 'Time period',
+            ans: 'B'
+          }, {
+            id: 't8',
+            label: 'Stage space',
+            ans: 'B'
+          }, {
+            id: 't9',
+            label: 'Blocking',
+            ans: 'B'
+          }];
+
+          function makeToken(t) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.draggable = true;
+            b.className = 'token';
+            b.textContent = t.label;
+            b.dataset.id = t.id;
+            b.dataset.answer = t.ans; // Drag handlers b.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', t.id); e.dataTransfer.effectAllowed='move'; b.classList.remove('ok','err'); }); // Click to cycle fallback b.addEventListener('click', ()=>{ const p = b.parentElement; b.classList.remove('ok','err'); if(p===src) binA.appendChild(b); else if(p===binA) binB.appendChild(b); else src.appendChild(b); }); return b; } TOKENS.forEach(t=> src.appendChild(makeToken(t))); zones.forEach(z=>{ z.parentElement.addEventListener('dragover', e=>{ e.preventDefault(); z.parentElement.classList.add('over'); }); z.parentElement.addEventListener('dragleave', ()=> z.parentElement.classList.remove('over')); z.parentElement.addEventListener('drop', e=>{ e.preventDefault(); const id = e.dataTransfer.getData('text/plain'); const el = $(`.token[data-id="${id}"]`); if(el){ z.appendChild(el); } z.parentElement.classList.remove('over'); }); }); $('#sortCheck').addEventListener('click',()=>{ let correct=0, total=TOKENS.length, missing=0; $$('.token').forEach(tok=>{ tok.classList.remove('ok','err'); const ans = tok.dataset.answer; const parent = tok.parentElement?.parentElement?.id || ''; const parentKey = parent==='binA' ? 'A' : parent==='binB' ? 'B' : 'S'; if(parentKey==='S'){ missing++; tok.classList.add('err'); } else if(parentKey===ans){ correct++; tok.classList.add('ok'); } else tok.classList.add('err'); }); $('#sortMsg').textContent = `Correct: ${correct}/${total}${missing?` • Place all tokens (missing: ${missing})`:''}`; }); $('#sortReset').addEventListener('click',()=>{ $$('.token').forEach(tok=>{ tok.classList.remove('ok','err'); src.appendChild(tok); }); $('#sortMsg').textContent=''; }); /* Match table */ $('#matchCheck').addEventListener('click',()=>{ let correct=0, total=0; $$('#matchTable tbody tr').forEach(tr=>{ total++; const ans = tr.getAttribute('data-answer'); const val = $('select', tr).value || ''; tr.classList.remove('okcell','errcell'); if(val===ans){ correct++; tr.classList.add('okcell'); } else tr.classList.add('errcell'); }); $('#matchMsg').textContent = `Correct: ${correct}/${total}`; }); $('#matchReset').addEventListener('click',()=>{ $$('#matchTable tbody tr').forEach(tr=>{ tr.classList.remove('okcell','errcell'); const sel = $('select', tr); sel.selectedIndex = 0; }); $('#matchMsg').textContent=''; }); /* MCQ */ $$('.mcq .q').forEach(q=>{ const opts = $$('.opt', q); opts.forEach(o=>{ o.addEventListener('click',()=>{ opts.forEach(x=>x.classList.remove('sel')); o.classList.add('sel'); }); }); }); $('#quizCheck').addEventListener('click',()=>{ let score=0, total=0; $$('.mcq .q').forEach(q=>{ total++; const ans = Number(q.dataset.answerIndex); const opts = $$('.opt', q); const fb = $('.feedback', q); const sel = opts.find(o=>o.classList.contains('sel')); opts.forEach(o=>o.classList.remove('ok','err')); if(!sel){ fb.textContent='Choose an answer.'; return; } const idx = Number(sel.dataset.index); if(idx===ans){ score++; sel.classList.add('ok'); fb.textContent='Correct!'; } else{ sel.classList.add('err'); fb.textContent='Revisit the elements and try again.'; } }); $('#quizMsg').textContent = `Score: ${score}/${total}`; }); $('#quizReset').addEventListener('click',()=>{ $$('.mcq .q').forEach(q=>{ $$('.opt', q).forEach(o=>o.classList.remove('sel','ok','err')); $('.feedback', q).textContent=''; }); $('#quizMsg').textContent=''; }); /* Export */ function val(id){ const el = document.getElementById(id); return el ? (el.value||'') : ''; } $('#exportBtn').addEventListener('click',()=>{ // Chips const chips = $$('.chip.sel').map(c=>c.textContent.trim()); // Sorter const tokens = $$('.token').map(t=>({ label:t.textContent.trim(), placed: t.parentElement?.parentElement?.id==='binA' ? 'A' : t.parentElement?.parentElement?.id==='binB' ? 'B' : 'Source', correct: t.classList.contains('ok') })); const sortCorrect = tokens.filter(t=>t.correct).length; // Match let matchCorrect=0, matchTotal=0; $$('#matchTable tbody tr').forEach(tr=>{ matchTotal++; const ans = tr.getAttribute('data-answer'); const val = $('select', tr).value || ''; if(val===ans) matchCorrect++; }); // Quiz score const quizMsg = $('#quizMsg').textContent || 'Not checked yet.'; const lines = [ '=== Grade 5 Drama Summary ===', 'Timestamp: '+new Date().toLocaleString(), '', '--- Body-Only Emotions (max 3) ---', (chips.length?chips.join(', '):'(none selected)'), '', '--- Character Profile ---', 'Name: '+val('c_name'), 'Age: '+val('c_age'), 'Background: '+val('c_bg'), 'Personality: '+val('c_person'), 'Main Goal: '+val('c_goal'), 'Biggest Fear: '+val('c_fear'), 'Relationships: '+val('c_rel'), '', '--- Social-Issue Planner ---', 'Issue: '+val('i_issue'), 'Feels: '+val('i_feel'), 'Talks: '+val('i_talk'), 'Solves: '+val('i_solve'), '', '--- Sorter Results ---', `Correct: ${sortCorrect}/${tokens.length}`, ...tokens.map(t=>`- ${t.label}: ${t.placed}${t.correct?' (ok)':''}`), '', '--- Match Table ---', `Score: ${matchCorrect}/${matchTotal}`, '', '--- Quiz ---', quizMsg, '', '--- Reflection ---', 'Character learning: '+val('r_char'), 'Voice/Movement effect: '+val('r_vm'), 'Group respect: '+val('r_group') ]; const blob = new Blob([lines.join('\n')], {type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='drama_roleplay_summary.txt'; a.click(); URL.revokeObjectURL(url); $('#exportMsg').textContent='Saved!'; setTimeout(()=>$('#exportMsg').textContent='',1500); }); })(); 
+    </script>
+  </body>
+</html>

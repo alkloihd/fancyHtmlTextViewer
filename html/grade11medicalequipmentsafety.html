@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Medical Equipment Safety — Grade 11</title>
+<style>
+  :root{
+    /* Bright clinical palette */
+    --bg:#fffdf9; --paper:#ffffff; --panel:#eef9ff; --ink:#102a43; --muted:#5c738a; --line:#e3eef6;
+    --mint:#0ec5a3; --coral:#ff6b6b; --gold:#ffc857; --vio:#8b7cff; --sky:#56b1ff; --leaf:#35c86d;
+    --warn:#e6901a; --bad:#d3455b; --good:#15957b;
+    --radius:16px; --shadow:0 10px 28px rgba(16,42,67,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{
+    margin:0;padding:0;
+    background:
+      radial-gradient(1000px 420px at 90% -8%, #e7f6ff 0%, transparent 60%),
+      radial-gradient(1000px 520px at -6% -10%, #fff1f1 0%, transparent 60%),
+      linear-gradient(180deg,#fffefb,#f8fffd 60%,#fbfffe);
+    color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; line-height:1.35;
+  }
+  a{color:#0a66c2;text-decoration:none}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.88));border-bottom:1px solid var(--line);backdrop-filter:blur(6px);padding:14px 0}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 16px}
+  h1{margin:0;font-size:clamp(22px,3.2vw,36px)}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#4d6a7e;margin-left:8px}
+  .hero{margin:14px 0 18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+  .section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:16px 0;box-shadow:var(--shadow)}
+  .grid{display:grid;gap:12px}
+  @media (min-width:900px){ .cols-2{grid-template-columns:1fr 1fr} .cols-3{grid-template-columns:repeat(3,1fr)} .cols-4{grid-template-columns:repeat(4,1fr)} }
+  h2{font-size:clamp(18px,2.3vw,26px);margin:0 0 10px}
+  h3{margin:8px 0}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  button{background:linear-gradient(180deg,#a6ffef,var(--mint));color:#063b33;border:none;border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(14,197,163,.18)}
+  button.ghost{background:#fff;color:#2a4e61;border:1px solid var(--line)}
+  button.coral{background:linear-gradient(180deg,#ffb1b1,var(--coral));color:#4a1313;box-shadow:0 6px 18px rgba(255,107,107,.22)}
+  button.gold{background:linear-gradient(180deg,#ffe2a6,var(--gold));color:#3a2700;box-shadow:0 6px 18px rgba(255,200,87,.22)}
+  input[type="number"],input[type="text"],textarea{
+    background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px
+  }
+  input[type="number"],input[type="text"]{width:160px}
+  textarea{width:100%;min-height:110px;resize:vertical}
+  .ok{color:var(--good);font-weight:800} .bad{color:var(--bad);font-weight:800} .warn{color:var(--warn);font-weight:800}
+  .out{background:#f8fffd;border:1px dashed var(--line);border-radius:12px;padding:10px}
+
+  /* Pills */
+  .pill.stat{border-color:#cfe8ff}
+  .pill.good{background:#eafff5;border-color:#baf1de;color:#0f6b58}
+  .pill.warn{background:#fff7e6;border-color:#ffe0a6;color:#7a4a00}
+  .pill.bad{background:#fff0f2;border-color:#ffc9d0;color:#6f1223}
+
+  /* Accordion */
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
+  summary{cursor:pointer;font-weight:800}
+
+  /* Flip cards */
+  .flip{background:transparent;perspective:1000px;height:160px}
+  .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s ease}
+  .flip:hover .flip-inner,.flip:focus-within .flip-inner,.flip.active .flip-inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;padding:12px;border-radius:12px;border:1px solid var(--line);background:#fff;backface-visibility:hidden}
+  .back{transform:rotateY(180deg);background:#f7fbff}
+  .flip h4{margin:0 0 6px}
+  .tap{position:absolute;right:10px;bottom:8px;font-size:12px;opacity:.75}
+
+  /* Sorting board */
+  .board{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .zone{min-height:160px;border:2px dashed #cfe6f5;border-radius:12px;padding:8px;background:#fafdff}
+  .zone.active{background:#e9f6ff;border-color:#56b1ff}
+  .tile{user-select:none;cursor:grab;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:6px 0;display:flex;gap:8px;align-items:center;font-weight:700}
+  .tile .tag{font-size:11px;padding:2px 6px;border-radius:999px;background:#eef6ff;color:#2c4d5b;border:1px solid #d8eaf6}
+  .tile.correct{border-color:#baf1de;background:#eafff5}
+  .tile.wrong{border-color:#ffc9d0;background:#fff0f2}
+
+  /* MCQ */
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .q{font-weight:800;margin-bottom:6px}
+  .qcard label{display:flex;gap:8px;align-items:flex-start;margin:4px 0}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:#fff}
+  th,td{border:1px solid var(--line);padding:8px;text-align:left;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Medical Equipment Safety Protocol Manual
+      <span class="pill stat">Grade 11 • Health Science</span>
+      <span class="pill stat">Interactive: flip cards • sorting • counting</span>
+    </h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- Intro -->
+  <section class="hero">
+    <h2>Safety First: The Foundation of Healthcare Practice</h2>
+    <p>Healthcare professionals must prioritize safety in every aspect of their work. This guide provides essential guidelines for handling medical equipment safely and effectively. Proper handling protects you and ensures optimal patient care.</p>
+    <div class="row" style="margin-top:8px">
+      <span class="pill good">Hand hygiene</span>
+      <span class="pill good">PPE</span>
+      <span class="pill warn">Calibration</span>
+      <span class="pill warn">Sterility</span>
+      <span class="pill bad">Do not use if damaged</span>
+    </div>
+  </section>
+
+  <!-- Instruments -->
+  <section class="section">
+    <h2>Common Medical Instruments</h2>
+    <p class="small muted">Images (safe search): <a target="_blank" rel="noopener" href="https://www.google.com/search?q=common+medical+instruments+healthcare+training">basic medical instruments ↗</a></p>
+    <div class="grid cols-3">
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="face front">
+          <h4>🩺 Sphygmomanometer</h4><p class="muted">Blood pressure measurement</p><div class="tap small">Flip ↻</div>
+        </div>
+        <div class="face back">
+          <ul>
+            <li>Components: cuff, bulb, gauge</li>
+            <li class="small">Safety: ensure calibration; use clean cuff</li>
+          </ul>
+        </div>
+      </div></div>
+
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="face front">
+          <h4>🔧 Forceps</h4><p class="muted">Gripping/manipulation</p><div class="tap small">Flip ↻</div>
+        </div>
+        <div class="face back">
+          <ul>
+            <li>Types: straight, curved, locking</li>
+            <li class="small">Critical: sterilize between uses</li>
+          </ul>
+        </div>
+      </div></div>
+
+      <div class="flip" tabindex="0"><div class="flip-inner">
+        <div class="face front">
+          <h4>🧪 Diagnostic Equipment</h4><p class="muted">Microscope, scale, IV pole</p><div class="tap small">Flip ↻</div>
+        </div>
+        <div class="face back">
+          <p class="small">Links: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=medical+diagnostic+equipment+training">diagnostic equipment examples ↗</a></p>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- Protocols -->
+  <section class="section">
+    <h2>Safety Protocols & Procedures</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Universal Precautions</h3>
+        <ol>
+          <li>Hand hygiene before and after equipment use</li>
+          <li>Personal protective equipment (PPE)</li>
+          <li>Proper disposal of contaminated materials</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>Equipment Handling Checklist</h3>
+        <label><input type="checkbox" class="chk"> Verify equipment cleanliness</label><br/>
+        <label><input type="checkbox" class="chk"> Check calibration status</label><br/>
+        <label><input type="checkbox" class="chk"> Inspect for damage</label><br/>
+        <label><input type="checkbox" class="chk"> Review usage protocols</label><br/>
+        <label><input type="checkbox" class="chk"> Confirm proper storage</label>
+        <div class="out" id="chkOut" style="margin-top:8px">Checked: 0/5</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Infection control -->
+  <section class="section">
+    <h2>Infection Control — Preventing Nosocomial Infections</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <table>
+          <thead><tr><th>Procedure</th><th>Method</th><th>Frequency</th></tr></thead>
+          <tbody>
+            <tr><td>Disinfection</td><td>Chemical agents</td><td>After each use</td></tr>
+            <tr><td>Sterilization</td><td>Autoclave</td><td>Per protocol</td></tr>
+            <tr><td>Storage</td><td>Sealed containers</td><td>Continuous</td></tr>
+          </tbody>
+        </table>
+        <p class="small muted" style="margin-top:6px">Learn more: <a target="_blank" rel="noopener" href="https://www.google.com/search?q=medical+equipment+sterilization+procedures">sterilization procedures ↗</a></p>
+      </div>
+      <div class="card">
+        <h3>PPE & Waste Counter</h3>
+        <div class="row">
+          <span class="pill good">🧤 Gloves: <strong id="glv">0</strong></span>
+          <button class="ghost" data-inc="glv">+1</button><button class="ghost" data-dec="glv">−1</button>
+        </div>
+        <div class="row">
+          <span class="pill good">😷 Masks: <strong id="msk">0</strong></span>
+          <button class="ghost" data-inc="msk">+1</button><button class="ghost" data-dec="msk">−1</button>
+        </div>
+        <div class="row">
+          <span class="pill good">🧥 Gowns: <strong id="gwn">0</strong></span>
+          <button class="ghost" data-inc="gwn">+1</button><button class="ghost" data-dec="gwn">−1</button>
+        </div>
+        <div class="out" id="invOut" style="margin-top:8px">Total used this session: 0</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sorting board: timelines -->
+  <section class="section">
+    <h2>Hands-On: Sort the Steps (Pre-Use • During Use • Post-Use)</h2>
+    <p class="muted small">Drag each card to the correct stage. Then press <em>Check</em>.</p>
+    <div class="board" aria-label="Sorting activity">
+      <div class="zone" id="pre"  data-zone="pre"  aria-label="Pre-use"></div>
+      <div class="zone" id="dur"  data-zone="during" aria-label="During-use"></div>
+      <div class="zone" id="post" data-zone="post" aria-label="Post-use"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="check">Check Answers</button>
+      <button class="ghost" id="reset">Reset</button>
+      <div class="out" id="score" style="flex:1">Score: 0 / 12</div>
+    </div>
+    <div id="pool" class="card" style="margin-top:12px">
+      <h3>Step Cards</h3>
+      <div id="tiles"></div>
+    </div>
+  </section>
+
+  <!-- Practical guidelines -->
+  <section class="section">
+    <h2>Practical Guidelines — Step-by-Step</h2>
+    <details class="card"><summary>1) Pre-use Assessment</summary>
+      <ul><li>Check equipment integrity</li><li>Verify sterilization status</li><li>Gather necessary supplies</li></ul>
+    </details>
+    <details class="card"><summary>2) During Use</summary>
+      <ul><li>Maintain sterile field</li><li>Follow proper grip techniques</li><li>Monitor patient comfort</li></ul>
+    </details>
+    <details class="card"><summary>3) Post-use Care</summary>
+      <ul><li>Clean immediately after use</li><li>Document any issues</li><li>Store appropriately</li></ul>
+    </details>
+  </section>
+
+  <!-- Emergency procedures -->
+  <section class="section">
+    <h2>Emergency Procedures — Quick Response</h2>
+    <div class="grid cols-3">
+      <div class="card">
+        <h3>⚡ Equipment Malfunction</h3>
+        <ul class="small">
+          <li>Stop use safely</li><li>Label “OUT OF SERVICE”</li><li>Report and document</li><li>Follow facility protocol</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🧫 Contamination Incident</h3>
+        <ul class="small">
+          <li>Isolate item/area</li><li>Perform hand hygiene</li><li>Notify supervisor</li><li>Use spill kit if applicable</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🚑 Patient Reaction</h3>
+        <ul class="small">
+          <li>Call for help</li><li>Monitor ABCs</li><li>Document time/actions</li><li>Follow emergency plan</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Review -->
+  <section class="section">
+    <h2>Review Questions</h2>
+    <div class="grid cols-2">
+      <div class="qcard">
+        <div class="q">What are three essential steps in equipment preparation?</div>
+        <label><input type="radio" name="q1" value="a"> Start use → Clean later → Calibrate next week</label>
+        <label><input type="radio" name="q1" value="b"> Check integrity → Verify sterility → Gather supplies</label>
+        <label><input type="radio" name="q1" value="c"> Store first → Use → Disinfect tomorrow</label>
+        <button class="ghost" onclick="checkMCQ('q1','b','r1')">Check</button>
+        <div id="r1" class="small" style="margin-top:6px"></div>
+      </div>
+      <div class="qcard">
+        <div class="q">Describe proper handling technique for forceps.</div>
+        <label><input type="radio" name="q2" value="a"> No sterilization if they look clean</label>
+        <label><input type="radio" name="q2" value="b"> Maintain sterile field and use proper grip</label>
+        <label><input type="radio" name="q2" value="c"> Use as tweezers for everything</label>
+        <button class="ghost" onclick="checkMCQ('q2','b','r2')">Check</button>
+        <div id="r2" class="small" style="margin-top:6px"></div>
+      </div>
+      <div class="qcard">
+        <div class="q">List components of universal precautions.</div>
+        <label><input type="radio" name="q3" value="a"> PPE only</label>
+        <label><input type="radio" name="q3" value="b"> Hand hygiene, PPE, proper disposal</label>
+        <label><input type="radio" name="q3" value="c"> Storage and transport only</label>
+        <button class="ghost" onclick="checkMCQ('q3','b','r3')">Check</button>
+        <div id="r3" class="small" style="margin-top:6px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Symbols -->
+  <section class="section">
+    <h2>Quick Reference — Common Safety Symbols</h2>
+    <table>
+      <thead><tr><th>Symbol</th><th>Meaning</th><th>Action Required</th></tr></thead>
+      <tbody>
+        <tr><td>⚠️</td><td>Caution</td><td>Use extra care</td></tr>
+        <tr><td>🧤</td><td>PPE Required</td><td>Wear protective gear</td></tr>
+        <tr><td>🔄</td><td>Sterilize</td><td>Process before use</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Resources -->
+  <section class="section">
+    <h2>Digital Resources</h2>
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Canadian Patient Safety Institute</h3>
+        <p><a target="_blank" rel="noopener" href="https://www.patientsafetyinstitute.ca">Resource link ↗</a> &nbsp;|&nbsp;
+           <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Canadian+Patient+Safety+Institute+guidelines">Search ↗</a></p>
+      </div>
+      <div class="card">
+        <h3>Health Canada — Medical Device Regulations</h3>
+        <p><a target="_blank" rel="noopener" href="https://www.canada.ca/en/health-canada/services/drugs-health-products/medical-devices.html">Resource link ↗</a> &nbsp;|&nbsp;
+           <a target="_blank" rel="noopener" href="https://www.google.com/search?q=Health+Canada+medical+device+safety+regulations">Search ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="wrap" style="color:#6e8791;font-size:12px;padding:26px 0 60px">
+    Built for Grade 11: colourful clinical theme, flip cards, accordions, sorting, and counting—no graphic images. Always follow your facility’s protocols.
+  </footer>
+</div>
+
+<script>
+/* Flip cards: tap/click support */
+document.querySelectorAll('.flip').forEach(c=>{
+  c.addEventListener('click',e=>{
+    if(window.getSelection && String(window.getSelection())!=='') return;
+    c.classList.toggle('active');
+  });
+});
+
+/* Checklist counter */
+const chks=[...document.querySelectorAll('.chk')];
+const chkOut=document.getElementById('chkOut');
+function updateChk(){ const n=chks.filter(c=>c.checked).length; chkOut.textContent=`Checked: ${n}/5`; }
+chks.forEach(c=>c.addEventListener('change',updateChk)); updateChk();
+
+/* PPE counters */
+const ids=['glv','msk','gwn']; let total=0;
+function updTotal(){ const t=ids.reduce((s,id)=>s+parseInt(document.getElementById(id).textContent||'0',10),0); total=t; document.getElementById('invOut').textContent=`Total used this session: ${t}`; }
+document.querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>{ const id=b.dataset.inc; const el=document.getElementById(id); el.textContent=parseInt(el.textContent,10)+1; updTotal(); });
+document.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>{ const id=b.dataset.dec; const el=document.getElementById(id); el.textContent=Math.max(0,parseInt(el.textContent,10)-1); updTotal(); });
+updTotal();
+
+/* Sorting game */
+const steps = [
+  {txt:'Check equipment integrity', cat:'pre'},
+  {txt:'Verify sterilization status', cat:'pre'},
+  {txt:'Gather necessary supplies', cat:'pre'},
+  {txt:'Maintain sterile field', cat:'during'},
+  {txt:'Follow proper grip techniques', cat:'during'},
+  {txt:'Monitor patient comfort', cat:'during'},
+  {txt:'Clean immediately after use', cat:'post'},
+  {txt:'Document any issues', cat:'post'},
+  {txt:'Store appropriately', cat:'post'},
+  {txt:'Check calibration status', cat:'pre'},
+  {txt:'Inspect for damage', cat:'pre'},
+  {txt:'Dispose of contaminated materials', cat:'post'},
+];
+const pool = document.getElementById('tiles');
+const zones = [...document.querySelectorAll('.zone')];
+function mkTile(s){
+  const d=document.createElement('div');
+  d.className='tile'; d.draggable=true; d.dataset.cat=s.cat;
+  d.innerHTML=`<span class="tag">${s.cat.toUpperCase()}</span> ${s.txt}`;
+  d.addEventListener('dragstart',ev=>{ ev.dataTransfer.setData('text/plain','ID'); d.classList.add('dragging'); });
+  d.addEventListener('dragend', ()=> d.classList.remove('dragging'));
+  return d;
+}
+function renderPool(){
+  pool.innerHTML='';
+  steps.forEach(s=> pool.appendChild(mkTile(s)));
+}
+zones.forEach(z=>{
+  z.addEventListener('dragover',ev=>{ ev.preventDefault(); z.classList.add('active'); });
+  z.addEventListener('dragleave',()=> z.classList.remove('active'));
+  z.addEventListener('drop',ev=>{
+    ev.preventDefault(); z.classList.remove('active');
+    const dragging=document.querySelector('.tile.dragging');
+    if(dragging){ dragging.classList.remove('correct','wrong'); z.appendChild(dragging); }
+  });
+});
+document.getElementById('check').onclick = ()=>{
+  let correct=0, total=steps.length;
+  document.querySelectorAll('.tile').forEach(t=>{
+    const parent = t.parentElement.dataset.zone;
+    if(parent===t.dataset.cat){ t.classList.add('correct'); t.classList.remove('wrong'); correct++; }
+    else { t.classList.add('wrong'); t.classList.remove('correct'); }
+  });
+  document.getElementById('score').textContent = `Score: ${correct} / ${total}`;
+};
+document.getElementById('reset').onclick = ()=>{
+  renderPool();
+  zones.forEach(z=>z.innerHTML=''); document.getElementById('score').textContent='Score: 0 / 12';
+};
+renderPool();
+
+/* MCQs */
+function checkMCQ(name, correct, outId){
+  const sel = document.querySelector(`input[name="${name}"]:checked`);
+  const out = document.getElementById(outId);
+  if(!sel){ out.innerHTML='<span class="warn">Choose an option.</span>'; return; }
+  out.innerHTML = (sel.value===correct)? '<span class="ok">✅ Correct!</span>' : '<span class="bad">Try again.</span>';
+}
+window.checkMCQ = checkMCQ;
+</script>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Migration Research Packets: People on the Move (1800-1850)</title>  
+    <style>  
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@400;600;700&display=swap');  
+          
+        * {  
+            margin: 0;  
+            padding: 0;  
+            box-sizing: border-box;  
+        }  
+          
+        body {  
+            font-family: 'Open Sans', sans-serif;  
+            line-height: 1.6;  
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);  
+            min-height: 100vh;  
+            color: #333;  
+        }  
+          
+        .container {  
+            max-width: 1200px;  
+            margin: 0 auto;  
+            padding: 20px;  
+        }  
+          
+        .header {  
+            text-align: center;  
+            background: rgba(255, 255, 255, 0.95);  
+            border-radius: 20px;  
+            padding: 30px;  
+            margin-bottom: 30px;  
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);  
+            backdrop-filter: blur(10px);  
+        }  
+          
+        .header h1 {  
+            font-family: 'Merriweather', serif;  
+            font-size: 2.5em;  
+            color: #2c3e50;  
+            margin-bottom: 10px;  
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);  
+        }  
+          
+        .header .subtitle {  
+            font-size: 1.2em;  
+            color: #7f8c8d;  
+            font-weight: 300;  
+        }  
+          
+        .migration-grid {  
+            display: grid;  
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));  
+            gap: 30px;  
+            margin-bottom: 40px;  
+        }  
+          
+        .migration-card {  
+            perspective: 1000px;  
+            height: 400px;  
+        }  
+          
+        .card-inner {  
+            position: relative;  
+            width: 100%;  
+            height: 100%;  
+            text-align: center;  
+            transition: transform 0.8s;  
+            transform-style: preserve-3d;  
+            cursor: pointer;  
+        }  
+          
+        .migration-card:hover .card-inner {  
+            transform: rotateY(180deg);  
+        }  
+          
+        .card-front, .card-back {  
+            position: absolute;  
+            width: 100%;  
+            height: 100%;  
+            backface-visibility: hidden;  
+            border-radius: 20px;  
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);  
+            padding: 30px;  
+            display: flex;  
+            flex-direction: column;  
+            justify-content: center;  
+            align-items: center;  
+        }  
+          
+        .card-back {  
+            transform: rotateY(180deg);  
+            overflow-y: auto;  
+            justify-content: flex-start;  
+            padding: 20px;  
+        }  
+          
+        .irish-card .card-front {  
+            background: linear-gradient(135deg, #2ecc71, #27ae60);  
+            color: white;  
+        }  
+          
+        .irish-card .card-back {  
+            background: linear-gradient(135deg, #e8f5e8, #d5f4d5);  
+            color: #2c3e50;  
+        }  
+          
+        .underground-card .card-front {  
+            background: linear-gradient(135deg, #3498db, #2980b9);  
+            color: white;  
+        }  
+          
+        .underground-card .card-back {  
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);  
+            color: #2c3e50;  
+        }  
+          
+        .scottish-card .card-front {  
+            background: linear-gradient(135deg, #e74c3c, #c0392b);  
+            color: white;  
+        }  
+          
+        .scottish-card .card-back {  
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);  
+            color: #2c3e50;  
+        }  
+          
+        .mennonite-card .card-front {  
+            background: linear-gradient(135deg, #f39c12, #e67e22);  
+            color: white;  
+        }  
+          
+        .mennonite-card .card-back {  
+            background: linear-gradient(135deg, #fff8e1, #ffecb3);  
+            color: #2c3e50;  
+        }  
+          
+        .western-card .card-front {  
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);  
+            color: white;  
+        }  
+          
+        .western-card .card-back {  
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);  
+            color: #2c3e50;  
+        }  
+          
+        .card-icon {  
+            font-size: 4em;  
+            margin-bottom: 20px;  
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));  
+        }  
+          
+        .card-title {  
+            font-family: 'Merriweather', serif;  
+            font-size: 1.8em;  
+            font-weight: 700;  
+            margin-bottom: 15px;  
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);  
+        }  
+          
+        .card-subtitle {  
+            font-size: 1.1em;  
+            opacity: 0.9;  
+            font-weight: 300;  
+        }  
+          
+        .card-back h3 {  
+            color: #2c3e50;  
+            margin-bottom: 15px;  
+            font-size: 1.3em;  
+            border-bottom: 2px solid #3498db;  
+            padding-bottom: 5px;  
+        }  
+          
+        .card-back p {  
+            margin-bottom: 12px;  
+            font-size: 0.95em;  
+            line-height: 1.5;  
+        }  
+          
+        .card-back ul {  
+            margin: 10px 0;  
+            padding-left: 20px;  
+        }  
+          
+        .card-back li {  
+            margin-bottom: 8px;  
+            font-size: 0.9em;  
+        }  
+          
+        .stats-section {  
+            background: rgba(255, 255, 255, 0.95);  
+            border-radius: 20px;  
+            padding: 30px;  
+            margin: 30px 0;  
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);  
+        }  
+          
+        .stats-title {  
+            font-family: 'Merriweather', serif;  
+            font-size: 2em;  
+            color: #2c3e50;  
+            text-align: center;  
+            margin-bottom: 25px;  
+        }  
+          
+        .stats-table {  
+            width: 100%;  
+            border-collapse: collapse;  
+            margin: 20px 0;  
+            background: white;  
+            border-radius: 10px;  
+            overflow: hidden;  
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);  
+        }  
+          
+        .stats-table th {  
+            background: linear-gradient(135deg, #667eea, #764ba2);  
+            color: white;  
+            padding: 15px;  
+            text-align: left;  
+            font-weight: 600;  
+        }  
+          
+        .stats-table td {  
+            padding: 12px 15px;  
+            border-bottom: 1px solid #eee;  
+        }  
+          
+        .stats-table tr:nth-child(even) {  
+            background-color: #f8f9fa;  
+        }  
+          
+        .stats-table tr:hover {  
+            background-color: #e3f2fd;  
+            transform: scale(1.02);  
+            transition: all 0.3s ease;  
+        }  
+          
+        .questions-section {  
+            background: rgba(255, 255, 255, 0.95);  
+            border-radius: 20px;  
+            padding: 30px;  
+            margin: 30px 0;  
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);  
+        }  
+          
+        .questions-title {  
+            font-family: 'Merriweather', serif;  
+            font-size: 2em;  
+            color: #2c3e50;  
+            text-align: center;  
+            margin-bottom: 25px;  
+        }  
+          
+        .question-item {  
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);  
+            border-left: 5px solid #3498db;  
+            padding: 15px 20px;  
+            margin: 15px 0;  
+            border-radius: 0 10px 10px 0;  
+            transition: all 0.3s ease;  
+        }  
+          
+        .question-item:hover {  
+            transform: translateX(10px);  
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);  
+        }  
+          
+        .question-item strong {  
+            color: #2c3e50;  
+            font-size: 1.1em;  
+        }  
+          
+        .hover-instruction {  
+            position: fixed;  
+            top: 20px;  
+            right: 20px;  
+            background: rgba(52, 152, 219, 0.9);  
+            color: white;  
+            padding: 15px 20px;  
+            border-radius: 25px;  
+            font-size: 0.9em;  
+            animation: pulse 2s infinite;  
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);  
+        }  
+          
+        @keyframes pulse {  
+            0% { transform: scale(1); }  
+            50% { transform: scale(1.05); }  
+            100% { transform: scale(1); }  
+        }  
+          
+        .link-button {  
+            display: inline-block;  
+            background: linear-gradient(135deg, #3498db, #2980b9);  
+            color: white;  
+            padding: 8px 15px;  
+            border-radius: 20px;  
+            text-decoration: none;  
+            font-size: 0.85em;  
+            margin: 5px;  
+            transition: all 0.3s ease;  
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);  
+        }  
+          
+        .link-button:hover {  
+            transform: translateY(-2px);  
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);  
+        }  
+          
+        @media (max-width: 768px) {  
+            .migration-grid {  
+                grid-template-columns: 1fr;  
+            }  
+              
+            .header h1 {  
+                font-size: 2em;  
+            }  
+              
+            .hover-instruction {  
+                position: relative;  
+                top: auto;  
+                right: auto;  
+                margin: 20px 0;  
+                text-align: center;  
+            }  
+        }  
+    </style>  
+</head>  
+<body>  
+    <div class="hover-instruction">  
+        💡 Hover over cards to reveal more information!  
+    </div>  
+      
+    <div class="container">  
+        <div class="header">  
+            <h1>📍 Migration Research Packets</h1>  
+            <p class="subtitle">People on the Move in British North America (1800-1850)</p>  
+        </div>  
+          
+        <div class="migration-grid">  
+            <!-- Irish Famine Immigrants Card -->  
+            <div class="migration-card irish-card">  
+                <div class="card-inner">  
+                    <div class="card-front">  
+                        <div class="card-icon">🍀</div>  
+                        <h2 class="card-title">Irish Famine Immigrants</h2>  
+                        <p class="card-subtitle">The Great Hunger (1845-1852)</p>  
+                    </div>  
+                    <div class="card-back">  
+                        <h3>🥔 The Great Hunger</h3>  
+                        <p>Between 1845-1852, potato blight destroyed Ireland's main food source, forcing over one million people to leave forever.</p>  
+                          
+                        <h3>📤 Push Factors</h3>  
+                        <ul>  
+                            <li>Potato crop failures for several years</li>  
+                            <li>Starvation and disease killed over 1 million</li>  
+                            <li>British landlords evicted families</li>  
+                            <li>No jobs or money for food</li>  
+                        </ul>  
+                          
+                        <h3>📥 Pull Factors</h3>  
+                        <ul>  
+                            <li>Cheaper ship passage than to USA</li>  
+                            <li>British colonies offered assistance</li>  
+                            <li>Stories of available land and work</li>  
+                            <li>Family members already there</li>  
+                        </ul>  
+                          
+                        <h3>🚢 Challenges</h3>  
+                        <p>Traveled on "coffin ships" with terrible conditions. Many arrived sick, faced discrimination, and lived in poverty.</p>  
+                          
+                        <a href="https://www.google.com/search?q=Irish+famine+ships+coffin+ships+Canada+1840s" class="link-button" target="_blank">🔍 Learn More</a>  
+                        <a href="https://www.pc.gc.ca/en/lhn-nhs/qc/grosseile" class="link-button" target="_blank">🏛️ Grosse Île</a>  
+                    </div>  
+                </div>  
+            </div>  
+              
+            <!-- Underground Railroad Card -->  
+            <div class="migration-card underground-card">  
+                <div class="card-inner">  
+                    <div class="card-front">  
+                        <div class="card-icon">🚂</div>  
+                        <h2 class="card-title">Underground Railroad Travelers</h2>  
+                        <p class="card-subtitle">Escaping to Freedom</p>  
+                    </div>  
+                    <div class="card-back">  
+                        <h3>🗽 Escaping to Freedom</h3>  
+                        <p>Secret network helping enslaved African Americans escape to British North America where slavery was illegal.</p>  
+                          
+                        <h3>📤 Push Factors</h3>  
+                        <ul>  
+                            <li>Slavery was legal in many US states</li>  
+                            <li>Brutal treatment and family separation</li>  
+                            <li>Fugitive Slave Act of 1850</li>  
+                            <li>Hope for children's better future</li>  
+                        </ul>  
+                          
+                        <h3>📥 Pull Factors</h3>  
+                        <ul>  
+                            <li>Slavery illegal in British colonies (1833)</li>  
+                            <li>Legal protection from return</li>  
+                            <li>Growing free African American communities</li>  
+                            <li>Stories of successful settlements</li>  
+                        </ul>  
+                          
+                        <h3>⭐ The Journey</h3>  
+                        <p>Traveled at night following the North Star. Conductors like Harriet Tubman guided groups through dangerous terrain.</p>  
+                          
+                        <a href="https://www.google.com/search?q=Underground+Railroad+Canada+Harriet+Tubman+freedom+seekers" class="link-button" target="_blank">🔍 Learn More</a>  
+                        <a href="https://www.pc.gc.ca/en/lhn-nhs/on/buxton" class="link-button" target="_blank">🏛️ Buxton Site</a>  
+                    </div>  
+                </div>  
+            </div>  
+              
+            <!-- Scottish Highland Clearances Card -->  
+            <div class="migration-card scottish-card">  
+                <div class="card-inner">  
+                    <div class="card-front">  
+                        <div class="card-icon">🏔️</div>  
+                        <h2 class="card-title">Scottish Highland Migrants</h2>  
+                        <p class="card-subtitle">Highland Clearances (1750-1860)</p>  
+                    </div>  
+                    <div class="card-back">  
+                        <h3>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Forced from Ancient Lands</h3>  
+                        <p>Wealthy landowners evicted Highland communities to make room for sheep farming, destroying the traditional clan system.</p>  
+                          
+                        <h3>📤 Push Factors</h3>  
+                        <ul>  
+                            <li>Landlords evicted entire communities</li>  
+                            <li>Traditional clan system destroyed</li>  
+                            <li>Poverty and lack of work</li>  
+                            <li>Some given assisted passage to leave</li>  
+                        </ul>  
+                          
+                        <h3>📥 Pull Factors</h3>  
+                        <ul>  
+                            <li>Free or cheap passage offered</li>  
+                            <li>Promises of free land grants</li>  
+                            <li>Climate similar to Scotland</li>  
+                            <li>Could maintain Scottish culture</li>  
+                        </ul>  
+                          
+                        <h3>🌲 Settlement</h3>  
+                        <p>Established communities in Maritime provinces, especially Nova Scotia (New Scotland), maintaining Gaelic language and traditions.</p>  
+                          
+                        <a href="https://www.google.com/search?q=Scottish+Highland+Clearances+immigration+Nova+Scotia+Gaelic" class="link-button" target="_blank">🔍 Learn More</a>  
+                        <a href="https://highlandvillage.novascotia.ca/" class="link-button" target="_blank">🏛️ Highland Village</a>  
+                    </div>  
+                </div>  
+            </div>  
+              
+            <!-- Mennonite Settlers Card -->  
+            <div class="migration-card mennonite-card">  
+                <div class="card-inner">  
+                    <div class="card-front">  
+                        <div class="card-icon">⛪</div>  
+                        <h2 class="card-title">Mennonite Settlers</h2>  
+                        <p class="card-subtitle">Seeking Religious Freedom</p>  
+                    </div>  
+                    <div class="card-back">  
+                        <h3>🕊️ Seeking Religious Freedom</h3>  
+                        <p>Christian group believing in pacifism and simple living. Faced persecution in Europe for their beliefs and refusal to serve in armies.</p>  
+                          
+                        <h3>📤 Push Factors</h3>  
+                        <ul>  
+                            <li>Religious persecution in Europe</li>  
+                            <li>Forced military service conflicts</li>  
+                            <li>Limited land ownership opportunities</li>  
+                            <li>Government restrictions on religion</li>  
+                        </ul>  
+                          
+                        <h3>📥 Pull Factors</h3>  
+                        <ul>  
+                            <li>Religious freedom in British colonies</li>  
+                            <li>Military service exemption promised</li>  
+                            <li>Large blocks of fertile farmland</li>  
+                            <li>Establish close-knit communities</li>  
+                        </ul>  
+                          
+                        <h3>🌾 Community Life</h3>  
+                        <p>Well-organized migration with some resources. Settled in Waterloo County, Ontario, known for excellent farming and craftsmanship.</p>  
+                          
+                        <a href="https://www.google.com/search?q=Mennonite+immigration+Waterloo+County+Ontario+1800s" class="link-button" target="_blank">🔍 Learn More</a>  
+                        <a href="https://www.mennonitechurch.ca/programs/archives" class="link-button" target="_blank">🏛️ Heritage Centre</a>  
+                    </div>  
+                </div>  
+            </div>  
+              
+            <!-- Western Settlers Card -->  
+            <div class="migration-card western-card">  
+                <div class="card-inner">  
+                    <div class="card-front">  
+                        <div class="card-icon">🏕️</div>  
+                        <h2 class="card-title">Western Settlers</h2>  
+                        <p class="card-subtitle">Internal Migration West</p>  
+                    </div>  
+                    <div class="card-back">  
+                        <h3>🌅 Seeking New Opportunities</h3>  
+                        <p>People already in British North America moved west for better opportunities, cheaper land, or to escape economic problems.</p>  
+                          
+                        <h3>📤 Push Factors</h3>  
+                        <ul>  
+                            <li>Limited land in settled eastern areas</li>  
+                            <li>Economic difficulties and lack of jobs</li>  
+                            <li>Overcrowding in some regions</li>  
+                            <li>Desire for independence</li>  
+                        </ul>  
+                          
+                        <h3>📥 Pull Factors</h3>  
+                        <ul>  
+                            <li>Free or cheap government land grants</li>  
+                            <li>Stories of fertile soil and resources</li>  
+                            <li>Fresh start opportunities</li>  
+                            <li>Less government control</li>  
+                        </ul>  
+                          
+                        <h3>🏞️ Impact on Indigenous Peoples</h3>  
+                        <p>Devastating effects on First Nations and Métis communities. Traditional territories disrupted, forcing many to sign treaties.</p>  
+                          
+                        <a href="https://www.google.com/search?q=western+settlement+Canada+1800s+pioneers+Red+River" class="link-button" target="_blank">🔍 Learn More</a>  
+                        <a href="https://www.thecanadianencyclopedia.ca/en/article/red-river-colony" class="link-button" target="_blank">🏛️ Red River Settlement</a>  
+                    </div>  
+                </div>  
+            </div>  
+        </div>  
+          
+        <div class="stats-section">  
+            <h2 class="stats-title">📊 Migration Statistics Summary</h2>  
+            <table class="stats-table">  
+                <thead>  
+                    <tr>  
+                        <th>Migration Group</th>  
+                        <th>Peak Years</th>  
+                        <th>Estimated Numbers</th>  
+                        <th>Main Destinations</th>  
+                    </tr>  
+                </thead>  
+                <tbody>  
+                    <tr>  
+                        <td><strong>🍀 Irish Famine Immigrants</strong></td>  
+                        <td>1847-1852</td>  
+                        <td>100,000+</td>  
+                        <td>Montreal, Quebec City, Toronto</td>  
+                    </tr>  
+                    <tr>  
+                        <td><strong>🚂 Underground Railroad</strong></td>  
+                        <td>1840-1860</td>  
+                        <td>30,000-40,000</td>  
+                        <td>Canada West, Maritime provinces</td>  
+                    </tr>  
+                    <tr>  
+                        <td><strong>🏔️ Scottish Highlanders</strong></td>  
+                        <td>1770-1850</td>  
+                        <td>50,000+</td>  
+                        <td>Nova Scotia, Prince Edward Island</td>  
+                    </tr>  
+                    <tr>  
+                        <td><strong>⛪ Mennonites</strong></td>  
+                        <td>1786-1825</td>  
+                        <td>2,000+</td>  
+                        <td>Waterloo County, Ontario</td>  
+                    </tr>  
+                    <tr>  
+                        <td><strong>🏕️ Western Settlers</strong></td>  
+                        <td>1810-1850</td>  
+                        <td>25,000+</td>  
+                        <td>Red River, Saskatchewan Valley</td>  
+                    </tr>  
+                </tbody>  
+            </table>  
+        </div>  
+          
+        <div class="questions-section">  
+            <h2 class="questions-title">🤔 Research Questions to Consider</h2>  
+              
+            <div class="question-item">  
+                <strong>1. How did the experiences of voluntary immigrants differ from those who were forced to migrate?</strong>  
+            </div>  
+              
+            <div class="question-item">  
+                <strong>2. What role did existing communities play in helping or hindering new arrivals?</strong>  
+            </div>  
+              
+            <div class="question-item">  
+                <strong>3. How did migration patterns change the cultural landscape of British North America?</strong>  
+            </div>  
+              
+            <div class="question-item">  
+                <strong>4. What were the long-term effects of these migration movements on Indigenous peoples?</strong>  
+            </div>  
+              
+            <div class="question-item">  
+                <strong>5. How did government policies encourage or discourage different types of migration?</strong>  
+            </div>  
+        </div>  
+    </div>  
+</body>  
+</html>  
