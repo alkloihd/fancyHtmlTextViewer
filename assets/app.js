@@ -247,10 +247,10 @@
   function ensureMarkdownVisible(show) {
     if (show) {
       els.split.classList.add('raw-visible');
-      els.toggleMarkdown.textContent = 'Hide Raw Text ⇨';
+      els.toggleMarkdown.textContent = 'Hide Raw Text →';
     } else {
       els.split.classList.remove('raw-visible');
-      els.toggleMarkdown.textContent = 'Show Raw Text ⇦';
+      els.toggleMarkdown.textContent = 'Show Raw Text ←';
     }
   }
 
