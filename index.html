@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NextClass Content Previewer</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <!-- Markdown renderer (client-side) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">NC</span>
+        <h1>Content Previewer</h1>
+      </div>
+      <div class="filters">
+        <label>
+          Grade
+          <select id="gradeFilter"></select>
+        </label>
+        <label>
+          Subject
+          <select id="subjectFilter"></select>
+        </label>
+      </div>
+      <div class="actions">
+        <button id="feedbackTopBtn" class="primary">Rate & Submit</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="content-list" class="cards"></section>
+
+      <section id="viewer" class="viewer hidden">
+        <div class="viewer-header">
+          <div class="info">
+            <span id="currentTitle" class="title"></span>
+            <span id="currentMeta" class="meta"></span>
+          </div>
+          <div class="viewer-actions">
+            <span class="badge">Markdown</span>
+            <select id="mdVersionSelect"></select>
+            <span class="badge">HTML</span>
+            <select id="htmlVersionSelect"></select>
+            <button id="toggleMarkdown" class="ghost">Hide Markdown</button>
+            <a id="openHtmlNewTab" target="_blank" rel="noopener" class="ghost">Open HTML ↗</a>
+          </div>
+        </div>
+
+        <div class="split" id="split">
+          <aside class="pane markdown" id="markdownPane">
+            <div class="pane-header">Markdown (rendered)</div>
+            <div id="markdownRender" class="content markdown-body"></div>
+          </aside>
+          <div class="divider" id="divider" title="Drag to resize"></div>
+          <section class="pane html" id="htmlPane">
+            <div class="pane-header">HTML Preview</div>
+            <iframe id="htmlFrame" title="HTML Preview"></iframe>
+          </section>
+        </div>
+
+        <section id="feedback" class="feedback">
+          <h2>Teacher Feedback</h2>
+          <form id="feedbackForm">
+            <div class="form-row">
+              <label for="teacherName">Your Name</label>
+              <input id="teacherName" name="teacherName" type="text" placeholder="Jane Doe" required />
+            </div>
+            <div class="form-row two">
+              <label for="teacherGrade">Your Grade</label>
+              <select id="teacherGrade" name="teacherGrade" required>
+                <option value="">Select grade…</option>
+              </select>
+              <label for="preferredVersion">Prefer</label>
+              <select id="preferredVersion" name="preferredVersion">
+                <option value="html">HTML</option>
+                <option value="markdown">Markdown</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+
+            <div class="form-row three ratings">
+              <div>
+                <label for="ratingQuality">Overall Quality: <span id="qualityVal">5</span>/10</label>
+                <input id="ratingQuality" type="range" min="0" max="10" value="5" />
+              </div>
+              <div>
+                <label for="ratingOutput">Output (UX/Design): <span id="outputVal">5</span>/10</label>
+                <input id="ratingOutput" type="range" min="0" max="10" value="5" />
+              </div>
+              <div>
+                <label for="ratingAccuracy">Accuracy: <span id="accuracyVal">5</span>/10</label>
+                <input id="ratingAccuracy" type="range" min="0" max="10" value="5" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="comments">Comments</label>
+              <textarea id="comments" name="comments" rows="5" placeholder="Share specifics: strengths, issues, suggestions…"></textarea>
+            </div>
+
+            <div class="form-row">
+              <label class="checkbox">
+                <input type="checkbox" id="approve" />
+                Approve this content for use
+              </label>
+            </div>
+
+            <div class="form-row actions">
+              <button type="submit" class="primary">Download Feedback JSON</button>
+              <a id="emailHint" class="ghost" href="mailto:rishaal@nextclass.ca?subject=NextClass%20Feedback&body=Please%20attach%20the%20downloaded%20JSON%20file." target="_blank" rel="noopener">Email rishaal@nextclass.ca</a>
+            </div>
+
+            <p class="helper">Note: GitHub Pages is static. Submitting downloads a JSON file with your feedback. Please email it to <a href="mailto:rishaal@nextclass.ca">rishaal@nextclass.ca</a>.</p>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>NextClass • Static Preview App</span>
+      <a href="#" id="backToTop">Back to top</a>
+    </footer>
+
+    <script src="assets/app.js"></script>
+  </body>
+  </html>

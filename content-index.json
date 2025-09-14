@@ -1,0 +1,42 @@
+{
+  "items": [
+    {
+      "id": "g3-math-fractions",
+      "title": "Fractions Basics",
+      "grade": "3",
+      "subject": "math",
+      "markdown": "markdown/g3-math-fractions.md",
+      "html": "html/g3-math-fractions.html",
+      "file": "g3-math-fractions"
+    },
+    {
+      "id": "g5-science-water-cycle",
+      "title": "The Water Cycle",
+      "grade": "5",
+      "subject": "science",
+      "markdown": "markdown/g5-science-water-cycle.md",
+      "html": "html/g5-science-water-cycle.html",
+      "file": "g5-science-water-cycle"
+    },
+    {
+      "id": "kindergartendrama",
+      "title": "Kindergarten Drama",
+      "grade": "K",
+      "subject": "arts",
+      "markdown": "markdown/kindergartendrama.md",
+      "html": "html/kindergartendrama.html",
+      "file": "kindergartendrama",
+      "version": 1
+    },
+    {
+      "id": "kindergartendrama",
+      "title": "Kindergarten Drama",
+      "grade": "K",
+      "subject": "arts",
+      "markdown": "markdown/kindergartendrama.md",
+      "html": "html/kindergartendrama_2.html",
+      "file": "kindergartendrama",
+      "version": 2
+    }
+  ]
+}
