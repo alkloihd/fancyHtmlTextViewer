@@ -142,7 +142,7 @@
       const vB = b.version || parseVersionFromPath(b.html||'');
       return vA - vB;
     });
-    const renderInto = (arr, container) => {
+    const renderInto = (arr, container, isBoth) => {
       if (!arr.length) {
         const n = el('div', 'card');
         n.appendChild(el('h3', '', 'No items'));
@@ -150,23 +150,44 @@
         container.appendChild(n);
         return;
       }
-      sortItems(arr).forEach((it) => {
-        const card = el('article', 'card');
-        const v = it.version || parseVersionFromPath(it.html||'');
-        const title = el('h3', '', `${it.title} ${v>1?`(v${v})`:''}`);
-        const meta = el('div', 'badge', `Grade ${it.grade || '—'} • ${titleCase(it.subject || '')}`);
-        const row = el('div', 'row');
-        const file = it.file || it.id || it.title;
-        const filename = el('div', 'badge', file);
-        const btn = el('button', 'primary', 'Open');
-        btn.addEventListener('click', () => openViewer(it));
-        row.appendChild(filename); row.appendChild(btn);
-        card.appendChild(title); card.appendChild(meta); card.appendChild(row);
-        container.appendChild(card);
+      // Group by grade
+      const groups = {};
+      arr.forEach((it)=>{
+        const g = (it.grade || '').toString() || 'Unspecified';
+        (groups[g] ||= []).push(it);
+      });
+      const gradeSortVal = (g) => {
+        if (g.toLowerCase() === 'k') return -1;
+        const n = parseInt(g, 10);
+        return isNaN(n) ? 999 : n;
+      };
+      Object.keys(groups).sort((a,b)=> gradeSortVal(a)-gradeSortVal(b)).forEach((g)=>{
+        const wrap = el('div', 'grade-group');
+        wrap.appendChild(el('div', 'grade-header', `Grade ${g}`));
+        const cards = el('section', 'cards');
+        sortItems(groups[g]).forEach((it) => {
+          const card = el('article', 'card');
+          const v = it.version || parseVersionFromPath(it.html||'');
+          const title = el('h3', '', `${it.title} ${v>1?`(v${v})`:''}`);
+          const meta = el('div', 'badge', `Grade ${it.grade || '—'} • ${titleCase(it.subject || '')}`);
+          const type = el('span', `badge type-badge ${isBoth?'type-mdhtml':'type-htmlonly'}`, isBoth ? 'Raw+Web' : 'Web Only');
+          const row = el('div', 'row');
+          const file = it.file || it.id || it.title;
+          const filename = el('div', 'badge', file);
+          const btn = el('button', 'primary', 'Open');
+          btn.addEventListener('click', () => openViewer(it));
+          row.appendChild(filename); row.appendChild(btn);
+          card.appendChild(title);
+          const metaRow = el('div'); metaRow.appendChild(meta); metaRow.appendChild(type); card.appendChild(metaRow);
+          card.appendChild(row);
+          cards.appendChild(card);
+        });
+        wrap.appendChild(cards);
+        container.appendChild(wrap);
       });
     };
-    renderInto(both, els.listBoth);
-    renderInto(htmlOnly, els.listHtmlOnly);
+    renderInto(both, els.listBoth, true);
+    renderInto(htmlOnly, els.listHtmlOnly, false);
   }
 
   async function openViewer(item) {
