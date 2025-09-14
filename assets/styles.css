@@ -143,6 +143,8 @@ main { padding: 16px; max-width: 100%; margin: 0 auto; }
   background: rgba(2,6,23,0.03);
   border-bottom: 1px solid var(--border);
 }
+.pane-header { display: flex; align-items: center; justify-content: space-between; }
+.status { color: var(--muted); font-weight: 600; }
 .pane .content { padding: 12px; overflow: auto; }
 .markdown-body { color: #0f172a; }
 
@@ -161,6 +163,8 @@ main { padding: 16px; max-width: 100%; margin: 0 auto; }
 .form-row.three { grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .form-row.actions { display: flex; gap: 12px; align-items: center; }
 .form-row input[type="text"], .form-row textarea, .form-row select { background: #fff; border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 10px; }
+.input-sm { max-width: 260px; }
+.note-strong { font-weight: 700; color: var(--text); }
 .checkbox { display: flex; align-items: center; gap: 8px; }
 .helper { color: var(--muted); font-size: 12px; margin: 0; }
 

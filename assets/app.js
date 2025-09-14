@@ -7,18 +7,25 @@
     subjectFilter: document.getElementById('subjectFilter'),
     listBoth: document.getElementById('content-list-both'),
     listHtmlOnly: document.getElementById('content-list-html-only'),
+    listsContainer: document.getElementById('listsContainer'),
+    legendBar: document.getElementById('legendBar'),
     viewer: document.getElementById('viewer'),
     currentTitle: document.getElementById('currentTitle'),
     currentMeta: document.getElementById('currentMeta'),
-    toggleMarkdown: document.getElementById('toggleMarkdown'),
+    backToLibraryBtn: document.getElementById('backToLibraryBtn'),
     htmlFrame: document.getElementById('htmlFrame'),
     markdownRender: document.getElementById('markdownRender'),
     split: document.getElementById('split'),
     openHtmlNewTab: document.getElementById('openHtmlNewTab'),
     htmlVersionButtons: document.getElementById('htmlVersionButtons'),
+    toggleRawPaneBtn: document.getElementById('toggleRawPaneBtn'),
+    currentVersionLabel: document.getElementById('currentVersionLabel'),
+    preferenceSelect: document.getElementById('preferenceSelect'),
+    currentViewNote: document.getElementById('currentViewNote'),
     feedbackTopBtn: document.getElementById('feedbackTopBtn'),
     backToTop: document.getElementById('backToTop'),
     teacherGrade: document.getElementById('teacherGrade'),
+    teacherSchool: document.getElementById('teacherSchool'),
     feedbackForm: document.getElementById('feedbackForm'),
     emailHint: document.getElementById('emailHint'),
     // Ratings
@@ -29,7 +36,6 @@
     outputVal: document.getElementById('outputVal'),
     accuracyVal: document.getElementById('accuracyVal'),
     teacherName: document.getElementById('teacherName'),
-    preferredVersion: document.getElementById('preferredVersion'),
     comments: document.getElementById('comments'),
     approve: document.getElementById('approve'),
   };
@@ -94,10 +100,15 @@
   }
 
   function populateTeacherGradeOptions() {
-    els.teacherGrade.innerHTML = els.gradeFilter.innerHTML;
-    // Ensure first option reads clearly
-    const first = els.teacherGrade.querySelector('option');
-    if (first) first.textContent = 'Select grade…';
+    const grades = ['K'];
+    for (let i=1;i<=12;i++) grades.push(String(i));
+    els.teacherGrade.innerHTML = '';
+    const first = el('option','', 'Select grade…'); first.value = '';
+    els.teacherGrade.appendChild(first);
+    grades.forEach(g => {
+      const o = el('option','', g);
+      o.value = g; els.teacherGrade.appendChild(o);
+    });
   }
 
   function applyFilters() {
@@ -190,6 +201,8 @@
 
   async function openViewer(item) {
     currentContent = item;
+    if (els.listsContainer) els.listsContainer.style.display = 'none';
+    if (els.legendBar) els.legendBar.style.display = 'none';
     els.viewer.classList.remove('hidden');
     const v = item.version || parseVersionFromPath(item.html||'');
     els.currentTitle.textContent = `${item.title} ${v>1?`(v${v})`:''}`;
@@ -200,6 +213,8 @@
     selectedMdPath = item.markdown || markdownVariants[0] || '';
     els.openHtmlNewTab.href = selectedHtmlPath || '#';
     buildHtmlVersionButtons(htmlVariants, selectedHtmlPath);
+    updateViewLabels();
+    buildPreferenceOptions(htmlVariants, !!selectedMdPath);
     // Set teacher grade default to the item grade if empty
     if (!els.teacherGrade.value) {
       els.teacherGrade.value = String(item.grade);
@@ -232,25 +247,25 @@
     // Load HTML content for including in feedback JSON (iframe handles display)
     cache.html = await (await fetch(selectedHtmlPath)).text().catch(() => '');
     els.htmlFrame.src = selectedHtmlPath;
-    // Update email hint subject for convenience
-    const subj = encodeURIComponent(`NextClass Feedback: ${item.title}`);
-    const body = encodeURIComponent('Attach your downloaded JSON feedback file. Thank you!');
-    els.emailHint.href = `mailto:rishaal@nextclass.ca?subject=${subj}&body=${body}`;
-    // Ensure markdown shown by default (hide if not available)
-    ensureMarkdownVisible(false);
-    els.toggleMarkdown.disabled = !hasMd;
-    if (!hasMd) els.toggleMarkdown.textContent = 'Raw Text Unavailable';
-    // Scroll to viewer
-    els.viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Pre-populate email link
+    updateEmailHint({ title: item.title });
+    // Ensure markdown shown by default if available
+    ensureMarkdownVisible(!!hasMd);
+    if (els.toggleRawPaneBtn) {
+      els.toggleRawPaneBtn.disabled = !hasMd;
+      if (!hasMd) els.toggleRawPaneBtn.textContent = 'Raw Text Unavailable';
+    }
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function ensureMarkdownVisible(show) {
     if (show) {
       els.split.classList.add('raw-visible');
-      els.toggleMarkdown.textContent = 'Hide Raw Text →';
+      if (els.toggleRawPaneBtn) els.toggleRawPaneBtn.textContent = 'Hide Raw Text →';
     } else {
       els.split.classList.remove('raw-visible');
-      els.toggleMarkdown.textContent = 'Show Raw Text ←';
+      if (els.toggleRawPaneBtn) els.toggleRawPaneBtn.textContent = 'Show Raw Text ←';
     }
   }
 
@@ -280,15 +295,25 @@
   function initEvents() {
     els.gradeFilter.addEventListener('change', renderList);
     els.subjectFilter.addEventListener('change', renderList);
-    els.toggleMarkdown.addEventListener('click', () => {
-      const visible = els.split.classList.contains('raw-visible');
-      ensureMarkdownVisible(!visible);
-    });
+    if (els.toggleRawPaneBtn) {
+      els.toggleRawPaneBtn.addEventListener('click', () => {
+        const visible = els.split.classList.contains('raw-visible');
+        ensureMarkdownVisible(!visible);
+      });
+    }
     els.feedbackTopBtn.addEventListener('click', () => {
       // Scroll to feedback section in viewer
       const fb = document.getElementById('feedback');
       fb?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+    if (els.backToLibraryBtn) {
+      els.backToLibraryBtn.addEventListener('click', () => {
+        els.viewer.classList.add('hidden');
+        if (els.listsContainer) els.listsContainer.style.display = '';
+        if (els.legendBar) els.legendBar.style.display = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
     els.backToTop.addEventListener('click', (e) => {
       e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -301,10 +326,17 @@
       }
       const name = els.teacherName.value.trim();
       const tGrade = els.teacherGrade.value.trim();
+      const school = (els.teacherSchool?.value || '').trim();
+      const commentText = els.comments.value.trim();
       if (!name || !tGrade) {
         alert('Please enter your name and grade.');
         return;
       }
+      if (!commentText) {
+        alert('Please leave feedback in the comments.');
+        return;
+      }
+      const preferred = els.preferenceSelect?.value || '';
       const payload = {
         schema: 'nextclass-feedback.v1',
         timestamp: new Date().toISOString(),
@@ -312,6 +344,7 @@
         teacher: {
           name,
           grade: tGrade,
+          school: school || null,
         },
         content: {
           id: currentContent.id,
@@ -325,13 +358,13 @@
           fileName: currentContent.file || currentContent.id || currentContent.title,
         },
         ratings: {
-          overallQuality: Number(els.ratingQuality.value),
+          functionality: Number(els.ratingQuality.value),
           outputQuality: Number(els.ratingOutput.value),
           accuracy: Number(els.ratingAccuracy.value),
         },
-        preferredVersion: els.preferredVersion.value,
+        preferred,
         approved: !!els.approve.checked,
-        comments: els.comments.value,
+        comments: commentText,
         markdownContent: cache.md,
         htmlContent: cache.html,
       };
@@ -346,7 +379,8 @@
       a.href = url; a.download = filename; document.body.appendChild(a); a.click();
       setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 0);
       // Helpful reminder
-      setTimeout(() => alert('Feedback JSON downloaded. Please attach it in an email to rishaal@nextclass.ca. Thank you!'), 100);
+      setTimeout(() => alert('Feedback JSON downloaded. Please attach it in an email to hello@nextclass.ca. Thank you!'), 120);
+      updateEmailHint({ title: payload.content.title, payload });
     });
     // HTML version switching now handled by buttons
   }
@@ -367,7 +401,9 @@
   initMarkedOptions();
   loadManifest().catch((e) => {
     console.error(e);
-    els.list.innerHTML = '<div class="card"><h3>Failed to load manifest</h3><div class="badge">Ensure content-index.json is present.</div></div>';
+    if (els.listBoth) {
+      els.listBoth.innerHTML = '<div class="card"><h3>Failed to load manifest</h3><div class="badge">Ensure content-index.json is present.</div></div>';
+    }
   });
 
   // Variant helpers
@@ -413,8 +449,69 @@
         els.htmlFrame.src = selectedHtmlPath;
         const vNow = parseVersionFromPath(selectedHtmlPath);
         els.currentTitle.textContent = `${currentContent.title} ${vNow>1?`(v${vNow})`:''}`;
+        updateViewLabels();
+        buildPreferenceOptions(collectVariants(currentContent).htmlVariants, !!selectedMdPath);
       });
       els.htmlVersionButtons.appendChild(btn);
     });
+  }
+
+  function updateViewLabels() {
+    const vNow = selectedHtmlPath ? parseVersionFromPath(selectedHtmlPath) : 1;
+    if (els.currentVersionLabel) els.currentVersionLabel.textContent = `Viewing v${vNow}`;
+    if (els.currentViewNote) els.currentViewNote.textContent = `Currently viewing: Web View v${vNow}`;
+  }
+
+  function buildPreferenceOptions(htmlVariants, hasMd) {
+    if (!els.preferenceSelect) return;
+    els.preferenceSelect.innerHTML = '';
+    if (hasMd) {
+      const optMd = document.createElement('option');
+      optMd.value = 'markdown'; optMd.textContent = 'Raw Text';
+      els.preferenceSelect.appendChild(optMd);
+    } else {
+      const optMdDis = document.createElement('option');
+      optMdDis.value = ''; optMdDis.textContent = 'Raw Text (not available)'; optMdDis.disabled = true;
+      els.preferenceSelect.appendChild(optMdDis);
+    }
+    htmlVariants.forEach(h => {
+      const v = parseVersionFromPath(h);
+      const opt = document.createElement('option');
+      opt.value = `html_v${v}`; opt.textContent = `Web View v${v}`;
+      if (h === selectedHtmlPath) opt.selected = true;
+      els.preferenceSelect.appendChild(opt);
+    });
+  }
+
+  function updateEmailHint({ title, payload }) {
+    const to = 'hello@nextclass.ca';
+    const subj = encodeURIComponent(`NextClass Feedback: ${title || (currentContent?.title || '')}`);
+    let body = 'Please attach the downloaded JSON feedback file to this email. Thank you!\n\n';
+    try {
+      const p = payload || null;
+      if (p) {
+        const lines = [
+          `Teacher: ${p.teacher.name}`,
+          `Grade: ${p.teacher.grade}${p.teacher.school?` (School: ${p.teacher.school})`:''}`,
+          `Content: ${p.content.title} (id: ${p.content.id})`,
+          `HTML: ${p.content.htmlPath} (v${p.content.htmlVersion})`,
+          `Preferred: ${p.preferred || '—'}`,
+          `Functionality: ${p.ratings.functionality}/10`,
+          `Output: ${p.ratings.outputQuality}/10`,
+          `Accuracy: ${p.ratings.accuracy}/10`,
+          `Approved: ${p.approved ? 'Yes' : 'No'}`,
+          '',
+          'Comments:',
+          p.comments,
+          '',
+          '--- Raw JSON (copy/paste below, also attach the file) ---',
+        ];
+        const jsonStr = JSON.stringify(p, null, 2);
+        const trimmed = jsonStr.length > 2000 ? jsonStr.slice(0, 2000) + '\n... (truncated) ...' : jsonStr;
+        body += lines.join('\n') + '\n' + trimmed;
+      }
+    } catch {}
+    const href = `mailto:${to}?subject=${subj}&body=${encodeURIComponent(body)}`;
+    if (els.emailHint) els.emailHint.href = href;
   }
 })();

@@ -29,13 +29,13 @@
       </div>
     </header>
 
-    <main>
-      <div class="legend-bar">
+    <main id="mainRoot">
+      <div class="legend-bar" id="legendBar">
         <strong>Legend:</strong>
         <span class="badge type-badge type-mdhtml">Raw+Web</span> has both Markdown and HTML •
         <span class="badge type-badge type-htmlonly">Web Only</span> has only HTML
       </div>
-      <section class="lists">
+      <section class="lists" id="listsContainer">
         <div class="list-group">
           <h2>Raw Text + Web View</h2>
           <section id="content-list-both" class="cards"></section>
@@ -54,7 +54,7 @@
             <span id="currentMeta" class="meta"></span>
           </div>
           <div class="viewer-actions">
-            <button id="toggleMarkdown" class="toggle-raw">Show Raw Text ⇦</button>
+            <button id="backToLibraryBtn" class="ghost">← Back to Library</button>
             <div id="htmlVersionButtons" class="version-buttons"></div>
             <a id="openHtmlNewTab" target="_blank" rel="noopener" class="ghost">Open HTML ↗</a>
           </div>
@@ -62,11 +62,11 @@
 
         <div class="split" id="split">
           <aside class="pane markdown" id="markdownPane">
-            <div class="pane-header">Markdown (rendered)</div>
+            <div class="pane-header"><span>Raw Text (rendered)</span><button id="toggleRawPaneBtn" class="toggle-raw">Hide Raw Text →</button></div>
             <div id="markdownRender" class="content markdown-body"></div>
           </aside>
           <section class="pane html" id="htmlPane">
-            <div class="pane-header">HTML Preview</div>
+            <div class="pane-header">HTML Preview • <span id="currentVersionLabel" class="status">Viewing v1</span></div>
             <iframe id="htmlFrame" title="HTML Preview"></iframe>
           </section>
         </div>
@@ -74,26 +74,37 @@
         <section id="feedback" class="feedback">
           <h2>Teacher Feedback</h2>
           <form id="feedbackForm">
-            <div class="form-row">
-              <label for="teacherName">Your Name</label>
-              <input id="teacherName" name="teacherName" type="text" placeholder="Jane Doe" required />
+            <div class="form-row three">
+              <div>
+                <label for="teacherName">Your Name</label>
+                <input id="teacherName" class="input-sm" name="teacherName" type="text" placeholder="Jane Doe" required />
+              </div>
+              <div>
+                <label for="teacherGrade">Your Grade</label>
+                <select id="teacherGrade" name="teacherGrade" required>
+                  <option value="">Select grade…</option>
+                </select>
+              </div>
+              <div>
+                <label for="teacherSchool">School</label>
+                <select id="teacherSchool" name="teacherSchool">
+                  <option value="">Select school…</option>
+                  <option>School A</option>
+                  <option>School B</option>
+                  <option>School C</option>
+                  <option>Other</option>
+                </select>
+              </div>
             </div>
-            <div class="form-row two">
-              <label for="teacherGrade">Your Grade</label>
-              <select id="teacherGrade" name="teacherGrade" required>
-                <option value="">Select grade…</option>
-              </select>
-              <label for="preferredVersion">Prefer</label>
-              <select id="preferredVersion" name="preferredVersion">
-                <option value="html">HTML</option>
-                <option value="markdown">Markdown</option>
-                <option value="both">Both</option>
-              </select>
+            <div class="form-row">
+              <label for="preferenceSelect">Prefer</label>
+              <select id="preferenceSelect" name="preferenceSelect"></select>
+              <div class="helper" id="currentViewNote">Currently viewing: Web View v1</div>
             </div>
 
             <div class="form-row three ratings">
               <div>
-                <label for="ratingQuality">Overall Quality: <span id="qualityVal">5</span>/10</label>
+                <label for="ratingQuality">Functionality: <span id="qualityVal">5</span>/10</label>
                 <input id="ratingQuality" type="range" min="0" max="10" value="5" />
               </div>
               <div>
@@ -108,7 +119,8 @@
 
             <div class="form-row">
               <label for="comments">Comments</label>
-              <textarea id="comments" name="comments" rows="5" placeholder="Share specifics: strengths, issues, suggestions…"></textarea>
+              <div class="note-strong">Be specific with your feedback and please report anything that does not function as labelled.</div>
+              <textarea id="comments" name="comments" rows="5" placeholder="Share specifics: strengths, issues, suggestions…" required></textarea>
             </div>
 
             <div class="form-row">
@@ -120,10 +132,10 @@
 
             <div class="form-row actions">
               <button type="submit" class="primary">Download Feedback JSON</button>
-              <a id="emailHint" class="ghost" href="mailto:rishaal@nextclass.ca?subject=NextClass%20Feedback&body=Please%20attach%20the%20downloaded%20JSON%20file." target="_blank" rel="noopener">Email rishaal@nextclass.ca</a>
+              <a id="emailHint" class="ghost" href="mailto:hello@nextclass.ca?subject=NextClass%20Feedback&body=Please%20attach%20the%20downloaded%20JSON%20file." target="_blank" rel="noopener">Email hello@nextclass.ca</a>
             </div>
 
-            <p class="helper">Note: GitHub Pages is static. Submitting downloads a JSON file with your feedback. Please email it to <a href="mailto:rishaal@nextclass.ca">rishaal@nextclass.ca</a>.</p>
+            <p class="helper">Note: GitHub Pages is static. Submitting downloads a JSON file with your feedback. Please attach it in an email to <a href="mailto:hello@nextclass.ca">hello@nextclass.ca</a>.</p>
           </form>
         </section>
       </section>
