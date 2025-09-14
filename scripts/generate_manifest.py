@@ -64,6 +64,19 @@ def titleize(s: str) -> str:
     return ' '.join(w.capitalize() for w in re.sub(r"[_-]+", ' ', s).split())
 
 
+def guess_grade_from_name(stem: str) -> str:
+    name = stem.lower()
+    # Kindergarten synonyms
+    if any(k in name for k in ["kindergarten", "kindie", "kinder", "kg"]):
+        return "K"
+    # Patterns like 'grade 5', 'grade5', 'Grade12'
+    m = re.search(r"\bgrade\s*([k]|1[0-2]|[1-9])", name, flags=re.I)
+    if m:
+        g = m.group(1).upper()
+        return "K" if g == "K" else g
+    return ""
+
+
 def main() -> None:
     bases: dict[str, dict] = {}
 
@@ -90,7 +103,7 @@ def main() -> None:
         md_paths = [p for _, p in mds]
         html_paths = [p for _, p in htmls]
 
-        # Metadata from first markdown variant if present
+        # Metadata from first markdown variant if present, otherwise guess from filename
         title = titleize(base)
         grade = ""
         subject = ""
@@ -99,6 +112,9 @@ def main() -> None:
             title = fm.get('title', title) or title
             grade = str(fm.get('grade', '')).strip()
             subject = str(fm.get('subject', '')).strip().lower()
+        if not grade:
+            # Try to infer grade from filename base
+            grade = guess_grade_from_name(base)
 
         for ver, html_path in htmls:
             item = {
@@ -122,4 +138,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-

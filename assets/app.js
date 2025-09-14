@@ -4,7 +4,7 @@
 (function () {
   const els = {
     gradeFilter: document.getElementById('gradeFilter'),
-    subjectFilter: document.getElementById('subjectFilter'),
+    // subjectFilter removed
     listBoth: document.getElementById('content-list-both'),
     listHtmlOnly: document.getElementById('content-list-html-only'),
     listsContainer: document.getElementById('listsContainer'),
@@ -79,23 +79,17 @@
   }
 
   function populateFilters() {
-    const grades = unique(manifest.map((i) => i.grade));
-    const subjects = unique(manifest.map((i) => i.subject));
-    // Grade filter
+    if (!els.gradeFilter) return;
+    const prev = els.gradeFilter.value;
+    const grades = ['','K','1','2','3','4','5','6','7','8','9','10','11','12'];
     els.gradeFilter.innerHTML = '';
-    const optAllG = el('option', '', 'All grades'); optAllG.value = '';
-    els.gradeFilter.appendChild(optAllG);
-    grades.sort((a,b)=> (''+a).localeCompare(''+b)).forEach((g) => {
-      const o = el('option', '', `Grade ${g}`);
-      o.value = g; els.gradeFilter.appendChild(o);
-    });
-    // Subject filter
-    els.subjectFilter.innerHTML = '';
-    const optAllS = el('option', '', 'All subjects'); optAllS.value = '';
-    els.subjectFilter.appendChild(optAllS);
-    subjects.sort().forEach((s) => {
-      const o = el('option', '', titleCase(s));
-      o.value = s; els.subjectFilter.appendChild(o);
+    const labels = {
+      '': 'All grades', 'K': 'Kindergarten',
+    };
+    grades.forEach((g) => {
+      const text = g === '' ? labels[''] : (g === 'K' ? labels['K'] : `Grade ${g}`);
+      const o = el('option', '', text);
+      o.value = g; if (g === prev) o.selected = true; els.gradeFilter.appendChild(o);
     });
   }
 
@@ -112,10 +106,9 @@
   }
 
   function applyFilters() {
-    const g = els.gradeFilter.value;
-    const s = els.subjectFilter.value;
+    const g = els.gradeFilter ? els.gradeFilter.value : '';
     return manifest.filter((item) => {
-      return (g ? item.grade == g : true) && (s ? item.subject === s : true);
+      return (g ? String(item.grade).toUpperCase() === String(g).toUpperCase() : true);
     });
   }
 
@@ -124,9 +117,12 @@
     els.listBoth.innerHTML = '';
     els.listHtmlOnly.innerHTML = '';
     if (!items.length) {
+      const g = els.gradeFilter ? els.gradeFilter.value : '';
+      const msg = g ? `No content for Grade ${g}.` : 'No content found.';
+      const sub = g ? 'Please email hello@nextclass.ca to request, and send over a text you\'ve made to make it even quicker! Any requests welcome for features/functions.' : 'Please add content files to html/ and markdown/.';
       const empty = el('div', 'card');
-      empty.appendChild(el('h3', '', 'No content found'));
-      empty.appendChild(el('div', 'badge', 'Try switching grade/subject filters.'));
+      empty.appendChild(el('h3', '', msg));
+      empty.appendChild(el('div', 'badge', sub));
       els.listBoth.appendChild(empty);
       return;
     }
@@ -293,15 +289,14 @@
   }
 
   function initEvents() {
-    els.gradeFilter.addEventListener('change', renderList);
-    els.subjectFilter.addEventListener('change', renderList);
+    els.gradeFilter && els.gradeFilter.addEventListener('change', renderList);
     if (els.toggleRawPaneBtn) {
       els.toggleRawPaneBtn.addEventListener('click', () => {
         const visible = els.split.classList.contains('raw-visible');
         ensureMarkdownVisible(!visible);
       });
     }
-    els.feedbackTopBtn.addEventListener('click', () => {
+    if (els.feedbackTopBtn) els.feedbackTopBtn.addEventListener('click', () => {
       // Scroll to feedback section in viewer
       const fb = document.getElementById('feedback');
       fb?.scrollIntoView({ behavior: 'smooth', block: 'start' });

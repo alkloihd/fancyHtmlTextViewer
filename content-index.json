@@ -3,7 +3,7 @@
     {
       "id": "grade 1 natural world",
       "title": "Grade 1 Natural World",
-      "grade": "",
+      "grade": "1",
       "subject": "",
       "markdown": null,
       "html": "html/grade 1 natural world.html",
@@ -17,7 +17,7 @@
     {
       "id": "grade 12 logs exponents",
       "title": "Grade 12 Logs Exponents",
-      "grade": "",
+      "grade": "12",
       "subject": "",
       "markdown": "markdown/grade 12 logs exponents.md",
       "html": "html/grade 12 logs exponents.html",
@@ -35,7 +35,7 @@
     {
       "id": "grade 12 logs exponents",
       "title": "Grade 12 Logs Exponents",
-      "grade": "",
+      "grade": "12",
       "subject": "",
       "markdown": "markdown/grade 12 logs exponents.md",
       "html": "html/grade 12 logs exponents_2.html",
@@ -53,7 +53,7 @@
     {
       "id": "grade 12 logs exponents",
       "title": "Grade 12 Logs Exponents",
-      "grade": "",
+      "grade": "12",
       "subject": "",
       "markdown": "markdown/grade 12 logs exponents.md",
       "html": "html/grade 12 logs exponents_3.html",
@@ -71,7 +71,7 @@
     {
       "id": "grade 12 technology logarithmic eval",
       "title": "Grade 12 Technology Logarithmic Eval",
-      "grade": "",
+      "grade": "12",
       "subject": "",
       "markdown": "markdown/grade 12 technology logarithmic eval.md",
       "html": "html/grade 12 technology logarithmic eval.html",
@@ -87,7 +87,7 @@
     {
       "id": "grade 5 triangles",
       "title": "Grade 5 Triangles",
-      "grade": "",
+      "grade": "5",
       "subject": "",
       "markdown": "markdown/grade 5 triangles.md",
       "html": "html/grade 5 triangles.html",
@@ -103,7 +103,7 @@
     {
       "id": "grade 7 migrants",
       "title": "Grade 7 Migrants",
-      "grade": "",
+      "grade": "7",
       "subject": "",
       "markdown": null,
       "html": "html/grade 7 migrants.html",
@@ -117,7 +117,7 @@
     {
       "id": "grade11medicalequipmentsafety",
       "title": "Grade11medicalequipmentsafety",
-      "grade": "",
+      "grade": "11",
       "subject": "",
       "markdown": "markdown/grade11medicalequipmentsafety.md",
       "html": "html/grade11medicalequipmentsafety.html",
@@ -133,7 +133,7 @@
     {
       "id": "grade2HowAnimalsMove - Science math",
       "title": "Grade2howanimalsmove Science Math",
-      "grade": "",
+      "grade": "2",
       "subject": "",
       "markdown": "markdown/grade2HowAnimalsMove - Science math.md",
       "html": "html/grade2HowAnimalsMove - Science math_1.html",
@@ -153,7 +153,7 @@
     {
       "id": "grade2HowAnimalsMove - Science math",
       "title": "Grade2howanimalsmove Science Math",
-      "grade": "",
+      "grade": "2",
       "subject": "",
       "markdown": "markdown/grade2HowAnimalsMove - Science math.md",
       "html": "html/grade2HowAnimalsMove - Science math_2.html",
@@ -173,7 +173,7 @@
     {
       "id": "grade2HowAnimalsMove - Science math",
       "title": "Grade2howanimalsmove Science Math",
-      "grade": "",
+      "grade": "2",
       "subject": "",
       "markdown": "markdown/grade2HowAnimalsMove - Science math.md",
       "html": "html/grade2HowAnimalsMove - Science math_3.html",
@@ -193,7 +193,7 @@
     {
       "id": "grade2HowAnimalsMove - Science math",
       "title": "Grade2howanimalsmove Science Math",
-      "grade": "",
+      "grade": "2",
       "subject": "",
       "markdown": "markdown/grade2HowAnimalsMove - Science math.md",
       "html": "html/grade2HowAnimalsMove - Science math_4.html",
@@ -213,7 +213,7 @@
     {
       "id": "grade2lifesystemsmath",
       "title": "Grade2lifesystemsmath",
-      "grade": "",
+      "grade": "2",
       "subject": "",
       "markdown": null,
       "html": "html/grade2lifesystemsmath.html",
@@ -227,7 +227,7 @@
     {
       "id": "grade5EnergyConservation",
       "title": "Grade5energyconservation",
-      "grade": "",
+      "grade": "5",
       "subject": "",
       "markdown": null,
       "html": "html/grade5EnergyConservation.html",
@@ -241,7 +241,7 @@
     {
       "id": "grade5drama",
       "title": "Grade5drama",
-      "grade": "",
+      "grade": "5",
       "subject": "",
       "markdown": null,
       "html": "html/grade5drama.html",
@@ -255,7 +255,7 @@
     {
       "id": "grade5example",
       "title": "Grade5example",
-      "grade": "",
+      "grade": "5",
       "subject": "",
       "markdown": null,
       "html": "html/grade5example.html",
@@ -269,7 +269,7 @@
     {
       "id": "grade5trianglesStructures_version2",
       "title": "Grade5trianglesstructures Version2",
-      "grade": "",
+      "grade": "5",
       "subject": "",
       "markdown": null,
       "html": "html/grade5trianglesStructures_version2.html",
@@ -283,7 +283,7 @@
     {
       "id": "grade6_biodiversity_patterning",
       "title": "Grade6 Biodiversity Patterning",
-      "grade": "",
+      "grade": "6",
       "subject": "",
       "markdown": null,
       "html": "html/grade6_biodiversity_patterning.html",
@@ -297,7 +297,7 @@
     {
       "id": "grade7geographywatersystems",
       "title": "Grade7geographywatersystems",
-      "grade": "",
+      "grade": "7",
       "subject": "",
       "markdown": "markdown/grade7geographywatersystems.md",
       "html": "html/grade7geographywatersystems_1.html",
@@ -314,7 +314,7 @@
     {
       "id": "grade7geographywatersystems",
       "title": "Grade7geographywatersystems",
-      "grade": "",
+      "grade": "7",
       "subject": "",
       "markdown": "markdown/grade7geographywatersystems.md",
       "html": "html/grade7geographywatersystems_2.html",
@@ -331,7 +331,7 @@
     {
       "id": "grade8diverseCommunities",
       "title": "Grade8diversecommunities",
-      "grade": "",
+      "grade": "8",
       "subject": "",
       "markdown": "markdown/grade8diverseCommunities.md",
       "html": "html/grade8diverseCommunities.html",
@@ -347,7 +347,7 @@
     {
       "id": "kindergartenExample",
       "title": "Kindergartenexample",
-      "grade": "",
+      "grade": "K",
       "subject": "",
       "markdown": null,
       "html": "html/kindergartenExample.html",
@@ -361,7 +361,7 @@
     {
       "id": "kindergartendrama",
       "title": "Kindergartendrama",
-      "grade": "",
+      "grade": "K",
       "subject": "",
       "markdown": "markdown/kindergartendrama.md",
       "html": "html/kindergartendrama.html",
@@ -378,7 +378,7 @@
     {
       "id": "kindergartendrama",
       "title": "Kindergartendrama",
-      "grade": "",
+      "grade": "K",
       "subject": "",
       "markdown": "markdown/kindergartendrama.md",
       "html": "html/kindergartendrama_2.html",
@@ -395,7 +395,7 @@
     {
       "id": "kindieDramaGame",
       "title": "Kindiedramagame",
-      "grade": "",
+      "grade": "K",
       "subject": "",
       "markdown": "markdown/kindieDramaGame.md",
       "html": "html/kindieDramaGame.html",
@@ -411,7 +411,7 @@
     {
       "id": "kindieEmotionStoryTelling",
       "title": "Kindieemotionstorytelling",
-      "grade": "",
+      "grade": "K",
       "subject": "",
       "markdown": "markdown/kindieEmotionStoryTelling.md",
       "html": "html/kindieEmotionStoryTelling.html",
