@@ -5,7 +5,8 @@
   const els = {
     gradeFilter: document.getElementById('gradeFilter'),
     subjectFilter: document.getElementById('subjectFilter'),
-    list: document.getElementById('content-list'),
+    listBoth: document.getElementById('content-list-both'),
+    listHtmlOnly: document.getElementById('content-list-html-only'),
     viewer: document.getElementById('viewer'),
     currentTitle: document.getElementById('currentTitle'),
     currentMeta: document.getElementById('currentMeta'),
@@ -111,37 +112,61 @@
 
   function renderList() {
     const items = applyFilters();
-    els.list.innerHTML = '';
+    els.listBoth.innerHTML = '';
+    els.listHtmlOnly.innerHTML = '';
     if (!items.length) {
       const empty = el('div', 'card');
       empty.appendChild(el('h3', '', 'No content found'));
       empty.appendChild(el('div', 'badge', 'Try switching grade/subject filters.'));
-      els.list.appendChild(empty);
+      els.listBoth.appendChild(empty);
       return;
     }
-    // Sort by title then version
-    const sorted = items.slice().sort((a,b)=>{
+    // Determine group keys and markdown availability per group
+    const groupKey = (it) => (it.id) || baseNameFromPath(it.html || it.markdown || it.file || '');
+    const hasMdByGroup = {};
+    items.forEach((it) => {
+      const key = groupKey(it);
+      const hasMd = (Array.isArray(it.markdownVariants) ? it.markdownVariants.length > 0 : !!it.markdown);
+      hasMdByGroup[key] = hasMdByGroup[key] || hasMd;
+    });
+    const both = [];
+    const htmlOnly = [];
+    items.forEach((it) => {
+      const key = groupKey(it);
+      if (hasMdByGroup[key]) both.push(it); else htmlOnly.push(it);
+    });
+    const sortItems = (arr) => arr.slice().sort((a,b)=>{
       const tA = (a.title||'').localeCompare(b.title||'');
       if (tA !== 0) return tA;
       const vA = a.version || parseVersionFromPath(a.html||'');
       const vB = b.version || parseVersionFromPath(b.html||'');
       return vA - vB;
     });
-
-    sorted.forEach((it) => {
-      const card = el('article', 'card');
-      const v = it.version || parseVersionFromPath(it.html||'');
-      const title = el('h3', '', `${it.title} ${v>1?`(v${v})`:''}`);
-      const meta = el('div', 'badge', `Grade ${it.grade} • ${titleCase(it.subject)}`);
-      const row = el('div', 'row');
-      const file = it.file || it.id || it.title;
-      const filename = el('div', 'badge', file);
-      const btn = el('button', 'primary', 'Open');
-      btn.addEventListener('click', () => openViewer(it));
-      row.appendChild(filename); row.appendChild(btn);
-      card.appendChild(title); card.appendChild(meta); card.appendChild(row);
-      els.list.appendChild(card);
-    });
+    const renderInto = (arr, container) => {
+      if (!arr.length) {
+        const n = el('div', 'card');
+        n.appendChild(el('h3', '', 'No items'));
+        n.appendChild(el('div', 'badge', 'Nothing to show here.'));
+        container.appendChild(n);
+        return;
+      }
+      sortItems(arr).forEach((it) => {
+        const card = el('article', 'card');
+        const v = it.version || parseVersionFromPath(it.html||'');
+        const title = el('h3', '', `${it.title} ${v>1?`(v${v})`:''}`);
+        const meta = el('div', 'badge', `Grade ${it.grade || '—'} • ${titleCase(it.subject || '')}`);
+        const row = el('div', 'row');
+        const file = it.file || it.id || it.title;
+        const filename = el('div', 'badge', file);
+        const btn = el('button', 'primary', 'Open');
+        btn.addEventListener('click', () => openViewer(it));
+        row.appendChild(filename); row.appendChild(btn);
+        card.appendChild(title); card.appendChild(meta); card.appendChild(row);
+        container.appendChild(card);
+      });
+    };
+    renderInto(both, els.listBoth);
+    renderInto(htmlOnly, els.listHtmlOnly);
   }
 
   async function openViewer(item) {
